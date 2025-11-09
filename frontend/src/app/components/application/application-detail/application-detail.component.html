@@ -1,0 +1,36 @@
+<div *ngIf="loading">
+  <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+</div>
+<div *ngIf="!loading && application">
+  <nz-page-header [nzTitle]="application?.vacancyTitle">
+    <nz-page-header-subtitle>
+      Applied by {{ application?.userFirstName }} {{ application?.userLastName }} on {{ application?.appliedAt | date }}
+    </nz-page-header-subtitle>
+    <nz-page-header-extra>
+      <nz-tag [nzColor]="getStatusColor(application.status)">{{ application?.status }}</nz-tag>
+    </nz-page-header-extra>
+    <nz-page-header-content>
+      <nz-descriptions nzBordered [nzColumn]="2">
+        <nz-descriptions-item nzTitle="Applicant Email">{{ application?.userEmail }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Vacancy ID">{{ application?.vacancyId }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Cover Letter" [nzSpan]="2">{{ application?.coverLetter || 'N/A' }}</nz-descriptions-item>
+      </nz-descriptions>
+
+      <div class="review-notes-section">
+        <h3>Add Review Note</h3>
+        <form nz-form [formGroup]="reviewNoteForm" (ngSubmit)="addReviewNote()">
+          <nz-form-item>
+            <nz-form-control nzErrorTip="Please input your note!">
+              <textarea nz-input formControlName="note" placeholder="Add a review note"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-control>
+              <button nz-button nzType="primary" [disabled]="!reviewNoteForm.valid">Add Note</button>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </div>
+    </nz-page-header-content>
+  </nz-page-header>
+</div>

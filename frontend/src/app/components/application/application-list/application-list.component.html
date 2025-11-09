@@ -1,0 +1,36 @@
+<nz-table #applicationTable [nzData]="applications" [nzLoading]="loading" nzShowSizeChanger>
+  <thead>
+    <tr>
+      <th>Vacancy</th>
+      <th>Applicant</th>
+      <th>Applied At</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of applicationTable.data">
+      <td>{{ data.vacancyTitle }}</td>
+      <td>{{ data.userFirstName }} {{ data.userLastName }}</td>
+      <td>{{ data.appliedAt | date }}</td>
+      <td>
+        <nz-tag [nzColor]="getStatusColor(data.status)">{{ data.status }}</nz-tag>
+      </td>
+      <td>
+        <a [routerLink]="['/applications', data.id]">View</a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a nz-dropdown [nzDropdownMenu]="statusMenu">
+          Change Status
+          <i nz-icon nzType="down"></i>
+        </a>
+        <nz-dropdown-menu #statusMenu="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item *ngFor="let status of getApplicationStatusValues()" (click)="updateStatus(data, status)">
+              {{ status }}
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>

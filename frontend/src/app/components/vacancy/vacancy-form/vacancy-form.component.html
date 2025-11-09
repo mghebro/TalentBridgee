@@ -1,0 +1,209 @@
+<div *ngIf="isLoading" class="loading-overlay">
+  <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+</div>
+<form nz-form [formGroup]="form" (ngSubmit)="submitForm()">
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="organizationId" nzRequired
+      >Organization</nz-form-label
+    >
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please select an organization!">
+      <nz-select
+        id="organizationId"
+        formControlName="organizationId"
+        nzShowSearch
+        nzAllowClear
+        nzPlaceHolder="Select an organization"
+      >
+        <nz-option
+          *ngFor="let org of organizations"
+          [nzValue]="org.id"
+          [nzLabel]="org.name"
+        ></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="title" nzRequired>Title</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the vacancy title!">
+      <input
+        nz-input
+        id="title"
+        formControlName="title"
+        placeholder="e.g. Senior Software Engineer"
+      />
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="description" nzRequired>Description</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the description!">
+      <textarea
+        nz-input
+        id="description"
+        formControlName="description"
+        [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+        placeholder="Provide a detailed description of the role."
+      ></textarea>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="requirements" nzRequired
+      >Requirements</nz-form-label
+    >
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the requirements!">
+      <textarea
+        nz-input
+        id="requirements"
+        formControlName="requirements"
+        [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+        placeholder="List the qualifications and skills required."
+      ></textarea>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="responsibilities" nzRequired
+      >Responsibilities</nz-form-label
+    >
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the responsibilities!">
+      <textarea
+        nz-input
+        id="responsibilities"
+        formControlName="responsibilities"
+        [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+        placeholder="Outline the key responsibilities of the role."
+      ></textarea>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="profession" nzRequired>Profession</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the profession!">
+      <input
+        nz-input
+        id="profession"
+        formControlName="profession"
+        placeholder="e.g. Software Development"
+      />
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="industry" nzRequired>Industry</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the industry!">
+      <input
+        nz-input
+        id="industry"
+        formControlName="industry"
+        placeholder="e.g. Information Technology"
+      />
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="employmentType" nzRequired
+      >Employment Type</nz-form-label
+    >
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please select the employment type!">
+      <nz-select
+        id="employmentType"
+        formControlName="employmentType"
+        nzPlaceHolder="Select employment type"
+      >
+        <nz-option
+          *ngFor="let type of EmploymentType"
+          [nzValue]="type"
+          [nzLabel]="type"
+        ></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="experienceLevel" nzRequired
+      >Experience Level</nz-form-label
+    >
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please select the experience level!">
+      <nz-select
+        id="experienceLevel"
+        formControlName="experienceLevel"
+        nzPlaceHolder="Select experience level"
+      >
+        <nz-option
+          *ngFor="let level of ExperienceLevel"
+          [nzValue]="level"
+          [nzLabel]="level"
+        ></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="salaryMin">Salary Range</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24">
+      <nz-input-group nzCompact>
+        <nz-input-number
+          [nzStep]="100"
+          formControlName="salaryMin"
+          [style.width]="'40%'"
+          nzPlaceHolder="Minimum"
+        ></nz-input-number>
+        <nz-input-number
+          [nzStep]="100"
+          formControlName="salaryMax"
+          [style.width]="'40%'"
+          nzPlaceHolder="Maximum"
+        ></nz-input-number>
+        <nz-select formControlName="salaryCurrency" [style.width]="'20%'">
+          <nz-option nzValue="GEL" nzLabel="GEL"></nz-option>
+          <nz-option nzValue="USD" nzLabel="USD"></nz-option>
+          <nz-option nzValue="EUR" nzLabel="EUR"></nz-option>
+        </nz-select>
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="location" nzRequired>Location</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the location!">
+      <input
+        nz-input
+        id="location"
+        formControlName="location"
+        placeholder="e.g. Tbilisi, Georgia"
+      />
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control [nzSm]="14" [nzXs]="24" [nzOffset]="6">
+      <label nz-checkbox formControlName="isRemote">Is Remote</label>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="status" nzRequired>Status</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please select the status!">
+      <nz-select id="status" formControlName="status">
+        <nz-option
+          *ngFor="let status of VacancyStatus"
+          [nzValue]="status"
+          [nzLabel]="status"
+        ></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="applicationDeadline" nzRequired
+      >Application Deadline</nz-form-label
+    >
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please select the deadline!">
+      <nz-date-picker
+        id="applicationDeadline"
+        formControlName="applicationDeadline"
+        style="width: 100%"
+      ></nz-date-picker>
+    </nz-form-control>
+  </nz-form-item>
+  <div class="modal-footer">
+    <button nz-button type="button" (click)="cancel()">Cancel</button>
+    <button
+      nz-button
+      nzType="primary"
+      [disabled]="form.invalid || isLoading"
+      [nzLoading]="isLoading"
+    >
+      {{ vacancyId ? 'Update' : 'Create' }}
+    </button>
+  </div>
+</form>

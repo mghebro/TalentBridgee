@@ -163,35 +163,63 @@ Navigation: Answers (1:N), User (N:1)
 - Users ↔ Vacancies (via SavedVacancy)
 - Applications ↔ Tests (via TestAssignment)
 
-### 3.3 API Endpoints (70+)
+### 3.3 API Endpoints
 
-| HTTP Method | Endpoint | აღწერა |
-|-------------|----------|--------|
-| POST | /api/auth/register | მომხმარებლის რეგისტრაცია |
-| POST | /api/auth/login | ავტორიზაცია და JWT გენერაცია |
-| POST | /api/auth/refresh-token | Token-ის განახლება |
-| GET | /api/users/me | მომხმარებლის პროფილი |
-| PUT | /api/users/me/details | პროფილის განახლება |
-| POST | /api/users/me/cv | CV-ის ატვირთვა |
-| POST | /api/organizations | ორგანიზაციის შექმნა |
-| GET | /api/organizations | ორგანიზაციების სია |
-| POST | /api/vacancies | ვაკანსიის შექმნა |
-| GET | /api/vacancies | ვაკანსიების სია ფილტრებით |
-| GET | /api/vacancies/{id} | ვაკანსიის დეტალები |
-| POST | /api/applications | განაცხადის გაგზავნა |
-| GET | /api/applications/my-applications | ჩემი განაცხადები |
-| PATCH | /api/applications/{id}/status | სტატუსის შეცვლა |
-| POST | /api/tests | ტესტის შექმნა |
-| POST | /api/tests/{id}/questions | კითხვის დამატება |
-| POST | /api/test-assignments | ტესტის მინიჭება |
-| POST | /api/test-submissions/{id}/start | ტესტის დაწყება |
-| POST | /api/test-submissions/{id}/submit | ტესტის გაგზავნა |
-| GET | /api/test-submissions/{id}/results | ტესტის შედეგები |
-| POST | /api/saved-vacancies | ვაკანსიის შენახვა |
-| GET | /api/notifications | შეტყობინებები |
-| POST | /api/messages | შეტყობინების გაგზავნა |
-| GET | /api/dashboard/candidate | კანდიდატის დაფა |
-| GET | /api/dashboard/hr-manager | HR დაფა |
+#### Auth
+| HTTP Method | Endpoint | Description |
+|---|---|---|
+| POST | /api/auth/register | User registration |
+| POST | /api/auth/verify-email | Verify user email |
+| POST | /api/auth/send-resend-verification-code | Resend verification code |
+| POST | /api/auth/send-reset-password-link | Send password reset link |
+| PUT | /api/auth/reset-password | Reset user password |
+| POST | /api/auth/login | User login |
+| GET | /api/auth/get-current-user | Get current user details |
+| PUT | /api/auth/update-user | Update user details |
+| DELETE | /api/auth/delete-user | Delete user account |
+
+#### Applications
+| HTTP Method | Endpoint | Description |
+|---|---|---|
+| POST | /api/applications | Create a new application |
+| GET | /api/applications/my-applications | Get applications for the current user |
+| GET | /api/vacancies/{vacancyId}/applications | Get applications for a specific vacancy |
+| PUT | /api/applications/{id}/status | Update application status |
+| GET | /api/applications/{id} | Get application by ID |
+| POST | /api/applications/{id}/notes | Add a review note to an application |
+
+#### Organizations
+| HTTP Method | Endpoint | Description |
+|---|---|---|
+| POST | /api/organizations | Create a new organization |
+| GET | /api/organizations | Get a list of organizations |
+| GET | /api/organizations/{id} | Get organization by ID |
+| PUT | /api/organizations/{id} | Update an organization |
+| DELETE | /api/organizations/{id} | Delete an organization |
+| GET | /api/organizations/my | Get organizations for the current user |
+
+#### Tests
+| HTTP Method | Endpoint | Description |
+|---|---|---|
+| POST | /api/tests | Create a new test |
+| POST | /api/tests/{testId}/questions | Add a question to a test |
+| POST | /api/tests/assign | Assign a test to a user |
+| POST | /api/tests/{testAssignmentId}/start | Start a test submission |
+| POST | /api/tests/{testSubmissionId}/submit | Submit a test |
+| GET | /api/tests/{id} | Get test by ID |
+| GET | /api/tests | Get a list of tests |
+| GET | /api/tests/{testSubmissionId}/result | Get the result of a test submission |
+| PUT | /api/submission-answers/{id}/grade | Grade a submission answer |
+
+#### Vacancies
+| HTTP Method | Endpoint | Description |
+|---|---|---|
+| POST | /api/vacancies | Create a new vacancy |
+| GET | /api/vacancies | Get a list of vacancies |
+| GET | /api/vacancies/{id} | Get vacancy by ID |
+| PUT | /api/vacancies/{id} | Update a vacancy |
+| DELETE | /api/vacancies/{id} | Delete a vacancy |
+| GET | /api/vacancies/{id}/analytics | Get analytics for a vacancy |
 
 ---
 

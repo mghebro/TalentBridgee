@@ -30,7 +30,9 @@ public class OrganizationsController : BaseApiController
         _organizationServices = organizationServices;
         _logger = logger;
     }
-[Authorize(Roles = "${nameof(ROLES.HR_MANAGER)},${nameof(ROLES.ORGANIZATION_ADMIN)}")]
+
+    [HttpPost]
+    [Authorize(Roles = $"{nameof(ROLES.HR_MANAGER)},{nameof(ROLES.ORGANIZATION_ADMIN)}")]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> CreateOrganization([FromForm] CreateOrganizationRequest request, IFormFile? logo)
     {
@@ -156,7 +158,7 @@ public class OrganizationsController : BaseApiController
     }
 
     [HttpGet("my")]
-    [Authorize(Roles = $"{nameof(ROLES.HR_MANAGER)},{nameof(ROLES.ORGANIZATION_ADMIN)}")]
+    [Authorize(Roles = "HR_MANAGER,ORGANIZATION_ADMIN")]
     public async Task<IActionResult> GetOrganizationsForCurrentUser()
     {
         var currentUserResponse = await GetCurrentUserIdAsync();

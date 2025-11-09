@@ -1,0 +1,42 @@
+<div style="margin-bottom: 16px;">
+  <button nz-button nzType="primary" (click)="openCreateModal()">Create Organization</button>
+</div>
+
+<nz-table
+  #basicTable
+  [nzData]="organizations"
+  [nzLoading]="loading"
+  [nzTotal]="total"
+  [nzPageSize]="pageSize"
+  [nzPageIndex]="pageIndex"
+  nzShowSizeChanger
+  [nzFrontPagination]="false"
+  (nzQueryParams)="onQueryParamsChange($event)"
+>
+  <thead>
+    <tr>
+      <th nzColumnKey="name" [nzSortFn]="true">Name</th>
+      <th nzColumnKey="type" [nzSortFn]="true">Type</th>
+      <th>Contact</th>
+      <th>Website</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of basicTable.data">
+      <td><a [routerLink]="['/organizations', data.id]">{{ data.name }}</a></td>
+      <td>{{ data.typeName }}</td>
+      <td>{{ data.contactEmail }}</td>
+      <td><a [href]="data.website" target="_blank" rel="noopener noreferrer">{{ data.website }}</a></td>
+      <td>
+        <nz-tag [nzColor]="data.isActive ? 'green' : 'red'">{{ data.isActive ? 'Active' : 'Inactive' }}</nz-tag>
+      </td>
+      <td>
+        <a (click)="openEditModal(data)">Edit</a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a nz-popconfirm nzPopconfirmTitle="Are you sure you want to delete this organization?" (nzOnConfirm)="deleteOrganization(data.id)">Delete</a>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>

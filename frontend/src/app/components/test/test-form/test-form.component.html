@@ -1,0 +1,119 @@
+<form nz-form [formGroup]="form" (ngSubmit)="submitForm()">
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="title" nzRequired>Title</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the test title!">
+      <input nz-input id="title" formControlName="title" />
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="organizationId" nzRequired>Organization</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please select an organization!">
+      <nz-select id="organizationId" formControlName="organizationId">
+        <nz-option *ngFor="let org of organizations" [nzValue]="org.id" [nzLabel]="org.name"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="description" nzRequired>Description</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the description!">
+      <textarea nz-input id="description" formControlName="description" [nzAutosize]="{ minRows: 3, maxRows: 5 }"></textarea>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="profession" nzRequired>Profession</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the profession!">
+      <input nz-input id="profession" formControlName="profession" />
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="durationMinutes" nzRequired>Duration (minutes)</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the duration!">
+      <nz-input-number id="durationMinutes" formControlName="durationMinutes" [nzMin]="1"></nz-input-number>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="passingScore" nzRequired>Passing Score (%)</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the passing score!">
+      <nz-input-number id="passingScore" formControlName="passingScore" [nzMin]="0" [nzMax]="100"></nz-input-number>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="difficulty" nzRequired>Difficulty</nz-form-label>
+    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please select the difficulty!">
+      <nz-select id="difficulty" formControlName="difficulty">
+        <nz-option nzValue="Easy" nzLabel="Easy"></nz-option>
+        <nz-option nzValue="Medium" nzLabel="Medium"></nz-option>
+        <nz-option nzValue="Hard" nzLabel="Hard"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-divider nzText="Questions"></nz-divider>
+  <div formArrayName="questions">
+    <div *ngFor="let question of questions.controls; let i=index" [formGroupName]="i">
+      <nz-card>
+        <div nz-row nzGutter="8">
+          <div nz-col nzSpan="16">
+            <h4>Question {{ i + 1 }}</h4>
+          </div>
+          <div nz-col nzSpan="8" style="text-align: right;">
+            <button nz-button nzType="primary" nzDanger (click)="removeQuestion(i)">Remove Question</button>
+          </div>
+        </div>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Question Text</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the question text!">
+            <input nz-input formControlName="questionText" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Question Type</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please select the question type!">
+            <nz-select formControlName="questionType">
+              <nz-option nzValue="MultipleChoice" nzLabel="Multiple Choice"></nz-option>
+              <nz-option nzValue="TrueFalse" nzLabel="True/False"></nz-option>
+              <nz-option nzValue="ShortAnswer" nzLabel="Short Answer"></nz-option>
+              <nz-option nzValue="Essay" nzLabel="Essay"></nz-option>
+              <nz-option nzValue="Coding" nzLabel="Coding"></nz-option>
+              <nz-option nzValue="FileUpload" nzLabel="File Upload"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Points</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the points!">
+            <nz-input-number formControlName="points" [nzMin]="0"></nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+
+        <div *ngIf="question.get('questionType')?.value === 'MultipleChoice' || question.get('questionType')?.value === 'TrueFalse'">
+          <h5>Options</h5>
+          <div formArrayName="options">
+            <div *ngFor="let option of getOptions(i).controls; let j=index" [formGroupName]="j">
+              <nz-form-item>
+                <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Option Text</nz-form-label>
+                <nz-form-control [nzSm]="12" [nzXs]="24" nzErrorTip="Please input the option text!">
+                  <input nz-input formControlName="optionText" />
+                </nz-form-control>
+                <nz-form-control [nzSm]="4" [nzXs]="12">
+                  <label nz-checkbox formControlName="isCorrect">Is Correct</label>
+                </nz-form-control>
+                <nz-form-control [nzSm]="2" [nzXs]="12">
+                  <button nz-button tpye="primary" nzDanger (click)="removeOption(i, j)">Remove</button>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+          <button nz-button nzType="dashed" (click)="addOption(i)">+ Add Option</button>
+        </div>
+      </nz-card>
+    </div>
+  </div>
+  <button nz-button nzType="dashed" (click)="addQuestion()">+ Add Question</button>
+
+  <nz-form-item>
+    <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 14, offset: 6 }">
+      <button nz-button nzType="primary" [disabled]="!form.valid">Submit</button>
+    </nz-form-control>
+  </nz-form-item>
+</form>
