@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../services/auth.service'; // Corrected import path
+import { AuthService } from '../../../services/auth/auth.service'; // Corrected import path
 import { CommonModule } from '@angular/common';
 
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/']);
           this.isLoading = false;
         },
-        (error) => {
+        (error: any) => {
           this.notification.error('Error', error.message || 'Login failed');
           this.isLoading = false;
         }

@@ -11,6 +11,7 @@ import { ApplicationListComponent } from './components/application/application-l
 import { ApplicationDetailComponent } from './components/application/application-detail/application-detail.component';
 import { TestListComponent } from './components/test/test-list/test-list.component';
 import { TestFormComponent } from './components/test/test-form/test-form.component';
+import { VerifyEmailComponent } from './components/auth/verify-email/verify-email.component';
 
 export const routes: Routes = [
   {
@@ -18,6 +19,7 @@ export const routes: Routes = [
     children: [
       { path: 'login', component: LoginComponent },
       { path: 'register', component: RegisterComponent },
+      { path: 'verify-email', component: VerifyEmailComponent },
     ]
   },
   {

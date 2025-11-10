@@ -1,0 +1,13 @@
+<div class="verify-container">
+  <form [formGroup]="verifyForm" (ngSubmit)="submit()">
+    <label>Email</label>
+    <input nz-input formControlName="email" placeholder="Enter your email" />
+
+    <label>Verification Code</label>
+    <input nz-input formControlName="code" placeholder="Enter verification code" />
+
+    <button nz-button nzType="primary" [disabled]="isLoading">
+      {{ isLoading ? 'Verifying...' : 'Verify Email' }}
+    </button>
+  </form>
+</div>

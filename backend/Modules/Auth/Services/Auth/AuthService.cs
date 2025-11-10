@@ -38,22 +38,9 @@ public class AuthService : IAuthService
         _organizationServices = organizationServices; 
     }
 
-   public async Task<ApiResponse<bool>> Register(RegisterRequest request)
+ public async Task<ApiResponse<bool>> Register(RegisterRequest request)
 {
-    var userExists = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-    if (userExists != null)
-    {
-        return new ApiResponse<bool>
-        {
-            Data = false,
-            Status = StatusCodes.Status409Conflict,
-            Message = "User already exists"
-        };
-    }
-
-    var user = _mapper.Map<User>(request);
-    user.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
+    // Validate first
     var result = _registerValidator.Validate(request);
     if (!result.IsValid)
     {
@@ -66,6 +53,30 @@ public class AuthService : IAuthService
         };
     }
 
+    // Check if user exists
+    var userExists = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+    if (userExists != null)
+    {
+        return new ApiResponse<bool>
+        {
+            Data = false,
+            Status = StatusCodes.Status409Conflict,
+            Message = "User already exists"
+        };
+    }
+
+    // Map user manually or use AutoMapper (but NOT for Organization)
+    var user = new User
+    {
+        Email = request.Email,
+        FirstName = request.FirstName,
+        LastName = request.LastName,
+        Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
+        CreatedAt = DateTime.UtcNow,
+        IsVerified = false,
+    };
+
+    // Assign role
     user.Role = request.DesiredRole switch
     {
         "USER" => ROLES.USER,
@@ -124,32 +135,26 @@ public class AuthService : IAuthService
                 };
             }
 
-            var createOrgResult = await _organizationServices.CreateOrganizationAsync(request.OrganizationDetails, null, user.Id);
-            if (!createOrgResult.Success)
+            var newOrganization = new Organization  
             {
-                return new ApiResponse<bool>
-                {
-                    Data = false,
-                    Status = StatusCodes.Status400BadRequest,
-                    Message = createOrgResult.Message
-                };
-            }
+                Name = request.OrganizationDetails.Name,
+                Type = request.OrganizationDetails.Type,
+                Address = request.OrganizationDetails.Address,
+                ContactEmail = request.OrganizationDetails.ContactEmail,
+                Website = request.OrganizationDetails.Website,
+                Description = request.OrganizationDetails.Description,
+                PhoneNumber = request.OrganizationDetails.PhoneNumber,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true
+            };
 
-            var newOrganizationId = createOrgResult.Data?.Id ?? 0;
-            if (newOrganizationId == 0)
-            {
-                return new ApiResponse<bool>
-                {
-                    Data = false,
-                    Status = StatusCodes.Status500InternalServerError,
-                    Message = "Organization creation succeeded but organization ID was not returned."
-                };
-            }
+            await _context.Organizations.AddAsync(newOrganization);
+            await _context.SaveChangesAsync();
 
             var orgAdminHrManager = new HRManager
             {
                 UserId = user.Id,
-                OrganizationId = newOrganizationId,
+                OrganizationId = newOrganization.Id,
                 Position = "Organization Admin",
                 HiredDate = DateTime.UtcNow,
                 IsActive = true
@@ -159,14 +164,13 @@ public class AuthService : IAuthService
             break;
 
         case ROLES.USER:
-            break;
-
-        default:
+            // No additional setup needed
             break;
     }
 
     await _context.SaveChangesAsync();
 
+    // Send verification email
     string verificationCode = await SMTPService.SendVerificationCodeAsync(user.Email!, user.FirstName);
 
     var emailVerification = new EmailVerification
@@ -185,7 +189,6 @@ public class AuthService : IAuthService
         Message = "User registered successfully. Please check your email for verification code."
     };
 }
-
 
     public async Task<ApiResponse<UserToken>> VerifyEmail(VerifyEmailRequest verify)
     {

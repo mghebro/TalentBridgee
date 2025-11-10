@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../../services/auth/auth.service';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { CommonModule } from '@angular/common';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -20,10 +20,10 @@ import { OrganizationType } from '../../../models/organization.model';
     NzInputModule,
     NzButtonModule,
     RouterLink,
-    NzSelectModule
+    NzSelectModule,
   ],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
@@ -35,79 +35,120 @@ export class RegisterComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private notification: NzNotificationService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    this.registerForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      desiredRole: ['USER', [Validators.required]],
-      organizationDetails: this.fb.group({
-        name: [''],
-        type: [''],
-        address: [''],
-        contactEmail: [''],
-      })
-    }, { validator: this.passwordMatchValidator });
+    this.registerForm = this.fb.group(
+      {
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(6)]],
+        confirmPassword: ['', [Validators.required]],
+        firstName: ['', [Validators.required]],
+        lastName: ['', [Validators.required]],
+        desiredRole: ['USER', [Validators.required]],
+        organizationDetails: this.fb.group({
+          name: [''],
+          type: [''],
+          address: [''],
+          contactEmail: [''],
+          website: [''],
+          description: [''],
+          phoneNumber: [''],
+        }),
+      },
+      { validators: this.passwordMatchValidator }
+    );
 
-    this.registerForm.get('desiredRole')?.valueChanges.subscribe(role => {
-      const orgDetails = this.registerForm.get('organizationDetails') as FormGroup;
-      if (role === 'ORGANIZATION') {
-        orgDetails.get('name')?.setValidators([Validators.required]);
-        orgDetails.get('type')?.setValidators([Validators.required]);
-        orgDetails.get('address')?.setValidators([Validators.required]);
-        orgDetails.get('contactEmail')?.setValidators([Validators.required, Validators.email]);
-      } else {
-        orgDetails.get('name')?.clearValidators();
-        orgDetails.get('type')?.clearValidators();
-        orgDetails.get('address')?.clearValidators();
-        orgDetails.get('contactEmail')?.clearValidators();
-      }
-      orgDetails.updateValueAndValidity();
+    this.registerForm.get('desiredRole')?.valueChanges.subscribe((role) => {
+      this.updateOrganizationValidators(role);
+    });
+  }
+
+  private updateOrganizationValidators(role: string): void {
+    const orgDetails = this.registerForm.get('organizationDetails') as FormGroup;
+    const fields = [
+      'name',
+      'type',
+      'address',
+      'contactEmail',
+      'website',
+      'description',
+      'phoneNumber',
+    ];
+
+    if (role === 'ORGANIZATION_ADMIN') {
+      orgDetails.get('name')?.setValidators([Validators.required]);
+      orgDetails.get('type')?.setValidators([Validators.required]);
+      orgDetails.get('address')?.setValidators([Validators.required]);
+      orgDetails.get('contactEmail')?.setValidators([Validators.required, Validators.email]);
+      orgDetails.get('website')?.setValidators([Validators.required]);
+      orgDetails.get('description')?.setValidators([Validators.required]);
+      orgDetails.get('phoneNumber')?.setValidators([Validators.required]);
+    } else {
+      fields.forEach((field) => {
+        orgDetails.get(field)?.clearValidators();
+        orgDetails.get(field)?.reset();
+      });
+    }
+
+    // Update validity for each control individually
+    fields.forEach((field) => {
+      orgDetails.get(field)?.updateValueAndValidity();
     });
   }
 
   passwordMatchValidator(form: FormGroup) {
-    return form.get('password')?.value === form.get('confirmPassword')?.value
-      ? null : { mismatch: true };
+    const password = form.get('password');
+    const confirmPassword = form.get('confirmPassword');
+
+    if (!password || !confirmPassword) {
+      return null;
+    }
+
+    return password.value === confirmPassword.value ? null : { mismatch: true };
   }
 
   submitForm(): void {
     if (this.registerForm.valid) {
       this.isLoading = true;
       const { confirmPassword, ...registerData } = this.registerForm.value;
-      if (registerData.desiredRole !== 'ORGANIZATION') {
+
+      // Remove organizationDetails if not ORGANIZATION_ADMIN
+      if (registerData.desiredRole !== 'ORGANIZATION_ADMIN') {
         delete registerData.organizationDetails;
       }
 
-      this.authService.register(registerData).subscribe(
-        () => {
-          this.notification.success('Success', 'Registration successful. Please check your email to verify your account.');
-          this.router.navigate(['/auth/login']);
+      // Send data directly, not wrapped in { request: ... }
+      this.authService.register(registerData).subscribe({
+        next: (response) => {
+          this.notification.success(
+            'Success',
+            'Registration successful. Please check your email to verify your account.'
+          );
+         this.router.navigate(['/auth/verify-email']);
+
           this.isLoading = false;
         },
-        (error) => {
-          this.notification.error('Error', error.message || 'Registration failed');
+        error: (error) => {
+          const errorMessage = error?.error?.message || error?.message || 'Registration failed';
+          this.notification.error('Error', errorMessage);
           this.isLoading = false;
-        }
-      );
+        },
+      });
     } else {
-      Object.values(this.registerForm.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
-      const orgDetails = this.registerForm.get('organizationDetails') as FormGroup;
-      Object.values(orgDetails.controls).forEach(control => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
+      this.markFormGroupTouched(this.registerForm);
     }
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach((key) => {
+      const control = formGroup.get(key);
+      control?.markAsDirty();
+      control?.updateValueAndValidity({ onlySelf: true });
+
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
   }
 }

@@ -2,18 +2,18 @@
   <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
 </div>
 <div *ngIf="!loading && application">
-  <nz-page-header [nzTitle]="application?.vacancyTitle">
+  <nz-page-header [nzTitle]="application.vacancyTitle">
     <nz-page-header-subtitle>
-      Applied by {{ application?.userFirstName }} {{ application?.userLastName }} on {{ application?.appliedAt | date }}
+      Applied by {{ application.userFirstName }} {{ application.userLastName }} on {{ application.appliedAt | date }}
     </nz-page-header-subtitle>
     <nz-page-header-extra>
-      <nz-tag [nzColor]="getStatusColor(application.status)">{{ application?.status }}</nz-tag>
+      <nz-tag [nzColor]="getStatusColor(application.status)">{{ application.status }}</nz-tag>
     </nz-page-header-extra>
     <nz-page-header-content>
       <nz-descriptions nzBordered [nzColumn]="2">
-        <nz-descriptions-item nzTitle="Applicant Email">{{ application?.userEmail }}</nz-descriptions-item>
-        <nz-descriptions-item nzTitle="Vacancy ID">{{ application?.vacancyId }}</nz-descriptions-item>
-        <nz-descriptions-item nzTitle="Cover Letter" [nzSpan]="2">{{ application?.coverLetter || 'N/A' }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Applicant Email">{{ application.userEmail }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Vacancy ID">{{ application.vacancyId }}</nz-descriptions-item>
+        <nz-descriptions-item nzTitle="Cover Letter" [nzSpan]="2">{{ application.coverLetter || 'N/A' }}</nz-descriptions-item>
       </nz-descriptions>
 
       <div class="review-notes-section">

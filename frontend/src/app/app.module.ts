@@ -56,14 +56,6 @@ import { ApplicationDetailComponent } from './components/application/application
 
 @NgModule({
   imports: [
-    LayoutComponent,
-    LoginComponent,
-    RegisterComponent,
-    OrganizationListComponent,
-    OrganizationFormComponent,
-    VacancyFormComponent,
-    ApplicationListComponent,
-    ApplicationDetailComponent,
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,

@@ -55,25 +55,12 @@ public class DataContext : DbContext
     
     //Organizations
     public DbSet<Organization> Organizations { get; set; } 
-    public DbSet<BusinessOrganization> BusinessOrganizations { get; set; }
-    public DbSet<EducationOrganization> EducationOrganizations { get; set; }
-    public DbSet<HealthcareOrganization> HealthcareOrganizations { get; set; }
-    public DbSet<NGOOrganization> NonGovOrganizations { get; set; }
-    public DbSet<GOVOrganization> GovOrganizations { get; set; }
-    public DbSet<OtherOrganization> OtherOrganizations { get; set; }
+  
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         
-        modelBuilder.Entity<Organization>()
-            .HasDiscriminator<TYPES>(o => o.Type)
-            .HasValue<BusinessOrganization>(TYPES.BUSINESS_COMPANY)
-            .HasValue<EducationOrganization>(TYPES.EDUCATION)
-            .HasValue<HealthcareOrganization>(TYPES.HEALTHCARE)
-            .HasValue<NGOOrganization>(TYPES.NON_GOV)
-            .HasValue<GOVOrganization>(TYPES.GOV)
-            .HasValue<OtherOrganization>(TYPES.OTHERS_ASSOCIATIONS);
         
         foreach (var relationship in modelBuilder.Model.GetEntityTypes()
                      .SelectMany(e => e.GetForeignKeys()))

@@ -9,6 +9,7 @@
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
+      
       <nz-form-item>
         <nz-form-control nzErrorTip="Please input your last name!">
           <nz-input-group nzPrefixIcon="user">
@@ -16,6 +17,7 @@
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
+      
       <nz-form-item>
         <nz-form-control nzErrorTip="Please input your email!">
           <nz-input-group nzPrefixIcon="mail">
@@ -23,6 +25,7 @@
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
+      
       <nz-form-item>
         <nz-form-control nzErrorTip="Password must be at least 6 characters long.">
           <nz-input-group nzPrefixIcon="lock">
@@ -30,12 +33,14 @@
           </nz-input-group>
         </nz-form-control>
       </nz-form-item>
+      
       <nz-form-item>
         <nz-form-control nzErrorTip="Please confirm your password!">
           <nz-input-group nzPrefixIcon="lock">
             <input type="password" nz-input formControlName="confirmPassword" placeholder="Confirm Password" />
           </nz-input-group>
-          <div *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.dirty" class="ant-form-item-explain-error" style="color: red;">
+          <div *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.dirty" 
+               class="ant-form-item-explain-error" style="color: red;">
             Passwords do not match.
           </div>
         </nz-form-control>
@@ -46,20 +51,23 @@
         <nz-form-control>
           <nz-select formControlName="desiredRole">
             <nz-option nzValue="USER" nzLabel="User"></nz-option>
-            <nz-option nzValue="ORGANIZATION" nzLabel="Organization"></nz-option>
+            <nz-option nzValue="ORGANIZATION_ADMIN" nzLabel="Organization Admin"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
 
-      <div *ngIf="registerForm.get('desiredRole')?.value === 'ORGANIZATION'" formGroupName="organizationDetails">
+      <div *ngIf="registerForm.get('desiredRole')?.value === 'ORGANIZATION_ADMIN'" 
+           formGroupName="organizationDetails">
         <h3>Organization Details</h3>
+        
         <nz-form-item>
           <nz-form-control nzErrorTip="Please input the organization name!">
-            <nz-input-group>
+            <nz-input-group nzPrefixIcon="bank">
               <input type="text" nz-input formControlName="name" placeholder="Organization Name" />
             </nz-input-group>
           </nz-form-control>
         </nz-form-item>
+        
         <nz-form-item>
           <nz-form-control nzErrorTip="Please select the organization type!">
             <nz-select formControlName="type" nzPlaceHolder="Select organization type">
@@ -67,17 +75,46 @@
             </nz-select>
           </nz-form-control>
         </nz-form-item>
+        
         <nz-form-item>
           <nz-form-control nzErrorTip="Please input the organization address!">
-            <nz-input-group>
+            <nz-input-group nzPrefixIcon="environment">
               <input type="text" nz-input formControlName="address" placeholder="Organization Address" />
             </nz-input-group>
           </nz-form-control>
         </nz-form-item>
+        
         <nz-form-item>
           <nz-form-control nzErrorTip="Please input the organization contact email!">
-            <nz-input-group>
+            <nz-input-group nzPrefixIcon="mail">
               <input type="email" nz-input formControlName="contactEmail" placeholder="Organization Contact Email" />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+        
+        <nz-form-item>
+          <nz-form-control nzErrorTip="Please input the organization website!">
+            <nz-input-group nzPrefixIcon="global">
+              <input type="url" nz-input formControlName="website" placeholder="https://example.com" />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+        
+        <nz-form-item>
+          <nz-form-control nzErrorTip="Please input the organization phone number!">
+            <nz-input-group nzPrefixIcon="phone">
+              <input type="tel" nz-input formControlName="phoneNumber" placeholder="Organization Phone Number" />
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+        
+        <nz-form-item>
+          <nz-form-control nzErrorTip="Please input the organization description!">
+            <nz-input-group>
+              <textarea nz-input 
+                        formControlName="description" 
+                        placeholder="Organization Description" 
+                        rows="3"></textarea>
             </nz-input-group>
           </nz-form-control>
         </nz-form-item>
@@ -85,8 +122,14 @@
 
       <nz-form-item>
         <nz-form-control>
-          <button nz-button nzType="primary" [nzLoading]="isLoading" [disabled]="!registerForm.valid">Register</button>
-          Or <a routerLink="/auth/login">login now!</a>
+          <button nz-button 
+                  nzType="primary" 
+                  [nzLoading]="isLoading" 
+                  [disabled]="isLoading">
+            Register
+          </button>
+          <span style="margin: 0 8px;">Or</span>
+          <a routerLink="/auth/login">login now!</a>
         </nz-form-control>
       </nz-form-item>
     </form>
