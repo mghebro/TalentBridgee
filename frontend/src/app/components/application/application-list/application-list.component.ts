@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ApplicationService } from '../../../services/application/application.service'; // Corrected import path
-import { Application, ApplicationStatus, UpdateApplicationStatusRequest } from '../../../models/application/application';
+import { ApplicationService } from '../../../services/application/application.service';
+import { Application } from '../../../models/application/application';
+import { ApplicationStatus } from '../../../models/enums';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -19,7 +20,7 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
   styleUrls: ['./application-list.component.scss']
 })
 export class ApplicationListComponent implements OnInit {
-  @Input() vacancyId?: number;
+  @Input() vacancyId?: string;
   applications: Application[] = [];
   loading = true;
   ApplicationStatus = ApplicationStatus; // Make enum available in template
@@ -31,60 +32,56 @@ export class ApplicationListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    if (this.vacancyId) {
-      this.loadApplicationsForVacancy(this.vacancyId);
-    } else {
-      this.route.data.subscribe(data => {
-        if (data['myApplications']) {
-          this.loadMyApplications();
+    this.route.params.subscribe(params => {
+      if (params['vacancyId']) {
+        this.vacancyId = params['vacancyId'];
+        if (this.vacancyId) {
+          this.loadApplicationsForVacancy(this.vacancyId);
         }
-      });
-    }
+      } else {
+        this.loadMyApplications();
+      }
+    });
   }
 
   loadMyApplications(): void {
     this.loading = true;
-    this.applicationService.getApplicationsByUserId().subscribe(
-      data => {
+    this.applicationService.getMyApplications().subscribe({
+      next: data => {
         this.applications = data;
         this.loading = false;
       },
-      error => {
+      error: error => {
         this.notification.error('Error', error.error.message || 'Failed to load applications');
         this.loading = false;
       }
-    );
+    });
   }
 
-  loadApplicationsForVacancy(vacancyId: number): void {
+  loadApplicationsForVacancy(vacancyId: string): void {
     this.loading = true;
-    this.applicationService.getApplicationsByVacancyId(vacancyId).subscribe(
-      data => {
+    this.applicationService.getApplicationsForVacancy(vacancyId).subscribe({
+      next: data => {
         this.applications = data;
         this.loading = false;
       },
-      error => {
+      error: error => {
         this.notification.error('Error', error.error.message || 'Failed to load applications for vacancy');
         this.loading = false;
       }
-    );
+    });
   }
 
-  getApplicationStatusValues(): ApplicationStatus[] {
-    return Object.values(this.ApplicationStatus) as ApplicationStatus[];
-  }
-
-  updateStatus(application: Application, status: ApplicationStatus): void {
-    const request: UpdateApplicationStatusRequest = { status: status };
-    this.applicationService.updateApplicationStatus(application.id, request).subscribe(
-      () => {
+  updateStatus(application: Application, status: string): void {
+    this.applicationService.updateApplicationStatus(application.id, status as ApplicationStatus).subscribe({
+      next: () => {
         this.notification.success('Success', 'Application status updated successfully');
         application.status = status;
       },
-      error => {
+      error: error => {
         this.notification.error('Error', error.error.message || 'Failed to update application status');
       }
-    );
+    });
   }
 
   getStatusColor(status: string): string {
@@ -110,5 +107,9 @@ export class ApplicationListComponent implements OnInit {
       default:
         return 'default';
     }
+  }
+
+  getApplicationStatusValues(): string[] {
+    return Object.values(ApplicationStatus);
   }
 }

@@ -1,0 +1,26 @@
+<div class="vacancy-management-container">
+  <h1>Vacancy Management</h1>
+  <button nz-button nzType="primary" (click)="openVacancyModal()">Create Vacancy</button>
+
+  <nz-table #vacancyTable [nzData]="vacancies">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Location</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let vacancy of vacancyTable.data">
+        <td>{{ vacancy.title }}</td>
+        <td>{{ vacancy.location }}</td>
+        <td>{{ vacancy.vacancyStatus }}</td>
+        <td>
+          <button nz-button nzType="primary" (click)="openVacancyModal(vacancy.id)">Edit</button>
+          <button nz-button nzType="default" nzDanger (click)="deleteVacancy(vacancy.id)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>

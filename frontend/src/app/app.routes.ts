@@ -9,9 +9,13 @@ import { VacancyFormComponent } from './components/vacancy/vacancy-form/vacancy-
 import { VacancyListComponent } from './components/vacancy/vacancy-list/vacancy-list.component';
 import { ApplicationListComponent } from './components/application/application-list/application-list.component';
 import { ApplicationDetailComponent } from './components/application/application-detail/application-detail.component';
+import { MyApplicationsComponent } from './components/application/my-applications/my-applications.component';
 import { TestListComponent } from './components/test/test-list/test-list.component';
 import { TestFormComponent } from './components/test/test-form/test-form.component';
+import { TestTakingComponent } from './components/test/test-taking/test-taking.component';
 import { VerifyEmailComponent } from './components/auth/verify-email/verify-email.component';
+import { VacancyDetailComponent } from './components/vacancy/vacancy-detail/vacancy-detail.component';
+import { VacancyManagementComponent } from './components/vacancy/vacancy-management/vacancy-management.component';
 
 export const routes: Routes = [
   {
@@ -25,22 +29,82 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [AuthGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'welcome' },
       { path: 'welcome', loadChildren: () => import('./pages/welcome/welcome.routes').then(m => m.WELCOME_ROUTES) },
-      { path: 'organizations', component: OrganizationListComponent },
-      { path: 'organizations/new', component: OrganizationFormComponent },
-      { path: 'organizations/edit/:id', component: OrganizationFormComponent },
       { path: 'vacancies', component: VacancyListComponent },
-      { path: 'vacancies/new', component: VacancyFormComponent },
-      { path: 'vacancies/edit/:id', component: VacancyFormComponent },
-      { path: 'applications', component: ApplicationListComponent },
-      { path: 'applications/:id', component: ApplicationDetailComponent },
-      { path: 'tests', component: TestListComponent },
-      { path: 'tests/new', component: TestFormComponent },
-      { path: 'tests/edit/:id', component: TestFormComponent },
+      { path: 'vacancies/:id', component: VacancyDetailComponent },
+      {
+        path: 'my-applications',
+        canActivate: [AuthGuard],
+        component: MyApplicationsComponent
+      },
+      {
+        path: 'organizations',
+        canActivate: [AuthGuard],
+        component: OrganizationListComponent
+      },
+      {
+        path: 'organizations/new',
+        canActivate: [AuthGuard],
+        component: OrganizationFormComponent
+      },
+      {
+        path: 'organizations/edit/:id',
+        canActivate: [AuthGuard],
+        component: OrganizationFormComponent
+      },
+      {
+        path: 'vacancies/new',
+        canActivate: [AuthGuard],
+        component: VacancyFormComponent
+      },
+      {
+        path: 'vacancies/edit/:id',
+        canActivate: [AuthGuard],
+        component: VacancyFormComponent
+      },
+      {
+        path: 'vacancy-management',
+        canActivate: [AuthGuard],
+        component: VacancyManagementComponent
+      },
+      {
+        path: 'vacancies/:vacancyId/applications',
+        canActivate: [AuthGuard],
+        component: ApplicationListComponent
+      },
+      {
+        path: 'applications',
+        canActivate: [AuthGuard],
+        component: ApplicationListComponent
+      },
+      {
+        path: 'applications/:id',
+        canActivate: [AuthGuard],
+        component: ApplicationDetailComponent
+      },
+      {
+        path: 'tests',
+        canActivate: [AuthGuard],
+        component: TestListComponent
+      },
+      {
+        path: 'tests/new',
+        canActivate: [AuthGuard],
+        component: TestFormComponent
+      },
+      {
+        path: 'tests/edit/:id',
+        canActivate: [AuthGuard],
+        component: TestFormComponent
+      },
+      {
+        path: 'tests/:id',
+        canActivate: [AuthGuard],
+        component: TestTakingComponent
+      },
     ]
   },
   { path: '**', redirectTo: '' } // Redirect any unmatched routes to the home page
-]
+];

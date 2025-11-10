@@ -57,8 +57,8 @@
         <i nz-icon nzType="plus"></i>
         <div class="ant-upload-text">Upload</div>
       </nz-upload>
-      <div *ngIf="organization?.logo" class="logo-preview">
-        <img [src]="apiUrl + '/' + organization?.logo" alt="Logo Preview" />
+      <div *ngIf="organization?.logoUrl" class="logo-preview">
+        <img [src]="apiUrl + '/' + organization?.logoUrl" alt="Logo Preview" />
         <label nz-checkbox formControlName="deleteLogo">Delete Logo</label>
       </div>
     </nz-form-control>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
@@ -19,8 +19,8 @@ import { Observable } from 'rxjs';
     RouterOutlet,
     NzIconModule,
     NzMenuModule,
-    NzDropDownModule
-    
+    NzDropDownModule,
+    RouterLink
   ],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss']

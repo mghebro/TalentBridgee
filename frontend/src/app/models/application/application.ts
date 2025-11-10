@@ -1,37 +1,26 @@
-export interface Application {
-    id: number;
-    vacancyId: number;
-    vacancyTitle: string;
-    userId: number;
-    userEmail: string;
-    userFirstName: string;
-    userLastName: string;
-    status: string;
-    coverLetter?: string;
-    appliedAt: Date;
-}
+import { Vacancy } from "../vacancy/vacancy";
+import { User } from "../auth/user";
 
-export interface CreateApplicationRequest {
-    vacancyId: number;
-    coverLetter?: string;
+export interface Application {
+  id: string;
+  vacancyId: string;
+  vacancy: Vacancy;
+  userId: string;
+  user: User;
+  applicationDate: Date;
+  status: string;
+  resumeUrl: string;
+  vacancyTitle: string;
+  userFirstName: string;
+  userLastName: string;
+  userEmail: string;
+  coverLetter: string;
 }
 
 export interface UpdateApplicationStatusRequest {
-    status: string;
+  status: string;
 }
 
 export interface AddReviewNoteRequest {
-    note: string;
-}
-
-export enum ApplicationStatus {
-    Submitted = 'Submitted',
-    UnderReview = 'UnderReview',
-    Shortlisted = 'Shortlisted',
-    Interview = 'Interview',
-    TestAssigned = 'TestAssigned',
-    Offered = 'Offered',
-    Hired = 'Hired',
-    Rejected = 'Rejected',
-    Withdrawn = 'Withdrawn',
+  note: string;
 }

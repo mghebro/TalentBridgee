@@ -1,40 +1,52 @@
-<div style="margin-bottom: 16px;">
-  <button nz-button nzType="primary" (click)="openCreateModal()">Create Vacancy</button>
-</div>
+<div class="vacancy-list-container">
+  <h1>Vacancies</h1>
 
-<nz-table
-  #basicTable
-  [nzData]="vacancies"
-  [nzLoading]="loading"
-  [nzTotal]="total"
-  [nzPageSize]="pageSize"
-  [nzPageIndex]="pageIndex"
-  nzShowSizeChanger
-  [nzFrontPagination]="false"
-  (nzQueryParams)="onQueryParamsChange($event)"
->
-  <thead>
-    <tr>
-      <th nzColumnKey="title" [nzSortFn]="true">Title</th>
-      <th nzColumnKey="organizationName" [nzSortFn]="true">Organization</th>
-      <th>Location</th>
-      <th>Status</th>
-      <th nzColumnKey="applicationDeadline" [nzSortFn]="true">Deadline</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let data of basicTable.data">
-      <td><a [routerLink]="['/vacancies', data.id]">{{ data.title }}</a></td>
-      <td>{{ data.organizationName }}</td>
-      <td>{{ data.location }}</td>
-      <td><nz-tag [nzColor]="getStatusColor(data.statusName)">{{ data.statusName }}</nz-tag></td>
-      <td>{{ data.applicationDeadline | date }}</td>
-      <td>
-        <a (click)="openEditModal(data)">Edit</a>
-        <nz-divider nzType="vertical"></nz-divider>
-        <a nz-popconfirm nzPopconfirmTitle="Sure to delete?" (nzOnConfirm)="deleteVacancy(data.id)">Delete</a>
-      </td>
-    </tr>
-  </tbody>
-</nz-table>
+  <form (ngSubmit)="search()">
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-control>
+            <nz-input-group>
+              <input type="text" nz-input placeholder="Search by keyword" [(ngModel)]="filter.searchTerm" name="searchTerm">
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="6">
+        <nz-form-item>
+          <nz-form-control>
+            <nz-input-group>
+              <input type="text" nz-input placeholder="Location" [(ngModel)]="filter.location" name="location">
+            </nz-input-group>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="6">
+        <nz-form-item>
+          <nz-form-control>
+            <nz-select [(ngModel)]="filter.employmentType" name="employmentType" nzAllowClear nzPlaceHolder="Employment Type">
+              <nz-option *ngFor="let type of employmentTypes" [nzLabel]="type" [nzValue]="type"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="4">
+        <button nz-button nzType="primary" type="submit">Search</button>
+      </div>
+    </div>
+  </form>
+
+  <nz-list [nzDataSource]="vacancies" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }">
+    <ng-template #item let-vacancy>
+      <nz-list-item>
+        <a [routerLink]="['/vacancies', vacancy.id]">
+          <nz-card [nzTitle]="vacancy.title">
+            <p><strong>{{ vacancy.organization.name }}</strong></p>
+            <p>{{ vacancy.location }}</p>
+            <p>{{ vacancy.employmentType }}</p>
+          </nz-card>
+        </a>
+      </nz-list-item>
+    </ng-template>
+  </nz-list>
+</div>

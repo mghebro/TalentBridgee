@@ -1,0 +1,75 @@
+import { Component, OnInit } from '@angular/core';
+import { VacancyService } from '../../../services/vacancy/vacancy.service';
+import { Vacancy } from '../../../models/vacancy/vacancy';
+import { CommonModule } from '@angular/common';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
+import { VacancyFormComponent } from '../vacancy-form/vacancy-form.component';
+import { OrganizationService } from '../../../services/organization/organization.service';
+import { Organization } from '../../../models/organization/organization';
+import { OrganizationList } from '../../../models/organization.model';
+
+@Component({
+  selector: 'app-vacancy-management',
+  standalone: true,
+  imports: [CommonModule, NzTableModule, NzButtonModule, NzModalModule],
+  templateUrl: './vacancy-management.component.html',
+  styleUrls: ['./vacancy-management.component.scss'],
+})
+export class VacancyManagementComponent implements OnInit {
+  vacancies: Vacancy[] = [];
+  myOrganizations: OrganizationList[] = [];
+
+  constructor(
+    private vacancyService: VacancyService,
+    private organizationService: OrganizationService,
+    private modalService: NzModalService
+  ) {}
+
+  ngOnInit(): void {
+    this.organizationService.getMyOrganizations().subscribe((orgs) => {
+      this.myOrganizations = orgs;
+      if (orgs.length > 0) {
+        this.loadVacancies(orgs[0].id);
+      }
+    });
+  }
+
+  loadVacancies(organizationId: string): void {
+    // This is a placeholder. The backend doesn't have a direct endpoint
+    // to get vacancies by organization id for the management view.
+    // We will filter the vacancies on the client side for now.
+    this.vacancyService.getVacancies().subscribe((vacancies) => {
+      this.vacancies = vacancies.filter((v) => v.organizationId === organizationId);
+    });
+  }
+
+  openVacancyModal(vacancyId?: string): void {
+    const modal = this.modalService.create({
+      nzTitle: vacancyId ? 'Edit Vacancy' : 'Create Vacancy',
+      nzContent: VacancyFormComponent,
+      nzComponentParams: {
+        vacancyId: vacancyId,
+      },
+      nzFooter: null,
+      nzWidth: '80%',
+    } as any);
+
+    modal.afterClose.subscribe((result) => {
+      if (result === 'created' || result === 'updated') {
+        if (this.myOrganizations.length > 0) {
+          this.loadVacancies(this.myOrganizations[0].id);
+        }
+      }
+    });
+  }
+
+  deleteVacancy(vacancyId: string): void {
+    this.vacancyService.deleteVacancy(vacancyId).subscribe(() => {
+      if (this.myOrganizations.length > 0) {
+        this.loadVacancies(this.myOrganizations[0].id);
+      }
+    });
+  }
+}

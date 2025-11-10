@@ -2,10 +2,9 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, ReactiveFormsModule } from '@angular/forms';
 import { TestService } from '../../../services/test/test.service';
 import { CreateTestRequest, Test } from '../../../models/test/test';
-import { NzModalRef } from 'ng-zorro-antd/modal';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { OrganizationService } from '../../../services/organization/organization.service';
-import { OrganizationList} from '../../../models/organization.model'; // Corrected import path
+import { OrganizationList} from '../../../models/organization.model';
 import { CommonModule } from '@angular/common';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -17,6 +16,7 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-test-form',
@@ -39,34 +39,61 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
   ]
 })
 export class TestFormComponent implements OnInit {
-  @Input() test?: Test;
+  @Input() testId?: string;
   form!: FormGroup;
   organizations: OrganizationList[] = [];
+  isEditing = false;
 
   constructor(
     private fb: FormBuilder,
     private testService: TestService,
     private organizationService: OrganizationService,
-    private modalRef: NzModalRef,
-    private notification: NzNotificationService
+    private notification: NzNotificationService,
+    private route: ActivatedRoute,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
     this.loadOrganizations();
+    this.initForm();
+
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.testId = id;
+        this.isEditing = true;
+        this.testService.getTestById(this.testId).subscribe(test => {
+          this.form.patchValue(test);
+          this.setQuestions(test.questions);
+        });
+      }
+    });
+  }
+
+  initForm(): void {
     this.form = this.fb.group({
-      title: [this.test?.title, [Validators.required]],
-      organizationId: [this.test?.organizationId, [Validators.required]],
-      description: [this.test?.description, [Validators.required]],
-      profession: [this.test?.profession, [Validators.required]],
-      durationMinutes: [this.test?.durationMinutes, [Validators.required]],
-      passingScore: [this.test?.passingScore, [Validators.required]],
-      difficulty: [this.test?.difficulty, [Validators.required]],
+      title: [null, [Validators.required]],
+      organizationId: [null, [Validators.required]],
+      description: [null, [Validators.required]],
+      profession: [null, [Validators.required]],
+      durationMinutes: [null, [Validators.required]],
+      passingScore: [null, [Validators.required]],
+      difficulty: [null, [Validators.required]],
       questions: this.fb.array([])
     });
+  }
 
-    if (this.test?.questions) {
-      this.test.questions.forEach(q => this.addQuestion(q));
-    }
+  setQuestions(questions: any[]): void {
+    const questionFGs = questions.map(q => {
+      const questionForm = this.fb.group({
+        questionText: [q.text, Validators.required],
+        questionType: [q.type, Validators.required],
+        points: [q.points || 0, Validators.required],
+        options: this.fb.array(q.options.map((o: any) => this.newOption(o)))
+      });
+      return questionForm;
+    });
+    this.form.setControl('questions', this.fb.array(questionFGs));
   }
 
   get questions(): FormArray {
@@ -80,21 +107,14 @@ export class TestFormComponent implements OnInit {
   newQuestion(): FormGroup {
     return this.fb.group({
       questionText: ['', Validators.required],
-      questionType: ['MultipleChoice', Validators.required],
+      questionType: ['SINGLE_CHOICE', Validators.required],
       points: [0, Validators.required],
       options: this.fb.array([])
     });
   }
 
-  addQuestion(question?: any): void {
-    const questionForm = this.newQuestion();
-    if (question) {
-      questionForm.patchValue(question);
-      question.options.forEach((o: any) => {
-        (questionForm.get('options') as FormArray).push(this.newOption(o));
-      });
-    }
-    this.questions.push(questionForm);
+  addQuestion(): void {
+    this.questions.push(this.newQuestion());
   }
 
   removeQuestion(i: number): void {
@@ -103,7 +123,7 @@ export class TestFormComponent implements OnInit {
 
   newOption(option?: any): FormGroup {
     return this.fb.group({
-      optionText: [option?.optionText || '', Validators.required],
+      text: [option?.text || '', Validators.required],
       isCorrect: [option?.isCorrect || false]
     });
   }
@@ -117,42 +137,39 @@ export class TestFormComponent implements OnInit {
   }
 
   loadOrganizations(): void {
-    this.organizationService.getOrganizationsForCurrentUser().subscribe(
-      orgs => {
-        this.organizations = orgs.items; // Access items from PaginatedResult
+    this.organizationService.getMyOrganizations().subscribe({
+      next: orgs => {
+        this.organizations = orgs;
       },
-      error => {
+      error: error => {
         this.notification.error('Error', error.error.message || 'Failed to load organizations');
       }
-    );
+    });
   }
 
   submitForm(): void {
     if (this.form.valid) {
-      if (this.test) {
-        // Assuming there's an updateTest method in TestService
-        // The backend README does not explicitly define an UpdateTestRequest DTO,
-        // so I'll use the form value directly, assuming it matches the backend's expected structure.
-        this.testService.updateTest(this.test.id, this.form.value).subscribe(
-          () => {
+      const request: CreateTestRequest = this.form.value;
+      if (this.isEditing && this.testId) {
+        this.testService.updateTest(this.testId, request).subscribe({
+          next: () => {
             this.notification.success('Success', 'Test updated successfully');
-            this.modalRef.close(true);
+            this.router.navigate(['/tests']);
           },
-          (error) => {
+          error: (error) => {
             this.notification.error('Error', error.error.message || 'Failed to update test');
           }
-        );
+        });
       } else {
-        const createRequest: CreateTestRequest = this.form.value;
-        this.testService.createTest(createRequest).subscribe(
-          () => {
+        this.testService.createTest(request).subscribe({
+          next: () => {
             this.notification.success('Success', 'Test created successfully');
-            this.modalRef.close(true);
+            this.router.navigate(['/tests']);
           },
-          (error) => {
+          error: (error) => {
             this.notification.error('Error', error.error.message || 'Failed to create test');
           }
-        );
+        });
       }
     } else {
       Object.values(this.form.controls).forEach(control => {
@@ -162,5 +179,9 @@ export class TestFormComponent implements OnInit {
         }
       });
     }
+  }
+
+  cancel(): void {
+    this.router.navigate(['/tests']);
   }
 }

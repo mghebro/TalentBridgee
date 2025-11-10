@@ -6,17 +6,11 @@
   #basicTable
   [nzData]="organizations"
   [nzLoading]="loading"
-  [nzTotal]="total"
-  [nzPageSize]="pageSize"
-  [nzPageIndex]="pageIndex"
-  nzShowSizeChanger
-  [nzFrontPagination]="false"
-  (nzQueryParams)="onQueryParamsChange($event)"
 >
   <thead>
     <tr>
-      <th nzColumnKey="name" [nzSortFn]="true">Name</th>
-      <th nzColumnKey="type" [nzSortFn]="true">Type</th>
+      <th>Name</th>
+      <th>Type</th>
       <th>Contact</th>
       <th>Website</th>
       <th>Status</th>

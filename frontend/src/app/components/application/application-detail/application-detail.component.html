@@ -4,7 +4,7 @@
 <div *ngIf="!loading && application">
   <nz-page-header [nzTitle]="application.vacancyTitle">
     <nz-page-header-subtitle>
-      Applied by {{ application.userFirstName }} {{ application.userLastName }} on {{ application.appliedAt | date }}
+      Applied by {{ application.userFirstName }} {{ application.userLastName }} on {{ application.applicationDate | date }}
     </nz-page-header-subtitle>
     <nz-page-header-extra>
       <nz-tag [nzColor]="getStatusColor(application.status)">{{ application.status }}</nz-tag>

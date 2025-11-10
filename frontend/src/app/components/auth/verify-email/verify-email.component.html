@@ -1,13 +1,29 @@
 <div class="verify-container">
-  <form [formGroup]="verifyForm" (ngSubmit)="submit()">
-    <label>Email</label>
-    <input nz-input formControlName="email" placeholder="Enter your email" />
-
-    <label>Verification Code</label>
-    <input nz-input formControlName="code" placeholder="Enter verification code" />
-
-    <button nz-button nzType="primary" [disabled]="isLoading">
-      {{ isLoading ? 'Verifying...' : 'Verify Email' }}
-    </button>
-  </form>
+  <div class="verify-form">
+    <h2>Verify Your Email</h2>
+    <p>A verification code has been sent to your email address. Please enter the code below to verify your account.</p>
+    <form nz-form [formGroup]="verifyForm" (ngSubmit)="submit()">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Please input your email!">
+          <nz-input-group nzPrefixIcon="mail">
+            <input type="email" nz-input formControlName="email" placeholder="Email" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Please input the verification code!">
+          <nz-input-group nzPrefixIcon="lock">
+            <input type="text" nz-input formControlName="code" placeholder="Verification Code" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <button nz-button nzType="primary" [nzLoading]="isLoading" [disabled]="!verifyForm.valid">Verify</button>
+      </nz-form-item>
+    </form>
+    <div class="resend-container">
+      <span>Didn't receive the code?</span>
+      <a (click)="resendCode()" [class.disabled]="isLoading">Resend Code</a>
+    </div>
+  </div>
 </div>

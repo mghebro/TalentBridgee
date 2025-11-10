@@ -1,7 +1,10 @@
 import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
-  const token = localStorage.getItem('jwtToken');
+  const cookieService = inject(CookieService);
+  const token = cookieService.get('token');
 
   if (token) {
     req = req.clone({
@@ -13,3 +16,4 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req);
 };
+

@@ -1,0 +1,16 @@
+<div class="my-applications-container">
+  <h1>My Applications</h1>
+  <nz-list [nzDataSource]="applications" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 2, xl: 3, xxl: 3 }">
+    <ng-template #item let-application>
+      <nz-list-item>
+        <a [routerLink]="['/vacancies', application.vacancy.id]">
+          <nz-card [nzTitle]="application.vacancy.title">
+            <p><strong>{{ application.vacancy.organization.name }}</strong></p>
+            <p><strong>Status:</strong> {{ application.status }}</p>
+            <p><strong>Applied on:</strong> {{ application.applicationDate | date }}</p>
+          </nz-card>
+        </a>
+      </nz-list-item>
+    </ng-template>
+  </nz-list>
+</div>

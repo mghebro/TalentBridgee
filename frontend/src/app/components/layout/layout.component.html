@@ -1,31 +1,49 @@
 <nz-layout class="layout">
   <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
-    <div class="logo"></div>
+    <div class="logo">
+      <a routerLink="/">
+        <img src="assets/logo.svg" alt="logo">
+        <h1>TalentBridge</h1>
+      </a>
+    </div>
     <ul nz-menu nzTheme="dark" nzMode="inline">
-      <li nz-menu-item routerLink="/dashboard">
+      <li nz-menu-item routerLink="/welcome">
         <i nz-icon nzType="dashboard"></i>
         <span>Dashboard</span>
       </li>
-      <li nz-submenu nzTitle="Organizations" nzIcon="bank">
-        <ul>
-          <li nz-menu-item routerLink="/organizations">List</li>
-        </ul>
+      <li nz-menu-item routerLink="/vacancies">
+        <i nz-icon nzType="profile"></i>
+        <span>Vacancies</span>
       </li>
-      <li nz-submenu nzTitle="Vacancies" nzIcon="profile">
-        <ul>
-          <li nz-menu-item routerLink="/vacancies">List</li>
-        </ul>
-      </li>
-      <li nz-submenu nzTitle="Applications" nzIcon="solution">
-        <ul>
-          <li nz-menu-item routerLink="/applications">My Applications</li>
-        </ul>
-      </li>
-      <li nz-submenu nzTitle="Tests" nzIcon="form">
-        <ul>
-          <li nz-menu-item routerLink="/tests">List</li>
-        </ul>
-      </li>
+      <ng-container *ngIf="currentUser$ | async as user">
+        <li nz-menu-item routerLink="/my-applications" *ngIf="user.role === 'USER'">
+          <i nz-icon nzType="solution"></i>
+          <span>My Applications</span>
+        </li>
+        <li nz-menu-item routerLink="/tests" *ngIf="user.role === 'USER'">
+          <i nz-icon nzType="form"></i>
+          <span>My Tests</span>
+        </li>
+        <li nz-submenu nzTitle="Organizations" nzIcon="bank" *ngIf="user.role === 'ORGANIZATION_ADMIN' || user.role === 'HR_MANAGER'">
+          <ul>
+            <li nz-menu-item routerLink="/organizations">List</li>
+            <li nz-menu-item routerLink="/organizations/new">Create</li>
+          </ul>
+        </li>
+        <li nz-submenu nzTitle="Tests" nzIcon="form" *ngIf="user.role === 'ORGANIZATION_ADMIN' || user.role === 'HR_MANAGER'">
+          <ul>
+            <li nz-menu-item routerLink="/tests">List</li>
+            <li nz-menu-item routerLink="/tests/new">Create</li>
+          </ul>
+        </li>
+        <li nz-submenu nzTitle="Vacancies" nzIcon="profile" *ngIf="user.role === 'ORGANIZATION_ADMIN' || user.role === 'HR_MANAGER'">
+          <ul>
+            <li nz-menu-item routerLink="/vacancy-management">Manage Vacancies</li>
+            <li nz-menu-item routerLink="/vacancies/new">Create Vacancy</li>
+            <li nz-menu-item routerLink="/applications">View Applications</li>
+          </ul>
+        </li>
+      </ng-container>
     </ul>
   </nz-sider>
   <nz-layout>
@@ -50,8 +68,8 @@
             </nz-dropdown-menu>
           </ng-container>
           <ng-template #loginRegister>
-            <a routerLink="/auth/login" class="login-link">Login</a>
-            <a routerLink="/auth/register" class="register-link">Register</a>
+            <a routerLink="auth/login" class="login-link">Login</a>
+            <a routerLink="auth/register" class="register-link">Register</a>
           </ng-template>
         </div>
       </div>

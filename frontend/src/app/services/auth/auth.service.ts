@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { Register } from '../../models/auth/register';
-import { Login } from '../../models/auth/login';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
+import { LoginRequest } from '../../models/auth/login-request';
+import { LoginResponse } from '../../models/auth/login-response.model';
+import { RegisterRequest } from '../../models/auth/register-request';
 import { User } from '../../models/auth/user';
-import { VerifyEmail } from '../../models/auth/verify-email';
 import { CookieService } from 'ngx-cookie-service';
+import { VerifyEmail } from '../../models/auth/verify-email';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5163/api/auth';
+  private apiUrl = `${environment.apiUrl}/auth`;
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
 
@@ -24,64 +27,45 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  private getUserFromCookie(): User | null {
-    const user = this.cookieService.get('user');
-    return user ? JSON.parse(user) : null;
+  register(request: RegisterRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, request);
   }
 
-  register(data: any): Observable<any> {
-  return this.http.post(`${this.apiUrl}/register`, data);
-}
-  login(data: Login): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, data).pipe(
-      tap((response) => {
+  verifyEmail(request: VerifyEmail): Observable<any> {
+    return this.http.post(`${this.apiUrl}/verify-email`, request);
+  }
+
+  resendVerificationCode(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/send-resend-verification-code?userEmail=${email}`, {});
+  }
+
+  login(request: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, request).pipe(
+      tap(response => {
         if (response && response.token) {
-          this.cookieService.set('jwtToken', response.token);
-          // Assuming the user object is returned in the response
-          const user: User = response.user;
-          this.cookieService.set('user', JSON.stringify(user));
-          this.currentUserSubject.next(user);
+          this.cookieService.set('currentUser', JSON.stringify(response.user), { expires: 1, path: '/' });
+          this.cookieService.set('token', response.token, { expires: 1, path: '/' });
+          this.currentUserSubject.next(response.user);
         }
       })
     );
   }
 
-  logout() {
-    this.cookieService.delete('jwtToken');
-    this.cookieService.delete('user');
+  logout(): void {
+    this.cookieService.delete('currentUser', '/');
+    this.cookieService.delete('token', '/');
     this.currentUserSubject.next(null);
   }
 
-  verifyEmail(data: VerifyEmail): Observable<any> {
-    return this.http.post(`${this.apiUrl}/verify-email`, data);
-  }
-
-  sendResendCode(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/send-resend-verification-code?userEmail=${email}`, null);
-  }
-
-  sendResetPasswordLink(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/send-reset-password-link?userEmail=${email}`, null);
-  }
-
-  resetPassword(data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/reset-password`, data);
-  }
-
   getCurrentUser(): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/get-current-user`).pipe(
-      tap(user => {
-        this.cookieService.set('user', JSON.stringify(user));
-        this.currentUserSubject.next(user);
-      })
-    );
+    return this.http.get<User>(`${this.apiUrl}/get-current-user`);
   }
 
-  updateUser(data: User): Observable<any> {
-    return this.http.put(`${this.apiUrl}/update-user`, data);
-  }
-
-  deleteUser(): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/delete-user`);
+  private getUserFromCookie(): User | null {
+    const user = this.cookieService.get('currentUser');
+    if (user) {
+      return JSON.parse(user);
+    }
+    return null;
   }
 }

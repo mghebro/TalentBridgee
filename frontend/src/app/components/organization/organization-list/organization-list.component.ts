@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { OrganizationService } from '../../../services/organization/organization.service';
-import { OrganizationFilterRequest, OrganizationList } from '../../../models/organization.model';
+import { OrganizationList } from '../../../models/organization.model';
 import { NzTableModule, NzTableQueryParams } from 'ng-zorro-antd/table';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { OrganizationFormComponent } from '../organization-form/organization-form.component';
@@ -14,6 +14,8 @@ import { FormsModule } from '@angular/forms';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { RouterLink } from '@angular/router';
 import { NzTagModule } from 'ng-zorro-antd/tag';
+import { OrganizationFilter } from '../../../models/organization/organization-filter';
+import { OrganizationType } from '../../../models/organization.model';
 
 @Component({
   selector: 'app-organization-list',
@@ -37,15 +39,8 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 export class OrganizationListComponent implements OnInit {
   organizations: OrganizationList[] = [];
   loading = true;
-  total = 0;
-  pageSize = 10;
-  pageIndex = 1;
-  filter: OrganizationFilterRequest = {
-    page: this.pageIndex,
-    pageSize: this.pageSize,
-    sortBy: 'createdAt',
-    sortOrder: 'desc'
-  };
+  filter: OrganizationFilter = {};
+  organizationTypes = Object.values(OrganizationType);
 
   constructor(
     private organizationService: OrganizationService,
@@ -57,35 +52,24 @@ export class OrganizationListComponent implements OnInit {
     this.loadData();
   }
 
-  loadData(reset = false): void {
-    if (reset) {
-      this.pageIndex = 1;
-    }
+  loadData(): void {
     this.loading = true;
-    this.filter.page = this.pageIndex;
-    this.filter.pageSize = this.pageSize;
-    this.organizationService.getOrganizations(this.filter).subscribe(data => {
-      this.loading = false;
-      this.organizations = data.items;
-      this.total = data.totalCount;
-    },
-    error => {
-      this.loading = false;
-      this.notification.error('Error', error.error.message || 'Failed to load organizations');
+    this.organizationService.getOrganizations(this.filter).subscribe({
+      next: data => {
+        this.loading = false;
+        this.organizations = data;
+      },
+      error: error => {
+        this.loading = false;
+        this.notification.error('Error', error.error.message || 'Failed to load organizations');
+      }
     });
   }
 
   onQueryParamsChange(params: NzTableQueryParams): void {
-    const { pageSize, pageIndex, sort } = params;
-    const currentSort = sort.find(item => item.value !== null);
-    const sortField = (currentSort && currentSort.key) || 'createdAt';
-    const sortOrder = (currentSort && currentSort.value) || 'desc';
-
-    this.pageIndex = pageIndex;
-    this.pageSize = pageSize;
-    this.filter.sortBy = sortField;
-    this.filter.sortOrder = sortOrder === 'ascend' ? 'asc' : 'desc';
-    this.loadData();
+    // No longer handling pagination and sorting via query params in this component
+    // as the OrganizationFilter model has changed.
+    // If pagination/sorting is needed, OrganizationFilter needs to be updated.
   }
 
   openCreateModal(): void {
@@ -98,7 +82,7 @@ export class OrganizationListComponent implements OnInit {
     modal.afterClose.subscribe(result => {
       if (result === 'created') {
         this.notification.success('Success', 'Organization created successfully.');
-        this.loadData(true);
+        this.loadData();
       }
     });
   }
@@ -121,7 +105,7 @@ export class OrganizationListComponent implements OnInit {
     });
   }
 
-  deleteOrganization(id: number): void {
+  deleteOrganization(id: string): void {
     this.organizationService.deleteOrganization(id).subscribe(() => {
       this.notification.success('Success', 'Organization deleted successfully.');
       this.loadData();

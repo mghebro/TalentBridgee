@@ -63,37 +63,27 @@
         <nz-form-item>
           <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Question Text</nz-form-label>
           <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the question text!">
-            <input nz-input formControlName="questionText" />
+            <input nz-input formControlName="text" />
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Question Type</nz-form-label>
           <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please select the question type!">
-            <nz-select formControlName="questionType">
-              <nz-option nzValue="MultipleChoice" nzLabel="Multiple Choice"></nz-option>
-              <nz-option nzValue="TrueFalse" nzLabel="True/False"></nz-option>
-              <nz-option nzValue="ShortAnswer" nzLabel="Short Answer"></nz-option>
-              <nz-option nzValue="Essay" nzLabel="Essay"></nz-option>
-              <nz-option nzValue="Coding" nzLabel="Coding"></nz-option>
-              <nz-option nzValue="FileUpload" nzLabel="File Upload"></nz-option>
+            <nz-select formControlName="type">
+              <nz-option nzValue="SINGLE_CHOICE" nzLabel="Single Choice"></nz-option>
+              <nz-option nzValue="MULTIPLE_CHOICE" nzLabel="Multiple Choice"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
-        <nz-form-item>
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Points</nz-form-label>
-          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the points!">
-            <nz-input-number formControlName="points" [nzMin]="0"></nz-input-number>
-          </nz-form-control>
-        </nz-form-item>
 
-        <div *ngIf="question.get('questionType')?.value === 'MultipleChoice' || question.get('questionType')?.value === 'TrueFalse'">
+        <div *ngIf="question.get('type')?.value === 'SINGLE_CHOICE' || question.get('type')?.value === 'MULTIPLE_CHOICE'">
           <h5>Options</h5>
           <div formArrayName="options">
             <div *ngFor="let option of getOptions(i).controls; let j=index" [formGroupName]="j">
               <nz-form-item>
                 <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Option Text</nz-form-label>
                 <nz-form-control [nzSm]="12" [nzXs]="24" nzErrorTip="Please input the option text!">
-                  <input nz-input formControlName="optionText" />
+                  <input nz-input formControlName="text" />
                 </nz-form-control>
                 <nz-form-control [nzSm]="4" [nzXs]="12">
                   <label nz-checkbox formControlName="isCorrect">Is Correct</label>

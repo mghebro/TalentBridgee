@@ -118,15 +118,13 @@ export class RegisterComponent implements OnInit {
         delete registerData.organizationDetails;
       }
 
-      // Send data directly, not wrapped in { request: ... }
       this.authService.register(registerData).subscribe({
         next: (response) => {
           this.notification.success(
             'Success',
             'Registration successful. Please check your email to verify your account.'
           );
-         this.router.navigate(['/auth/verify-email']);
-
+          this.router.navigate(['/auth/verify-email'], { queryParams: { email: registerData.email } });
           this.isLoading = false;
         },
         error: (error) => {

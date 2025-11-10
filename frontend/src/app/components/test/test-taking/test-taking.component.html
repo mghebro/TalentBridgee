@@ -1,0 +1,25 @@
+<div class="test-taking-container" *ngIf="test">
+  <h1>{{ test.title }}</h1>
+  <p>{{ test.description }}</p>
+
+  <form [formGroup]="testForm" (ngSubmit)="submitForm()">
+    <div formArrayName="answers">
+      <div *ngFor="let question of test.questions; let i = index" [formGroupName]="i">
+        <nz-card [nzTitle]="question.text">
+          <ng-container [ngSwitch]="question.type">
+            <div *ngSwitchCase="'SINGLE_CHOICE'">
+              <nz-radio-group formControlName="optionId">
+                <label nz-radio *ngFor="let option of question.options" [nzValue]="option.id">{{ option.text }}</label>
+              </nz-radio-group>
+            </div>
+            <div *ngSwitchCase="'MULTIPLE_CHOICE'" formArrayName="options">
+              <label nz-checkbox *ngFor="let option of question.options; let j = index" [formControlName]="j">{{ option.text }}</label>
+            </div>
+          </ng-container>
+        </nz-card>
+      </div>
+    </div>
+
+    <button nz-button nzType="primary" [nzLoading]="isLoading" [disabled]="!testForm.valid">Submit Test</button>
+  </form>
+</div>

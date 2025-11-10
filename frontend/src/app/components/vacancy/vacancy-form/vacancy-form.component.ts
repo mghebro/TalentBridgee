@@ -25,7 +25,7 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
   styleUrls: ['./vacancy-form.component.scss']
 })
 export class VacancyFormComponent implements OnInit {
-  @Input() vacancyId?: number;
+  @Input() vacancyId?: string;
   form!: FormGroup;
   organizations: OrganizationList[] = [];
   vacancy?: VacancyDetails;
@@ -42,7 +42,7 @@ export class VacancyFormComponent implements OnInit {
     private organizationService: OrganizationService,
     private modalRef: NzModalRef,
     private notification: NzNotificationService,
-    @Inject(NZ_MODAL_DATA) public data: { vacancyId?: number }
+    @Inject(NZ_MODAL_DATA) public data: { vacancyId?: string }
   ) {
     this.vacancyId = data?.vacancyId;
   }
@@ -52,7 +52,7 @@ export class VacancyFormComponent implements OnInit {
     this.loadOrganizations();
     if (this.vacancyId) {
       this.isLoading = true;
-      this.vacancyService.getVacancyById(this.vacancyId).subscribe(vacancy => {
+      this.vacancyService.getVacancyById(this.vacancyId!).subscribe(vacancy => {
         this.vacancy = vacancy;
         this.form.patchValue(vacancy);
         this.isLoading = false;
@@ -85,8 +85,8 @@ export class VacancyFormComponent implements OnInit {
   }
 
   loadOrganizations(): void {
-    this.organizationService.getOrganizationsForCurrentUser().subscribe(orgs => {
-      this.organizations = orgs.items;
+    this.organizationService.getMyOrganizations().subscribe(orgs => {
+      this.organizations = orgs;
     });
   }
 
@@ -96,29 +96,29 @@ export class VacancyFormComponent implements OnInit {
       const formValue = this.form.value;
       if (this.vacancy) {
         const updateRequest: UpdateVacancyRequest = formValue;
-        this.vacancyService.updateVacancy(this.vacancy.id, updateRequest).subscribe(
-          () => {
+        this.vacancyService.updateVacancy(this.vacancy.id, updateRequest).subscribe({
+          next: () => {
             this.notification.success('Success', 'Vacancy updated successfully');
             this.modalRef.close('updated');
             this.isLoading = false;
           },
-          (error) => {
+          error: (error) => {
             this.notification.error('Error', error.error.message || 'Failed to update vacancy');
             this.isLoading = false;
           }
-        );
+        });
       } else {
         const createRequest: CreateVacancyRequest = formValue;
-        this.vacancyService.createVacancy(createRequest).subscribe(
-          () => {
+        this.vacancyService.createVacancy(createRequest).subscribe({
+          next: () => {
             this.notification.success('Success', 'Vacancy created successfully');
             this.modalRef.close('created');
           },
-          (error) => {
+          error: (error) => {
             this.notification.error('Error', error.error.message || 'Failed to create vacancy');
             this.isLoading = false;
           }
-        );
+        });
       }
     } else {
       Object.values(this.form.controls).forEach(control => {

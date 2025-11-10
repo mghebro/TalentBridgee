@@ -1,0 +1,18 @@
+<div class="vacancy-detail-container" *ngIf="vacancy">
+  <nz-card [nzTitle]="vacancy.title">
+    <p><strong>{{ vacancy.organization.name }}</strong></p>
+    <p><strong>Location:</strong> {{ vacancy.location }}</p>
+    <p><strong>Employment Type:</strong> {{ vacancy.employmentType }}</p>
+    <p><strong>Salary:</strong> {{ vacancy.salary | currency }}</p>
+    <p><strong>Posted At:</strong> {{ vacancy.postedAt | date }}</p>
+    <p><strong>Expires At:</strong> {{ vacancy.expiresAt | date }}</p>
+
+    <h3>Description</h3>
+    <p>{{ vacancy.description }}</p>
+
+    <h3>Requirements</h3>
+    <p>{{ vacancy.requirements }}</p>
+
+    <button nz-button nzType="primary" (click)="apply()">Apply Now</button>
+  </nz-card>
+</div>

@@ -47,17 +47,17 @@ export class LoginComponent implements OnInit {
   submitForm(): void {
     if (this.loginForm.valid) {
       this.isLoading = true;
-      this.authService.login(this.loginForm.value).subscribe(
-        () => {
+      this.authService.login(this.loginForm.value).subscribe({
+        next: (response) => {
           this.notification.success('Success', 'Login successful');
           this.router.navigate(['/']);
           this.isLoading = false;
         },
-        (error: any) => {
-          this.notification.error('Error', error.message || 'Login failed');
+        error: (error: any) => {
+          this.notification.error('Error', error.error.message || 'Login failed');
           this.isLoading = false;
         }
-      );
+      });
     } else {
       Object.values(this.loginForm.controls).forEach(control => {
         if (control.invalid) {
