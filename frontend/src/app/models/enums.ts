@@ -11,25 +11,26 @@ export enum ApplicationStatus {
 }
 
 export enum EmploymentType {
-  FULL_TIME = 'FULL_TIME',
-  PART_TIME = 'PART_TIME',
-  CONTRACT = 'CONTRACT',
-  TEMPORARY = 'TEMPORARY',
-  INTERNSHIP = 'INTERNSHIP',
+  FullTime = 'FullTime',
+  PartTime = 'PartTime',
+  Contract = 'Contract',
+  Internship = 'Internship',
+  Freelance = 'Freelance',
 }
 
 export enum ExperienceLevel {
-  Internship = 'Internship',
-  EntryLevel = 'EntryLevel',
+  Entry = 'Entry',
   Junior = 'Junior',
-  MidLevel = 'MidLevel',
+  Mid = 'Mid',
   Senior = 'Senior',
   Lead = 'Lead',
-  Manager = 'Manager',
+  Executive = 'Executive',
 }
 
 export enum VacancyStatus {
   Draft = 'Draft',
-  Published = 'Published',
+  Active = 'Active',
   Closed = 'Closed',
+  OnHold = 'OnHold',
+  Expired = 'Expired',
 }

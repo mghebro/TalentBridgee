@@ -1,20 +1,14 @@
-import { Vacancy } from "../vacancy/vacancy";
-import { User } from "../auth/user";
-
 export interface Application {
-  id: string;
-  vacancyId: string;
-  vacancy: Vacancy;
-  userId: string;
-  user: User;
-  applicationDate: Date;
-  status: string;
-  resumeUrl: string;
+  id: number;
+  vacancyId: number;
   vacancyTitle: string;
+  userId: number;
+  userEmail: string;
   userFirstName: string;
   userLastName: string;
-  userEmail: string;
-  coverLetter: string;
+  status: string;
+  coverLetter?: string;
+  appliedAt: string;
 }
 
 export interface UpdateApplicationStatusRequest {

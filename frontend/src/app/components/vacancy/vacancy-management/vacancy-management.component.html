@@ -15,10 +15,19 @@
       <tr *ngFor="let vacancy of vacancyTable.data">
         <td>{{ vacancy.title }}</td>
         <td>{{ vacancy.location }}</td>
-        <td>{{ vacancy.vacancyStatus }}</td>
+        <td>{{ vacancy.statusName || vacancy.status }}</td>
         <td>
           <button nz-button nzType="primary" (click)="openVacancyModal(vacancy.id)">Edit</button>
-          <button nz-button nzType="default" nzDanger (click)="deleteVacancy(vacancy.id)">Delete</button>
+          <button
+            nz-button
+            nzType="default"
+            [routerLink]="['/vacancies', vacancy.id, 'applications']"
+          >
+            Applications
+          </button>
+          <button nz-button nzType="default" nzDanger (click)="deleteVacancy(vacancy.id)">
+            Delete
+          </button>
         </td>
       </tr>
     </tbody>

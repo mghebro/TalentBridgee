@@ -9,6 +9,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { extractErrorMessage } from '../../../utils/api-error';
 
 @Component({
   selector: 'app-test-taking',
@@ -98,7 +99,7 @@ export class TestTakingComponent implements OnInit {
           this.isLoading = false;
         },
         error: (error : any) => {
-          this.notification.error('Error', error.error.message || 'Failed to submit test');
+          this.notification.error('Error', extractErrorMessage(error, 'Failed to submit test'));
           this.isLoading = false;
         }
       });

@@ -24,87 +24,87 @@ export const routes: Routes = [
       { path: 'login', component: LoginComponent },
       { path: 'register', component: RegisterComponent },
       { path: 'verify-email', component: VerifyEmailComponent },
-    ]
+    ],
   },
   {
     path: '',
     component: LayoutComponent,
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'welcome' },
-      { path: 'welcome', loadChildren: () => import('./pages/welcome/welcome.routes').then(m => m.WELCOME_ROUTES) },
-      { path: 'vacancies', component: VacancyListComponent },
+      { path: '', pathMatch: 'full', redirectTo: 'vacancies' },
+
+      { path: 'vacancies', pathMatch: 'full', component: VacancyListComponent },
       { path: 'vacancies/:id', component: VacancyDetailComponent },
       {
         path: 'my-applications',
         canActivate: [AuthGuard],
-        component: MyApplicationsComponent
+        component: MyApplicationsComponent,
       },
       {
         path: 'organizations',
-        canActivate: [AuthGuard],
-        component: OrganizationListComponent
+        //canActivate: [AuthGuard],
+        component: OrganizationListComponent,
       },
       {
         path: 'organizations/new',
         canActivate: [AuthGuard],
-        component: OrganizationFormComponent
+        component: OrganizationFormComponent,
       },
       {
         path: 'organizations/edit/:id',
         canActivate: [AuthGuard],
-        component: OrganizationFormComponent
+        component: OrganizationFormComponent,
       },
       {
         path: 'vacancies/new',
         canActivate: [AuthGuard],
-        component: VacancyFormComponent
+        component: VacancyFormComponent,
       },
       {
         path: 'vacancies/edit/:id',
         canActivate: [AuthGuard],
-        component: VacancyFormComponent
+        component: VacancyFormComponent,
       },
       {
         path: 'vacancy-management',
         canActivate: [AuthGuard],
-        component: VacancyManagementComponent
+        component: VacancyManagementComponent,
       },
       {
         path: 'vacancies/:vacancyId/applications',
         canActivate: [AuthGuard],
-        component: ApplicationListComponent
+        component: ApplicationListComponent,
       },
       {
         path: 'applications',
         canActivate: [AuthGuard],
-        component: ApplicationListComponent
+        component: ApplicationListComponent,
       },
       {
         path: 'applications/:id',
         canActivate: [AuthGuard],
-        component: ApplicationDetailComponent
+        component: ApplicationDetailComponent,
       },
       {
         path: 'tests',
         canActivate: [AuthGuard],
-        component: TestListComponent
+        component: TestListComponent,
       },
       {
         path: 'tests/new',
         canActivate: [AuthGuard],
-        component: TestFormComponent
+        component: TestFormComponent,
       },
       {
         path: 'tests/edit/:id',
         canActivate: [AuthGuard],
-        component: TestFormComponent
+        component: TestFormComponent,
       },
       {
         path: 'tests/:id',
         canActivate: [AuthGuard],
-        component: TestTakingComponent
+        component: TestTakingComponent,
       },
-    ]
+    ],
   },
-  { path: '**', redirectTo: '' } // Redirect any unmatched routes to the home page
+  { path: '**', redirectTo: '' }, // Redirect any unmatched routes to the home page
 ];

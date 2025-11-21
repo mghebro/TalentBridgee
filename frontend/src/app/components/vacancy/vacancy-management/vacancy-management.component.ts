@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { VacancyService } from '../../../services/vacancy/vacancy.service';
 import { Vacancy } from '../../../models/vacancy/vacancy';
 import { CommonModule } from '@angular/common';
@@ -13,7 +14,7 @@ import { OrganizationList } from '../../../models/organization.model';
 @Component({
   selector: 'app-vacancy-management',
   standalone: true,
-  imports: [CommonModule, NzTableModule, NzButtonModule, NzModalModule],
+  imports: [CommonModule, NzTableModule, NzButtonModule, NzModalModule, RouterLink],
   templateUrl: './vacancy-management.component.html',
   styleUrls: ['./vacancy-management.component.scss'],
 })
@@ -40,12 +41,15 @@ export class VacancyManagementComponent implements OnInit {
     // This is a placeholder. The backend doesn't have a direct endpoint
     // to get vacancies by organization id for the management view.
     // We will filter the vacancies on the client side for now.
+    const orgId = Number(organizationId);
     this.vacancyService.getVacancies().subscribe((vacancies) => {
-      this.vacancies = vacancies.filter((v) => v.organizationId === organizationId);
+      this.vacancies = Number.isNaN(orgId)
+        ? vacancies
+        : vacancies.filter((v) => v.organizationId === orgId);
     });
   }
 
-  openVacancyModal(vacancyId?: string): void {
+  openVacancyModal(vacancyId?: number): void {
     const modal = this.modalService.create({
       nzTitle: vacancyId ? 'Edit Vacancy' : 'Create Vacancy',
       nzContent: VacancyFormComponent,
@@ -65,7 +69,7 @@ export class VacancyManagementComponent implements OnInit {
     });
   }
 
-  deleteVacancy(vacancyId: string): void {
+  deleteVacancy(vacancyId: number): void {
     this.vacancyService.deleteVacancy(vacancyId).subscribe(() => {
       if (this.myOrganizations.length > 0) {
         this.loadVacancies(this.myOrganizations[0].id);

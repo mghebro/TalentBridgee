@@ -7,7 +7,13 @@
         <nz-form-item>
           <nz-form-control>
             <nz-input-group>
-              <input type="text" nz-input placeholder="Search by keyword" [(ngModel)]="filter.searchTerm" name="searchTerm">
+              <input
+                type="text"
+                nz-input
+                placeholder="Search by keyword"
+                [(ngModel)]="filter.searchTerm"
+                name="searchTerm"
+              />
             </nz-input-group>
           </nz-form-control>
         </nz-form-item>
@@ -16,7 +22,13 @@
         <nz-form-item>
           <nz-form-control>
             <nz-input-group>
-              <input type="text" nz-input placeholder="Location" [(ngModel)]="filter.location" name="location">
+              <input
+                type="text"
+                nz-input
+                placeholder="Location"
+                [(ngModel)]="filter.location"
+                name="location"
+              />
             </nz-input-group>
           </nz-form-control>
         </nz-form-item>
@@ -24,8 +36,17 @@
       <div nz-col [nzSpan]="6">
         <nz-form-item>
           <nz-form-control>
-            <nz-select [(ngModel)]="filter.employmentType" name="employmentType" nzAllowClear nzPlaceHolder="Employment Type">
-              <nz-option *ngFor="let type of employmentTypes" [nzLabel]="type" [nzValue]="type"></nz-option>
+            <nz-select
+              [(ngModel)]="filter.employmentType"
+              name="employmentType"
+              nzAllowClear
+              nzPlaceHolder="Employment Type"
+            >
+              <nz-option
+                *ngFor="let type of employmentTypes"
+                [nzLabel]="type"
+                [nzValue]="type"
+              ></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -36,16 +57,32 @@
     </div>
   </form>
 
-  <nz-list [nzDataSource]="vacancies" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }">
+  <nz-list
+    [nzDataSource]="vacancies"
+    [nzRenderItem]="item"
+    [nzGrid]="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }"
+  >
     <ng-template #item let-vacancy>
       <nz-list-item>
-        <a [routerLink]="['/vacancies', vacancy.id]">
-          <nz-card [nzTitle]="vacancy.title">
-            <p><strong>{{ vacancy.organization.name }}</strong></p>
-            <p>{{ vacancy.location }}</p>
-            <p>{{ vacancy.employmentType }}</p>
-          </nz-card>
-        </a>
+        <nz-card
+          class="vacancy-card"
+          [nzTitle]="vacancy.title"
+          nzHoverable
+          (click)="viewVacancy(vacancy)"
+          tabindex="0"
+          role="button"
+          (keyup.enter)="viewVacancy(vacancy)"
+        >
+          <p>
+            <strong>{{ vacancy.organizationName || 'Organization' }}</strong>
+          </p>
+          <p>{{ vacancy.location }} <span *ngIf="vacancy.isRemote">(Remote)</span></p>
+          <p>
+            {{ vacancy.employmentTypeName || vacancy.employmentType }} ·
+            {{ vacancy.experienceLevelName || vacancy.experienceLevel }}
+          </p>
+          <p *ngIf="vacancy.salaryRange">{{ vacancy.salaryRange }}</p>
+        </nz-card>
       </nz-list-item>
     </ng-template>
   </nz-list>

@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
+import { extractErrorMessage } from '../../../utils/api-error';
 
 @Component({
   selector: 'app-verify-email',
@@ -58,7 +59,7 @@ export class VerifyEmailComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        const msg = err?.error?.message || 'Verification failed';
+        const msg = extractErrorMessage(err, 'Verification failed');
         this.notification.error('Error', msg);
       }
     });
@@ -79,7 +80,7 @@ export class VerifyEmailComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        const msg = err?.error?.message || 'Failed to send verification code.';
+        const msg = extractErrorMessage(err, 'Failed to send verification code.');
         this.notification.error('Error', msg);
       }
     });

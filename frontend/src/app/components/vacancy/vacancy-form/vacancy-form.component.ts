@@ -1,8 +1,12 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { VacancyService } from '../../../services/vacancy/vacancy.service';
-import { CreateVacancyRequest, UpdateVacancyRequest, VacancyDetails } from '../../../models/vacancy/vacancy';
-import { NZ_MODAL_DATA, NzModalRef } from 'ng-zorro-antd/modal';
+import {
+  CreateVacancyRequest,
+  UpdateVacancyRequest,
+  VacancyDetails,
+} from '../../../models/vacancy/vacancy';
+import { NZ_MODAL_DATA, NzModalModule, NzModalRef } from 'ng-zorro-antd/modal';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { OrganizationService } from '../../../services/organization/organization.service';
 import { OrganizationList } from '../../../models/organization.model';
@@ -16,16 +20,30 @@ import { EmploymentType, ExperienceLevel, VacancyStatus } from '../../../models/
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { extractErrorMessage } from '../../../utils/api-error';
 
 @Component({
   selector: 'app-vacancy-form',
   standalone: true,
-  imports : [NzInputNumberModule,NzSpinModule,CommonModule, ReactiveFormsModule, NzFormModule, NzSelectModule,NzInputModule, NzDatePickerModule, NzButtonModule, NzCheckboxModule, NzInputNumberModule],
+  imports: [
+    NzInputNumberModule,
+    NzSpinModule,
+    CommonModule,
+    ReactiveFormsModule,
+    NzFormModule,
+    NzSelectModule,
+    NzInputModule,
+    NzDatePickerModule,
+    NzButtonModule,
+    NzCheckboxModule,
+    NzInputNumberModule,
+    NzModalModule,
+  ],
   templateUrl: './vacancy-form.component.html',
-  styleUrls: ['./vacancy-form.component.scss']
+  styleUrls: ['./vacancy-form.component.scss'],
 })
 export class VacancyFormComponent implements OnInit {
-  @Input() vacancyId?: string;
+  @Input() vacancyId?: number | string;
   form!: FormGroup;
   organizations: OrganizationList[] = [];
   vacancy?: VacancyDetails;
@@ -42,7 +60,7 @@ export class VacancyFormComponent implements OnInit {
     private organizationService: OrganizationService,
     private modalRef: NzModalRef,
     private notification: NzNotificationService,
-    @Inject(NZ_MODAL_DATA) public data: { vacancyId?: string }
+    @Inject(NZ_MODAL_DATA) public data: { vacancyId?: number | string }
   ) {
     this.vacancyId = data?.vacancyId;
   }
@@ -52,13 +70,19 @@ export class VacancyFormComponent implements OnInit {
     this.loadOrganizations();
     if (this.vacancyId) {
       this.isLoading = true;
-      this.vacancyService.getVacancyById(this.vacancyId!).subscribe(vacancy => {
-        this.vacancy = vacancy;
-        this.form.patchValue(vacancy);
-        this.isLoading = false;
-      }, error => {
-        this.notification.error('Error', error.error.message || 'Failed to load vacancy details.');
-        this.isLoading = false;
+      this.vacancyService.getVacancyById(this.vacancyId!).subscribe({
+        next: (vacancy) => {
+          this.vacancy = vacancy;
+          this.form.patchValue(vacancy);
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.notification.error(
+            'Error',
+            extractErrorMessage(error, 'Failed to load vacancy details.')
+          );
+          this.isLoading = false;
+        },
       });
     }
   }
@@ -80,12 +104,12 @@ export class VacancyFormComponent implements OnInit {
       location: [null, [Validators.required]],
       isRemote: [false],
       status: [VacancyStatus.Draft, [Validators.required]],
-      applicationDeadline: [null, [Validators.required]]
+      applicationDeadline: [null, [Validators.required]],
     });
   }
 
   loadOrganizations(): void {
-    this.organizationService.getMyOrganizations().subscribe(orgs => {
+    this.organizationService.getMyOrganizations().subscribe((orgs) => {
       this.organizations = orgs;
     });
   }
@@ -93,7 +117,16 @@ export class VacancyFormComponent implements OnInit {
   submitForm(): void {
     if (this.form.valid) {
       this.isLoading = true;
-      const formValue = this.form.value;
+      const formValue = {
+        ...this.form.value,
+        organizationId: Number(this.form.value.organizationId),
+      };
+
+      if (Number.isNaN(formValue.organizationId)) {
+        this.notification.error('Error', 'Invalid organization selected');
+        this.isLoading = false;
+        return;
+      }
       if (this.vacancy) {
         const updateRequest: UpdateVacancyRequest = formValue;
         this.vacancyService.updateVacancy(this.vacancy.id, updateRequest).subscribe({
@@ -103,9 +136,12 @@ export class VacancyFormComponent implements OnInit {
             this.isLoading = false;
           },
           error: (error) => {
-            this.notification.error('Error', error.error.message || 'Failed to update vacancy');
+            this.notification.error(
+              'Error',
+              extractErrorMessage(error, 'Failed to update vacancy')
+            );
             this.isLoading = false;
-          }
+          },
         });
       } else {
         const createRequest: CreateVacancyRequest = formValue;
@@ -115,13 +151,16 @@ export class VacancyFormComponent implements OnInit {
             this.modalRef.close('created');
           },
           error: (error) => {
-            this.notification.error('Error', error.error.message || 'Failed to create vacancy');
+            this.notification.error(
+              'Error',
+              extractErrorMessage(error, 'Failed to create vacancy')
+            );
             this.isLoading = false;
-          }
+          },
         });
       }
     } else {
-      Object.values(this.form.controls).forEach(control => {
+      Object.values(this.form.controls).forEach((control) => {
         if (control.invalid) {
           control.markAsDirty();
           control.updateValueAndValidity({ onlySelf: true });

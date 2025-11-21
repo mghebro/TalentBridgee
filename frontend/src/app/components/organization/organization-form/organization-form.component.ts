@@ -1,8 +1,13 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { OrganizationService } from '../../../services/organization/organization.service';
-import { CreateOrganizationRequest, OrganizationDetails, OrganizationType, UpdateOrganizationRequest } from '../../../models/organization.model';
-import { NZ_MODAL_DATA, NzModalRef } from 'ng-zorro-antd/modal';
+import {
+  CreateOrganizationRequest,
+  OrganizationDetails,
+  OrganizationType,
+  UpdateOrganizationRequest,
+} from '../../../models/organization.model';
+import { NZ_MODAL_DATA, NzModalModule, NzModalRef } from 'ng-zorro-antd/modal';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -13,13 +18,25 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';
 import { environment } from '../../../../environments/environment';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { extractErrorMessage } from '../../../utils/api-error';
 
 @Component({
   selector: 'app-organization-form',
   standalone: true,
-  imports: [NzSpinModule, CommonModule, ReactiveFormsModule, NzFormModule, NzSelectModule, NzInputModule, NzButtonModule, NzCheckboxModule, NzUploadModule],
+  imports: [
+    NzSpinModule,
+    CommonModule,
+    ReactiveFormsModule,
+    NzFormModule,
+    NzSelectModule,
+    NzInputModule,
+    NzButtonModule,
+    NzCheckboxModule,
+    NzUploadModule,
+    NzModalModule,
+  ],
   templateUrl: './organization-form.component.html',
-  styleUrls: ['./organization-form.component.scss']
+  styleUrls: ['./organization-form.component.scss'],
 })
 export class OrganizationFormComponent implements OnInit {
   @Input() organizationId?: string;
@@ -44,13 +61,19 @@ export class OrganizationFormComponent implements OnInit {
     this.initForm();
     if (this.organizationId) {
       this.isLoading = true;
-      this.organizationService.getOrganizationById(this.organizationId!).subscribe(org => {
-        this.organization = org;
-        this.form.patchValue(org);
-        this.isLoading = false;
-      }, error => {
-        this.notification.error('Error', 'Failed to load organization details.');
-        this.isLoading = false;
+      this.organizationService.getOrganizationById(this.organizationId!).subscribe({
+        next: (org) => {
+          this.organization = org;
+          this.form.patchValue(org);
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.notification.error(
+            'Error',
+            extractErrorMessage(error, 'Failed to load organization details.')
+          );
+          this.isLoading = false;
+        },
       });
     }
   }
@@ -64,7 +87,7 @@ export class OrganizationFormComponent implements OnInit {
       phoneNumber: [null],
       description: [null],
       website: [null],
-      deleteLogo: [false]
+      deleteLogo: [false],
     });
   }
 
@@ -80,17 +103,22 @@ export class OrganizationFormComponent implements OnInit {
       const formValue = this.form.value;
 
       if (this.organization) {
-        this.organizationService.updateOrganization(this.organization.id, formValue, this.logoFile).subscribe({
-          next: () => {
-            this.notification.success('Success', 'Organization updated successfully');
-            this.modalRef.close('updated');
-            this.isLoading = false;
-          },
-          error: (error) => {
-            this.notification.error('Error', error.error.message || 'Failed to update organization');
-            this.isLoading = false;
-          }
-        });
+        this.organizationService
+          .updateOrganization(this.organization.id, formValue, this.logoFile)
+          .subscribe({
+            next: () => {
+              this.notification.success('Success', 'Organization updated successfully');
+              this.modalRef.close('updated');
+              this.isLoading = false;
+            },
+            error: (error) => {
+              this.notification.error(
+                'Error',
+                extractErrorMessage(error, 'Failed to update organization')
+              );
+              this.isLoading = false;
+            },
+          });
       } else {
         this.organizationService.createOrganization(formValue, this.logoFile).subscribe({
           next: () => {
@@ -99,13 +127,16 @@ export class OrganizationFormComponent implements OnInit {
             this.isLoading = false;
           },
           error: (error) => {
-            this.notification.error('Error', error.error.message || 'Failed to create organization');
+            this.notification.error(
+              'Error',
+              extractErrorMessage(error, 'Failed to create organization')
+            );
             this.isLoading = false;
-          }
+          },
         });
       }
     } else {
-      Object.values(this.form.controls).forEach(control => {
+      Object.values(this.form.controls).forEach((control) => {
         if (control.invalid) {
           control.markAsDirty();
           control.updateValueAndValidity({ onlySelf: true });
@@ -118,4 +149,3 @@ export class OrganizationFormComponent implements OnInit {
     this.modalRef.destroy();
   }
 }
-

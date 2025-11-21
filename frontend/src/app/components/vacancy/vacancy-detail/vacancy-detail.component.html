@@ -1,11 +1,28 @@
 <div class="vacancy-detail-container" *ngIf="vacancy">
   <nz-card [nzTitle]="vacancy.title">
-    <p><strong>{{ vacancy.organization.name }}</strong></p>
-    <p><strong>Location:</strong> {{ vacancy.location }}</p>
-    <p><strong>Employment Type:</strong> {{ vacancy.employmentType }}</p>
-    <p><strong>Salary:</strong> {{ vacancy.salary | currency }}</p>
-    <p><strong>Posted At:</strong> {{ vacancy.postedAt | date }}</p>
-    <p><strong>Expires At:</strong> {{ vacancy.expiresAt | date }}</p>
+    <p>
+      <strong>{{ vacancy.organizationName || 'Organization' }}</strong>
+    </p>
+    <p>
+      <strong>Location:</strong> {{ vacancy.location }}
+      <span *ngIf="vacancy.isRemote">(Remote)</span>
+    </p>
+    <p>
+      <strong>Employment Type:</strong> {{ vacancy.employmentTypeName || vacancy.employmentType }}
+    </p>
+    <p>
+      <strong>Experience Level:</strong>
+      {{ vacancy.experienceLevelName || vacancy.experienceLevel }}
+    </p>
+    <p>
+      <strong>Salary:</strong>
+      {{ vacancy.salaryRange || 'From ' + vacancy.salaryMin + ' ' + vacancy.salaryCurrency }}
+    </p>
+    <p><strong>Status:</strong> {{ vacancy.statusName || vacancy.status }}</p>
+    <p><strong>Application Deadline:</strong> {{ vacancy.applicationDeadline | date }}</p>
+    <p *ngIf="vacancy.publishedAt">
+      <strong>Published At:</strong> {{ vacancy.publishedAt | date }}
+    </p>
 
     <h3>Description</h3>
     <p>{{ vacancy.description }}</p>
@@ -13,6 +30,14 @@
     <h3>Requirements</h3>
     <p>{{ vacancy.requirements }}</p>
 
-    <button nz-button nzType="primary" (click)="apply()">Apply Now</button>
+    <h3>Responsibilities</h3>
+    <p>{{ vacancy.responsibilities }}</p>
+
+    <div class="vacancy-actions">
+      <button nz-button nzType="default" *ngIf="canViewApplications()" (click)="viewApplications()">
+        View Applications
+      </button>
+      <button nz-button nzType="primary" (click)="apply()">Apply Now</button>
+    </div>
   </nz-card>
 </div>

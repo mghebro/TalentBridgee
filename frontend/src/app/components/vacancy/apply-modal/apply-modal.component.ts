@@ -2,13 +2,13 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ApplicationService } from '../../../services/application/application.service';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { NzModalRef } from 'ng-zorro-antd/modal';
+import { NzModalModule, NzModalRef } from 'ng-zorro-antd/modal';
 import { CommonModule } from '@angular/common';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { extractErrorMessage } from '../../../utils/api-error';
 
 @Component({
   selector: 'app-apply-modal',
@@ -19,14 +19,14 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
     NzFormModule,
     NzInputModule,
     NzButtonModule,
-    NzUploadModule,
-    NzIconModule
+    NzIconModule,
+    NzModalModule,
   ],
   templateUrl: './apply-modal.component.html',
-  styleUrls: ['./apply-modal.component.scss']
+  styleUrls: ['./apply-modal.component.scss'],
 })
 export class ApplyModalComponent implements OnInit {
-  @Input() vacancyId!: string;
+  @Input() vacancyId!: number;
   applyForm!: FormGroup;
   isLoading = false;
 
@@ -35,40 +35,35 @@ export class ApplyModalComponent implements OnInit {
     private applicationService: ApplicationService,
     private notification: NzNotificationService,
     private modalRef: NzModalRef
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.applyForm = this.fb.group({
-      resume: [null, [Validators.required]]
+      coverLetter: [''],
     });
-  }
-
-  beforeUpload = (file: any): boolean => {
-    this.applyForm.patchValue({ resume: file });
-    return false;
-  };
-
-  handleUpload(event: any): void {
-    // The file is already handled by beforeUpload
   }
 
   submitForm(): void {
     if (this.applyForm.valid) {
       this.isLoading = true;
-      const formData = new FormData();
-      formData.append('vacancyId', this.vacancyId);
-      formData.append('resume', this.applyForm.value.resume);
+      const payload = {
+        vacancyId: Number(this.vacancyId),
+        coverLetter: this.applyForm.value.coverLetter,
+      };
 
-      this.applicationService.createApplication(formData).subscribe({
+      this.applicationService.createApplication(payload).subscribe({
         next: () => {
           this.notification.success('Success', 'Application submitted successfully');
           this.isLoading = false;
           this.modalRef.close(true);
         },
         error: (error) => {
-          this.notification.error('Error', error.error.message || 'Failed to submit application');
+          this.notification.error(
+            'Error',
+            extractErrorMessage(error, 'Failed to submit application')
+          );
           this.isLoading = false;
-        }
+        },
       });
     }
   }

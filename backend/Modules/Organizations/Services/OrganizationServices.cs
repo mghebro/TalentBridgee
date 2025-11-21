@@ -48,16 +48,9 @@ public class OrganizationServices : BaseService, IOrganizationServices
         if (existingOrg)
             return ServiceResult<OrganizationDetails>.FailureResult("Organization with this name already exists");
 
-        Organization organization = dto.Type switch
-        {
-            TYPES.BUSINESS_COMPANY => _mapper.Map<BusinessOrganization>(dto),
-            TYPES.EDUCATION => _mapper.Map<EducationOrganization>(dto),
-            TYPES.HEALTHCARE => _mapper.Map<HealthcareOrganization>(dto),
-            TYPES.NON_GOV => _mapper.Map<NGOOrganization>(dto),
-            TYPES.GOV => _mapper.Map<GOVOrganization>(dto),
-            TYPES.OTHERS_ASSOCIATIONS => _mapper.Map<OtherOrganization>(dto),
-            _ => throw new InvalidOperationException("Unknown organization type")
-        };
+        Organization organization = _mapper.Map<Organization>(dto);
+        
+        
 
         if (logoFile != null)
         {
@@ -128,7 +121,7 @@ public class OrganizationServices : BaseService, IOrganizationServices
     
         var organizationDtos = await query
             .Skip((request.Page - 1) * request.PageSize)
-            .Take(request.PageSize)
+            .Take(request.PageSize).Where(o => o.IsActive == true)
             .ProjectTo<OrganizationList>(_mapper.ConfigurationProvider)
             .ToListAsync();
 
@@ -262,52 +255,82 @@ public class OrganizationServices : BaseService, IOrganizationServices
 
 
     private async Task<OrganizationDetails?> GetOrganizationDetailsWithStats(int organizationId)
+{
+    // 1️⃣ Load organization
+    var organization = await _context.Organizations
+        .FirstOrDefaultAsync(o => o.Id == organizationId);
+
+    if (organization == null)
+        return null;
+
+    // 2️⃣ Load vacancies
+    var vacancies = await _context.Vacancies
+        .Where(v => v.OrganizationId == organizationId)
+        .ToListAsync();
+
+    // 3️⃣ Load applications
+    var applications = await _context.Applications
+        .Where(a => vacancies.Select(v => v.Id).Contains(a.VacancyId))
+        .ToListAsync();
+
+    // 4️⃣ Load tests
+    var tests = await _context.Tests
+        .Where(t => vacancies.Select(v => v.Id).Contains(t.VacancyId))
+        .ToListAsync();
+
+    // 5️⃣ Load completed test assignments
+    var testAssignments = await _context.TestAssignments
+        .Where(ta => tests.Select(t => t.Id).Contains(ta.TestId) &&
+                     ta.Status == TEST_ASSIGNMENT_STATUS.Completed)
+        .ToListAsync();
+
+    // 6️⃣ Load submissions with scores
+    var testSubmissions = await _context.TestSubmissions
+        .Where(ts => testAssignments.Select(ta => ta.Id).Contains(ts.TestAssignmentId) &&
+                     ts.PercentageScore.HasValue)
+        .ToListAsync();
+
+    // 7️⃣ Compute statistics
+    var stats = new OrganizationStatistics
     {
-        var details = await _context.Organizations
-            .Where(o => o.Id == organizationId)
-            .Select(o => new 
-            {
-                Organization = o, 
-                Stats = new OrganizationStatistics
-                {
-                    TotalVacancies = o.Vacancies.Count(),
-                    ActiveVacancies = o.Vacancies.Count(v => v.Status == VACANCY_STATUS.Active),
-                    ClosedVacancies = o.Vacancies.Count(v => v.Status == VACANCY_STATUS.Closed),
-                    TotalApplications = o.Vacancies.SelectMany(v => v.Applications).Count(),
-                    PendingApplications = o.Vacancies.SelectMany(v => v.Applications).Count(a => a.Status == APPLICATION_STATUS.Submitted),
-                    ReviewedApplications = o.Vacancies.SelectMany(v => v.Applications).Count(a => a.Status == APPLICATION_STATUS.UnderReview),
-                    TotalHires = o.Vacancies.SelectMany(v => v.Applications).Count(a => a.Status == APPLICATION_STATUS.Hired),
-                    TotalTests = o.Vacancies.SelectMany(v => v.Tests).Count(),
-                    AverageTestScore = o.Vacancies
-                        .SelectMany(v => v.Tests)
-                        .SelectMany(t => _context.TestAssignments.Where(ta => ta.TestId == t.Id))
-                        .Where(ts => ts.Status == TEST_ASSIGNMENT_STATUS.Completed)
-                        .Select(ts => _context.TestSubmissions.FirstOrDefault(s => s.TestAssignmentId == ts.Id))
-                        .Where(s => s != null && s.PercentageScore.HasValue)
-                        .Average(s => (decimal?)s.PercentageScore.Value) ?? 0, 
-                    LastVacancyPosted = o.Vacancies.OrderByDescending(v => v.CreatedAt).Select(v => (DateTime?)v.CreatedAt).FirstOrDefault(),
-                    LastApplicationReceived = o.Vacancies.SelectMany(a => a.Applications).OrderByDescending(a => a.CreatedAt).Select(a => (DateTime?)a.CreatedAt).FirstOrDefault()
-                }
-            })
-            .FirstOrDefaultAsync();
+        TotalVacancies = vacancies.Count,
+        ActiveVacancies = vacancies.Count(v => v.Status == VACANCY_STATUS.Active),
+        ClosedVacancies = vacancies.Count(v => v.Status == VACANCY_STATUS.Closed),
+        TotalApplications = applications.Count,
+        PendingApplications = applications.Count(a => a.Status == APPLICATION_STATUS.Submitted),
+        ReviewedApplications = applications.Count(a => a.Status == APPLICATION_STATUS.UnderReview),
+        TotalHires = applications.Count(a => a.Status == APPLICATION_STATUS.Hired),
+        TotalTests = tests.Count,
+        AverageTestScore = testSubmissions.Any() 
+            ? testSubmissions.Average(s => s.PercentageScore!.Value) 
+            : 0,
+        LastVacancyPosted = vacancies
+            .OrderByDescending(v => v.CreatedAt)
+            .Select(v => (DateTime?)v.CreatedAt)
+            .FirstOrDefault(),
+        LastApplicationReceived = applications
+            .OrderByDescending(a => a.CreatedAt)
+            .Select(a => (DateTime?)a.CreatedAt)
+            .FirstOrDefault()
+    };
 
-        if (details == null) return null;
+    // 8️⃣ Map to DTO
+    var organizationDetails = _mapper.Map<OrganizationDetails>(organization);
+    organizationDetails.Statistics = stats;
 
-        var organizationDetails = _mapper.Map<OrganizationDetails>(details.Organization);
-        organizationDetails.Statistics = details.Stats;
+    // 9️⃣ Calculate AverageTimeToHire
+    var hiredApplications = applications
+        .Where(a => a.Status == APPLICATION_STATUS.Hired && a.HiredAt.HasValue)
+        .ToList();
 
-        var hiredApplications = await _context.Applications
-            .Where(a => a.Vacancy.OrganizationId == organizationId && a.Status == APPLICATION_STATUS.Hired && a.HiredAt.HasValue)
-            .Select(a => new { a.AppliedAt, a.HiredAt })
-            .ToListAsync();
-
-        if (hiredApplications.Any())
-        {
-            organizationDetails.Statistics.AverageTimeToHire = (decimal)hiredApplications.Average(a => (a.HiredAt.Value - a.AppliedAt).TotalDays);
-        }
-
-        return organizationDetails;
+    if (hiredApplications.Any())
+    {
+        organizationDetails.Statistics.AverageTimeToHire = (decimal)hiredApplications
+            .Average(a => (a.HiredAt!.Value - a.AppliedAt).TotalDays);
     }
+
+    return organizationDetails;
+}
 
 
 

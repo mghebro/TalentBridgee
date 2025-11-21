@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { extractErrorMessage } from '../../../utils/api-error';
 
 @Component({
   selector: 'app-application-list',
@@ -52,7 +53,7 @@ export class ApplicationListComponent implements OnInit {
         this.loading = false;
       },
       error: error => {
-        this.notification.error('Error', error.error.message || 'Failed to load applications');
+        this.notification.error('Error', extractErrorMessage(error, 'Failed to load applications'));
         this.loading = false;
       }
     });
@@ -60,13 +61,19 @@ export class ApplicationListComponent implements OnInit {
 
   loadApplicationsForVacancy(vacancyId: string): void {
     this.loading = true;
-    this.applicationService.getApplicationsForVacancy(vacancyId).subscribe({
+    const numericId = Number(vacancyId);
+    if (Number.isNaN(numericId)) {
+      this.notification.error('Error', 'Invalid vacancy identifier');
+      this.loading = false;
+      return;
+    }
+    this.applicationService.getApplicationsForVacancy(numericId).subscribe({
       next: data => {
         this.applications = data;
         this.loading = false;
       },
       error: error => {
-        this.notification.error('Error', error.error.message || 'Failed to load applications for vacancy');
+        this.notification.error('Error', extractErrorMessage(error, 'Failed to load applications for vacancy'));
         this.loading = false;
       }
     });
@@ -79,7 +86,7 @@ export class ApplicationListComponent implements OnInit {
         application.status = status;
       },
       error: error => {
-        this.notification.error('Error', error.error.message || 'Failed to update application status');
+        this.notification.error('Error', extractErrorMessage(error, 'Failed to update application status'));
       }
     });
   }

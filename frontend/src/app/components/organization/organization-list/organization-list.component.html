@@ -1,12 +1,8 @@
-<div style="margin-bottom: 16px;">
+<div *ngIf="userCanManage() | async" style="margin-bottom: 16px">
   <button nz-button nzType="primary" (click)="openCreateModal()">Create Organization</button>
 </div>
 
-<nz-table
-  #basicTable
-  [nzData]="organizations"
-  [nzLoading]="loading"
->
+<nz-table #basicTable [nzData]="organizations" [nzLoading]="loading">
   <thead>
     <tr>
       <th>Name</th>
@@ -14,22 +10,33 @@
       <th>Contact</th>
       <th>Website</th>
       <th>Status</th>
-      <th>Actions</th>
+      <th *ngIf="userCanManage() | async">Actions</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let data of basicTable.data">
-      <td><a [routerLink]="['/organizations', data.id]">{{ data.name }}</a></td>
+      <td>
+        <a [routerLink]="['/organizations', data.id]">{{ data.name }}</a>
+      </td>
       <td>{{ data.typeName }}</td>
       <td>{{ data.contactEmail }}</td>
-      <td><a [href]="data.website" target="_blank" rel="noopener noreferrer">{{ data.website }}</a></td>
       <td>
-        <nz-tag [nzColor]="data.isActive ? 'green' : 'red'">{{ data.isActive ? 'Active' : 'Inactive' }}</nz-tag>
+        <a [href]="data.website" target="_blank" rel="noopener noreferrer">{{ data.website }}</a>
       </td>
       <td>
+        <nz-tag [nzColor]="data.isActive ? 'green' : 'red'">{{
+          data.isActive ? 'Active' : 'Inactive'
+        }}</nz-tag>
+      </td>
+      <td *ngIf="userCanManage() | async">
         <a (click)="openEditModal(data)">Edit</a>
         <nz-divider nzType="vertical"></nz-divider>
-        <a nz-popconfirm nzPopconfirmTitle="Are you sure you want to delete this organization?" (nzOnConfirm)="deleteOrganization(data.id)">Delete</a>
+        <a
+          nz-popconfirm
+          nzPopconfirmTitle="Are you sure you want to delete this organization?"
+          (nzOnConfirm)="deleteOrganization(data.id)"
+          >Delete</a
+        >
       </td>
     </tr>
   </tbody>

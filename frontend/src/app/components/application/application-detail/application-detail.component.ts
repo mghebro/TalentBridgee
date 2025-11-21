@@ -13,6 +13,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzFormModule } from 'ng-zorro-antd/form';
+import { extractErrorMessage } from '../../../utils/api-error';
 
 @Component({
   selector: 'app-application-detail',
@@ -51,13 +52,13 @@ export class ApplicationDetailComponent implements OnInit {
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.applicationService.getApplicationById(id).subscribe({
+      this.applicationService.getApplicationById(Number(id)).subscribe({
         next: data => {
           this.application = data;
           this.loading = false;
         },
         error: error => {
-          this.notification.error('Error', error.error.message || 'Failed to load application details');
+          this.notification.error('Error', extractErrorMessage(error, 'Failed to load application details'));
           this.loading = false;
         }
       });
@@ -75,7 +76,7 @@ export class ApplicationDetailComponent implements OnInit {
           this.ngOnInit();
         },
         error: error => {
-          this.notification.error('Error', error.error.message || 'Failed to add review note');
+          this.notification.error('Error', extractErrorMessage(error, 'Failed to add review note'));
         }
       });
     }

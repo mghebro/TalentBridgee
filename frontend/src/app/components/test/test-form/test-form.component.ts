@@ -17,6 +17,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { ActivatedRoute, Router } from '@angular/router';
+import { extractErrorMessage } from '../../../utils/api-error';
 
 @Component({
   selector: 'app-test-form',
@@ -142,7 +143,7 @@ export class TestFormComponent implements OnInit {
         this.organizations = orgs;
       },
       error: error => {
-        this.notification.error('Error', error.error.message || 'Failed to load organizations');
+        this.notification.error('Error', extractErrorMessage(error, 'Failed to load organizations'));
       }
     });
   }
@@ -157,7 +158,7 @@ export class TestFormComponent implements OnInit {
             this.router.navigate(['/tests']);
           },
           error: (error) => {
-            this.notification.error('Error', error.error.message || 'Failed to update test');
+            this.notification.error('Error', extractErrorMessage(error, 'Failed to update test'));
           }
         });
       } else {
@@ -167,7 +168,7 @@ export class TestFormComponent implements OnInit {
             this.router.navigate(['/tests']);
           },
           error: (error) => {
-            this.notification.error('Error', error.error.message || 'Failed to create test');
+            this.notification.error('Error', extractErrorMessage(error, 'Failed to create test'));
           }
         });
       }

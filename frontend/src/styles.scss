@@ -1,1 +1,241 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global Theme Variables */
+:root {
+  --layout-bg: #f0f2f5;
+  --content-bg: #ffffff;
+  --header-bg: #ffffff;
+  --sider-bg: #001529;
+  --text-color: rgba(0, 0, 0, 0.85);
+  --text-color-muted: rgba(0, 0, 0, 0.65);
+  --accent-color: #1890ff;
+  --menu-active-bg: rgba(255, 255, 255, 0.2);
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  background-color: var(--layout-bg);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+label {
+  margin-left: 8px;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--Typography-100);
+  text-decoration: none;
+}
+
+li,
+ol {
+  list-style: none;
+}
+
+html,
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--BG-Background);
+}
+
+header {
+  position: relative;
+}
+
+button {
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+.ant-notification {
+  position: fixed !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  right: auto !important;
+  top: auto !important;
+  z-index: 1050 !important;
+  @media (max-width: 768px) {
+    bottom: 70px !important;
+  }
+}
+
+.ant-notification-notice {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px;
+  background: var(--BG-Nav-Bar);
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  padding: 12px 20px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease-in-out !important;
+}
+
+.ant-notification-notice:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+.ant-notification-notice {
+  animation: glassyPop 0.35s ease-out;
+}
+
+.ant-notification-notice-message,
+.ant-notification-notice {
+  color: var(--BG-Purple-Light);
+}
+
+@keyframes glassyPop {
+  0% {
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.ant-select-dropdown {
+  border-radius: 24px !important;
+  transition: 0.3s;
+  background: var(--BG-Secondary-Section, #dbdce0) !important;
+  box-shadow: -1px -1px 0px 0px var(--BG-Disabled, #c7c8cc) inset,
+    1px 1px 0px 0px var(--BG-Disabled, #c7c8cc) inset,
+    0px 0px 12px -2px var(--BG-Disabled, #c7c8cc) inset !important;
+  padding: 12px 8px;
+  overflow: hidden;
+}
+
+.ant-select-item {
+  padding: 10px 16px !important;
+  border-radius: 16px !important;
+  margin: 2px 4px !important;
+  transition: all 0.2s !important;
+  color: var(--Typography-300, #4b4b52) !important;
+}
+
+.ant-select-item:hover {
+  background: rgba(255, 255, 255, 0.5) !important;
+  transform: translateX(2px);
+}
+
+.ant-select-item-option-selected {
+  background: rgba(255, 255, 255, 0.7) !important;
+  font-weight: 500 !important;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.ant-select-item .fi {
+  width: 21px !important;
+  height: 18px !important;
+  border-radius: 2px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-right: 8px !important;
+}
+
+.ant-select-dropdown .ant-select-selection-search {
+  padding: 0 12px 8px 12px;
+}
+
+.ant-select-dropdown .ant-select-selection-search-input {
+  background: rgba(255, 255, 255, 0.6) !important;
+  border-radius: 12px !important;
+  padding: 8px 12px !important;
+  border: none !important;
+  color: var(--Typography-300, #4b4b52) !important;
+}
+
+.ant-select-dropdown .ant-select-selection-search-input::placeholder {
+  color: var(--Typography-300, #4b4b52) !important;
+}
+
+.ant-select-dropdown .rc-virtual-list-scrollbar {
+  width: 6px !important;
+}
+
+.ant-select-dropdown .rc-virtual-list-scrollbar-thumb {
+  background: rgba(75, 75, 82, 0.3) !important;
+  border-radius: 3px !important;
+}
+
+.cdk-virtual-scroll-viewport {
+  height: auto !important;
+  &::-webkit-scrollbar {
+    width: 8px !important;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(199, 200, 204, 0.3) !important;
+    border-radius: 10px !important;
+    margin: 12px 0 !important;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #88838f !important;
+    border-radius: 10px !important;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+
+    &:hover {
+      background: #6b6770 !important;
+    }
+  }
+}
+
+.ant-select-dropdown .rc-virtual-list-scrollbar {
+  display: none !important;
+}
+
+.ant-select-arrow {
+  .anticon {
+    display: none !important;
+  }
+
+  &::after {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-image: url('data:image/svg+xml;utf8,<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 15C18 15 13.5811 9 12 9C10.4188 9 6 15 6 15" stroke="%234b4b52" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+  }
+}
+
+.ant-select-open .ant-select-arrow::after {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
+
+.ant-select-arrow::after {
+  transition: transform 0.3s ease;
+}
+html {
+  scroll-behavior: smooth;
+}
+cdk-virtual-scroll-viewport {
+  min-height: 46px !important;
+}

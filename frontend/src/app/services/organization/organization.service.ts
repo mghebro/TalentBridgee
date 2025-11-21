@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { CreateOrganizationRequest, OrganizationDetails, OrganizationList, UpdateOrganizationRequest } from '../../models/organization.model';
 import { OrganizationFilter } from '../../models/organization/organization-filter';
+import { PaginatedResult, ServiceResult } from '../../models/api/api-response';
 
 @Injectable({
   providedIn: 'root'
@@ -28,11 +30,15 @@ export class OrganizationService {
       params = params.append('type', filter.type);
     }
 
-    return this.http.get<OrganizationList[]>(this.apiUrl, { params });
+    return this.http.get<ServiceResult<PaginatedResult<OrganizationList>>>(this.apiUrl, { params }).pipe(
+      map(response => response.data?.items ?? [])
+    );
   }
 
   getOrganizationById(id: string): Observable<OrganizationDetails> {
-    return this.http.get<OrganizationDetails>(`${this.apiUrl}/${id}`);
+    return this.http.get<ServiceResult<OrganizationDetails>>(`${this.apiUrl}/${id}`).pipe(
+      map(response => this.unwrapResult(response, 'Organization not found'))
+    );
   }
 
   createOrganization(request: CreateOrganizationRequest, logo?: File): Observable<OrganizationDetails> {
@@ -47,7 +53,9 @@ export class OrganizationService {
     if (logo) {
       formData.append('logo', logo);
     }
-    return this.http.post<OrganizationDetails>(this.apiUrl, formData);
+    return this.http.post<ServiceResult<OrganizationDetails>>(this.apiUrl, formData).pipe(
+      map(response => this.unwrapResult(response, 'Failed to create organization'))
+    );
   }
 
   updateOrganization(id: string, request: UpdateOrganizationRequest, logo?: File): Observable<OrganizationDetails> {
@@ -62,14 +70,25 @@ export class OrganizationService {
     if (logo) {
       formData.append('logo', logo);
     }
-    return this.http.put<OrganizationDetails>(`${this.apiUrl}/${id}`, formData);
+    return this.http.put<ServiceResult<OrganizationDetails>>(`${this.apiUrl}/${id}`, formData).pipe(
+      map(response => this.unwrapResult(response, 'Failed to update organization'))
+    );
   }
 
-  deleteOrganization(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  deleteOrganization(id: string): Observable<void> {
+    return this.http.delete<ServiceResult<string>>(`${this.apiUrl}/${id}`).pipe(map(() => void 0));
   }
 
   getMyOrganizations(): Observable<OrganizationList[]> {
-    return this.http.get<OrganizationList[]>(`${this.apiUrl}/my`);
+    return this.http.get<ServiceResult<OrganizationList[]>>(`${this.apiUrl}/my`).pipe(
+      map(response => response.data ?? [])
+    );
+  }
+
+  private unwrapResult<T>(response: ServiceResult<T>, fallbackMessage: string): T {
+    if (!response.data) {
+      throw new Error(response.message ?? response.errors?.[0] ?? fallbackMessage);
+    }
+    return response.data;
   }
 }

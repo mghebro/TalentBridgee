@@ -1,20 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { LoginRequest } from '../../models/auth/login-request';
-import { LoginResponse } from '../../models/auth/login-response.model';
 import { RegisterRequest } from '../../models/auth/register-request';
 import { User } from '../../models/auth/user';
 import { CookieService } from 'ngx-cookie-service';
 import { VerifyEmail } from '../../models/auth/verify-email';
+import { ApiResponse } from '../../models/api/api-response';
+import { UserToken } from '../../models/auth/user-token';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
+  private readonly tokenCookieKey = 'token';
+  private readonly userCookieKey = 'currentUser';
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
 
@@ -27,45 +30,71 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  register(request: RegisterRequest): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, request);
+  register(request: RegisterRequest): Observable<ApiResponse<boolean>> {
+    return this.http.post<ApiResponse<boolean>>(`${this.apiUrl}/register`, request);
   }
 
-  verifyEmail(request: VerifyEmail): Observable<any> {
-    return this.http.post(`${this.apiUrl}/verify-email`, request);
+  verifyEmail(request: VerifyEmail): Observable<ApiResponse<boolean>> {
+    return this.http.post<ApiResponse<boolean>>(`${this.apiUrl}/verify-email`, request);
   }
 
-  resendVerificationCode(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/send-resend-verification-code?userEmail=${email}`, {});
+  resendVerificationCode(email: string): Observable<ApiResponse<boolean>> {
+    return this.http.post<ApiResponse<boolean>>(
+      `${this.apiUrl}/send-resend-verification-code?userEmail=${email}`,
+      {}
+    );
   }
 
-  login(request: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, request).pipe(
-      tap(response => {
-        if (response && response.token) {
-          this.cookieService.set('currentUser', JSON.stringify(response.user), { expires: 1, path: '/' });
-          this.cookieService.set('token', response.token, { expires: 1, path: '/' });
-          this.currentUserSubject.next(response.user);
+  login(request: LoginRequest): Observable<User> {
+    return this.http.post<ApiResponse<UserToken>>(`${this.apiUrl}/login`, request).pipe(
+      switchMap((response) => {
+        const token = response.data?.token;
+        if (!token) {
+          return throwError(() => new Error(response.message ?? 'Missing authentication token'));
         }
+        this.cookieService.set(this.tokenCookieKey, token, { expires: 1, path: '/' });
+        return this.getCurrentUser(true);
+      }),
+      map((user) => {
+        if (!user) {
+          throw new Error('Unable to load current user after login');
+        }
+        return user;
       })
     );
   }
 
   logout(): void {
-    this.cookieService.delete('currentUser', '/');
-    this.cookieService.delete('token', '/');
+    this.cookieService.delete(this.userCookieKey, '/');
+    this.cookieService.delete(this.tokenCookieKey, '/');
     this.currentUserSubject.next(null);
   }
 
-  getCurrentUser(): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/get-current-user`);
+  getCurrentUser(persistState = false): Observable<User | null> {
+    return this.http.get<ApiResponse<User>>(`${this.apiUrl}/get-current-user`).pipe(
+      map((response) => response.data ?? null),
+      tap((user) => {
+        if (user && persistState) {
+          this.setCurrentUser(user);
+        }
+      })
+    );
+  }
+
+  hasToken(): boolean {
+    return this.cookieService.check(this.tokenCookieKey);
   }
 
   private getUserFromCookie(): User | null {
-    const user = this.cookieService.get('currentUser');
+    const user = this.cookieService.get(this.userCookieKey);
     if (user) {
       return JSON.parse(user);
     }
     return null;
+  }
+
+  private setCurrentUser(user: User): void {
+    this.cookieService.set(this.userCookieKey, JSON.stringify(user), { expires: 1, path: '/' });
+    this.currentUserSubject.next(user);
   }
 }

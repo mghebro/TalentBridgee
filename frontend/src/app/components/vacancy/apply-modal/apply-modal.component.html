@@ -1,21 +1,8 @@
 <form nz-form [formGroup]="applyForm" (ngSubmit)="submitForm()">
   <nz-form-item>
-    <nz-form-label nzRequired>Resume</nz-form-label>
+    <nz-form-label>Cover Letter</nz-form-label>
     <nz-form-control>
-      <nz-upload
-        nzType="drag"
-        [nzMultiple]="false"
-        [nzBeforeUpload]="beforeUpload"
-        (nzChange)="handleUpload($event)">
-        <p class="ant-upload-drag-icon">
-          <i nz-icon nzType="inbox"></i>
-        </p>
-        <p class="ant-upload-text">Click or drag file to this area to upload</p>
-        <p class="ant-upload-hint">
-          Support for a single upload. Strictly prohibit from uploading company data or other
-          band files
-        </p>
-      </nz-upload>
+      <textarea nz-input rows="5" formControlName="coverLetter" placeholder="Optional cover letter"></textarea>
     </nz-form-control>
   </nz-form-item>
   <div class="modal-footer">

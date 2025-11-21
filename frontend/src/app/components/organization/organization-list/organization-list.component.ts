@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DOCUMENT, Inject, OnInit } from '@angular/core';
 import { OrganizationService } from '../../../services/organization/organization.service';
 import { OrganizationList } from '../../../models/organization.model';
 import { NzTableModule, NzTableQueryParams } from 'ng-zorro-antd/table';
@@ -16,6 +16,11 @@ import { RouterLink } from '@angular/router';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { OrganizationFilter } from '../../../models/organization/organization-filter';
 import { OrganizationType } from '../../../models/organization.model';
+import { extractErrorMessage } from '../../../utils/api-error';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { map, Observable } from 'rxjs';
+import { User } from '../../../models/user.model';
+import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-organization-list',
@@ -27,42 +32,63 @@ import { OrganizationType } from '../../../models/organization.model';
     NzButtonModule,
     NzDividerModule,
     NzPopconfirmModule,
+    NzModalModule,
     OrganizationFormComponent,
     NzInputModule,
     NzSelectModule,
     FormsModule,
-    NzTagModule
+    NzTagModule,
   ],
   templateUrl: './organization-list.component.html',
-  styleUrls: ['./organization-list.component.scss']
+  styleUrls: ['./organization-list.component.scss'],
 })
 export class OrganizationListComponent implements OnInit {
   organizations: OrganizationList[] = [];
   loading = true;
   filter: OrganizationFilter = {};
   organizationTypes = Object.values(OrganizationType);
+  currentUser$: Observable<User | null>;
 
   constructor(
+    private authService: AuthService,
     private organizationService: OrganizationService,
     private modalService: NzModalService,
-    private notification: NzNotificationService
-  ) { }
+    private notification: NzNotificationService,
+    @Inject(DOCUMENT) private document: Document
+  ) {
+    this.currentUser$ = this.authService.currentUser as Observable<User | null>;
+  }
 
   ngOnInit(): void {
     this.loadData();
+    if (!this.authService.currentUserValue && this.authService.hasToken()) {
+      this.authService.getCurrentUser(true).subscribe();
+    }
   }
-
+  userCanManage(): Observable<boolean> {
+    return this.currentUser$.pipe(
+      map((user) => {
+        if (!user) {
+          return false;
+        }
+        return user.role !== 'USER';
+      })
+    );
+  }
   loadData(): void {
     this.loading = true;
     this.organizationService.getOrganizations(this.filter).subscribe({
-      next: data => {
+      next: (data) => {
         this.loading = false;
         this.organizations = data;
       },
-      error: error => {
+      error: (error) => {
         this.loading = false;
-        this.notification.error('Error', error.error.message || 'Failed to load organizations');
-      }
+        this.notification.error(
+          'Error',
+          extractErrorMessage(error, 'Failed to load organizations')
+        );
+      },
     });
   }
 
@@ -77,9 +103,9 @@ export class OrganizationListComponent implements OnInit {
       nzTitle: 'Create Organization',
       nzContent: OrganizationFormComponent,
       nzWidth: '800px',
-      nzFooter: null
+      nzFooter: null,
     });
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.subscribe((result) => {
       if (result === 'created') {
         this.notification.success('Success', 'Organization created successfully.');
         this.loadData();
@@ -93,11 +119,11 @@ export class OrganizationListComponent implements OnInit {
       nzContent: OrganizationFormComponent,
       nzWidth: '800px',
       nzData: {
-        organizationId: organization.id
+        organizationId: organization.id,
       },
-      nzFooter: null
+      nzFooter: null,
     });
-    modal.afterClose.subscribe(result => {
+    modal.afterClose.subscribe((result) => {
       if (result === 'updated') {
         this.notification.success('Success', 'Organization updated successfully.');
         this.loadData();
@@ -106,12 +132,17 @@ export class OrganizationListComponent implements OnInit {
   }
 
   deleteOrganization(id: string): void {
-    this.organizationService.deleteOrganization(id).subscribe(() => {
-      this.notification.success('Success', 'Organization deleted successfully.');
-      this.loadData();
-    },
-    error => {
-      this.notification.error('Error', error.error.message || 'Failed to delete organization.');
-    });
+    this.organizationService.deleteOrganization(id).subscribe(
+      () => {
+        this.notification.success('Success', 'Organization deleted successfully.');
+        this.loadData();
+      },
+      (error) => {
+        this.notification.error(
+          'Error',
+          extractErrorMessage(error, 'Failed to delete organization.')
+        );
+      }
+    );
   }
 }

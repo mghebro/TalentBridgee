@@ -65,7 +65,8 @@ public class VacancyService : IVacancyService
 
         var totalCount = await query.CountAsync();
         
-        var vacancies = await query.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).ToListAsync();
+        var vacancies = await query.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).Where(v => v.IsDeleted == false).ToListAsync();
+        
         var vacancyList = _mapper.Map<List<VacancyList>>(vacancies);
 
         var paginatedResult = new PaginatedResult<VacancyList>
@@ -121,6 +122,7 @@ public class VacancyService : IVacancyService
             return ServiceResult<string>.FailureResult("User is not authorized to delete this vacancy.");
 
         vacancy.IsDeleted = true;
+        vacancy.Status = VACANCY_STATUS.Closed;
         vacancy.DeletedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 

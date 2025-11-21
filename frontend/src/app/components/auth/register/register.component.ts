@@ -9,6 +9,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { OrganizationType } from '../../../models/organization.model';
+import { extractErrorMessage } from '../../../utils/api-error';
 
 @Component({
   selector: 'app-register',
@@ -124,11 +125,13 @@ export class RegisterComponent implements OnInit {
             'Success',
             'Registration successful. Please check your email to verify your account.'
           );
-          this.router.navigate(['/auth/verify-email'], { queryParams: { email: registerData.email } });
+          this.router.navigate(['/auth/verify-email'], {
+            queryParams: { email: registerData.email },
+          });
           this.isLoading = false;
         },
         error: (error) => {
-          const errorMessage = error?.error?.message || error?.message || 'Registration failed';
+          const errorMessage = extractErrorMessage(error, 'Registration failed');
           this.notification.error('Error', errorMessage);
           this.isLoading = false;
         },
