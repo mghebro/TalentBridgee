@@ -1,74 +1,39 @@
-<nz-layout class="layout">
-  <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
+<nz-layout class="layout" [class.mobile-layout]="isMobileLayout$ | async">
+  
+  <nz-sider 
+    *ngIf="!(isMobileLayout$ | async)"
+    nzCollapsible 
+    [(nzCollapsed)]="isCollapsed" 
+    [nzWidth]="240"
+  >
     <div class="logo">
       <a routerLink="/">
-        @if (isCollapsed) {
-        <img src="assets/minilogooooo.png" alt="logo" width="48" height="40" />
-
-        }@else {
-        <img src="assets/logo.png" alt="logo" width="150" height="32" />
-
-        }
+        <img *ngIf="isCollapsed" src="assets/minilogooooo.png" alt="logo" width="48" height="40" />
+        <img *ngIf="!isCollapsed" src="assets/logo.png" alt="logo" width="150" height="32" />
       </a>
     </div>
-    <ul nz-menu nzTheme="dark" nzMode="inline">
-      <li nz-menu-item routerLink="/welcome">
-        <i nz-icon nzType="dashboard"></i>
-        <span>Dashboard</span>
-      </li>
-      <li nz-menu-item routerLink="/vacancies">
-        <i nz-icon nzType="profile"></i>
-        <span>Vacancies</span>
-      </li>
-      <li nz-submenu nzTitle="Organizations" nzIcon="bank">
-        <ul>
-          <li nz-menu-item routerLink="/organizations">List</li>
-        </ul>
-      </li>
-      <ng-container *ngIf="currentUser$ | async as user">
-        <li nz-menu-item routerLink="/my-applications" *ngIf="user.role === 'USER'">
-          <i nz-icon nzType="solution"></i>
-          <span>My Applications</span>
-        </li>
-        <li nz-menu-item routerLink="/tests" *ngIf="user.role === 'USER'">
-          <i nz-icon nzType="form"></i>
-          <span>My Tests</span>
-        </li>
-
-        <li
-          nz-submenu
-          nzTitle="Tests"
-          nzIcon="form"
-          *ngIf="user.role === 'ORGANIZATION_ADMIN' || user.role === 'HR_MANAGER'"
-        >
-          <ul>
-            <li nz-menu-item routerLink="/tests">List</li>
-            <li nz-menu-item routerLink="/tests/new">Create</li>
-          </ul>
-        </li>
-        <li
-          nz-submenu
-          nzTitle="Vacancies"
-          nzIcon="profile"
-          *ngIf="user.role === 'ORGANIZATION_ADMIN' || user.role === 'HR_MANAGER'"
-        >
-          <ul>
-            <li nz-menu-item routerLink="/vacancy-management">Manage Vacancies</li>
-            <li nz-menu-item routerLink="/applications">View Applications</li>
-          </ul>
-        </li>
-      </ng-container>
-    </ul>
+    <ng-container *ngTemplateOutlet="menuContent"></ng-container>
   </nz-sider>
+
   <nz-layout>
     <nz-header>
       <div class="app-header">
         <i
+          *ngIf="isMobileLayout$ | async"
+          class="trigger"
+          nz-icon
+          nzType="menu"
+          (click)="openDrawer()"
+        ></i>
+        
+        <i
+          *ngIf="!(isMobileLayout$ | async)"
           class="trigger"
           nz-icon
           [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
           (click)="isCollapsed = !isCollapsed"
         ></i>
+
         <div class="right-content">
           <div class="theme-toggle">
             <span>{{ isDarkMode ? 'Night' : 'Day' }} Mode</span>
@@ -105,3 +70,71 @@
     </nz-content>
   </nz-layout>
 </nz-layout>
+
+<nz-drawer
+  [nzVisible]="isDrawerVisible"
+  [nzClosable]="true"
+  nzPlacement="left"
+  (nzOnClose)="closeDrawer()"
+  [nzBodyStyle]="{ padding: 0 }"
+  [nzWidth]="280"
+>
+  <div *nzDrawerContent class="drawer-content">
+    <div class="logo-drawer">
+        <img src="assets/logo.png" alt="logo" width="150" height="32" />
+    </div>
+    <ng-container *ngTemplateOutlet="menuContent; context: { inDrawer: true }"></ng-container>
+  </div>
+</nz-drawer>
+
+
+<ng-template #menuContent let-inDrawer="inDrawer">
+  <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed && !inDrawer">
+    <li nz-menu-item routerLink="/welcome" (click)="inDrawer && closeDrawer()">
+      <i nz-icon nzType="dashboard"></i>
+      <span>Dashboard</span>
+    </li>
+    <li nz-menu-item routerLink="/vacancies" (click)="inDrawer && closeDrawer()">
+      <i nz-icon nzType="profile"></i>
+      <span>Vacancies</span>
+    </li>
+    <li nz-submenu nzTitle="Organizations" nzIcon="bank">
+      <ul>
+        <li nz-menu-item routerLink="/organizations" (click)="inDrawer && closeDrawer()">List</li>
+      </ul>
+    </li>
+    <ng-container *ngIf="currentUser$ | async as user">
+      <li nz-menu-item routerLink="/my-applications" *ngIf="user.role === 'USER'" (click)="inDrawer && closeDrawer()">
+        <i nz-icon nzType="solution"></i>
+        <span>My Applications</span>
+      </li>
+      <li nz-menu-item routerLink="/tests" *ngIf="user.role === 'USER'" (click)="inDrawer && closeDrawer()">
+        <i nz-icon nzType="form"></i>
+        <span>My Tests</span>
+      </li>
+
+      <li
+        nz-submenu
+        nzTitle="Tests"
+        nzIcon="form"
+        *ngIf="user.role === 'ORGANIZATION_ADMIN' || user.role === 'HR_MANAGER'"
+      >
+        <ul>
+          <li nz-menu-item routerLink="/tests" (click)="inDrawer && closeDrawer()">List</li>
+          <li nz-menu-item routerLink="/tests/new" (click)="inDrawer && closeDrawer()">Create</li>
+        </ul>
+      </li>
+      <li
+        nz-submenu
+        nzTitle="Vacancies"
+        nzIcon="profile"
+        *ngIf="user.role === 'ORGANIZATION_ADMIN' || user.role === 'HR_MANAGER'"
+      >
+        <ul>
+          <li nz-menu-item routerLink="/vacancy-management" (click)="inDrawer && closeDrawer()">Manage Vacancies</li>
+          <li nz-menu-item routerLink="/applications" (click)="inDrawer && closeDrawer()">View Applications</li>
+        </ul>
+      </li>
+    </ng-container>
+  </ul>
+</ng-template>

@@ -11,6 +11,9 @@
 .logo {
   height: 32px;
   margin: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 nz-header {
@@ -77,4 +80,21 @@ nz-content {
   background: var(--content-bg);
   min-height: 360px;
   transition: background 0.3s ease, color 0.3s ease;
+}
+
+.logo-drawer {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--border-color-split, #303030);
+  margin-bottom: 8px;
+}
+
+.mobile-layout .app-header {
+  padding: 0 16px;
+}
+
+.mobile-layout .trigger {
+  padding: 0;
 }

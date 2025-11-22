@@ -11,6 +11,10 @@ import { Observable } from 'rxjs';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { FormsModule } from '@angular/forms';
 
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { map, shareReplay } from 'rxjs/operators';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+
 @Component({
   selector: 'app-layout',
   standalone: true,
@@ -24,6 +28,7 @@ import { FormsModule } from '@angular/forms';
     RouterLink,
     NzSwitchModule,
     FormsModule,
+    NzDrawerModule, 
   ],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss'],
@@ -34,13 +39,25 @@ export class LayoutComponent implements OnInit {
   isDarkMode = false;
   private readonly THEME_STORAGE_KEY = 'tb-theme';
 
+  isDrawerVisible = false;
+  isMobileLayout$: Observable<boolean>;
+
   constructor(
     private authService: AuthService,
     private router: Router,
     private renderer: Renderer2,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
+    private breakpointObserver: BreakpointObserver 
   ) {
     this.currentUser$ = this.authService.currentUser;
+
+    this.isMobileLayout$ = this.breakpointObserver.observe([
+      Breakpoints.Handset,
+      Breakpoints.TabletPortrait
+    ]).pipe(
+        map(result => result.matches),
+        shareReplay()
+    );
   }
 
   ngOnInit(): void {
@@ -79,5 +96,13 @@ export class LayoutComponent implements OnInit {
       this.renderer.removeClass(this.document.body, themeClass);
       localStorage.setItem(this.THEME_STORAGE_KEY, 'light');
     }
+  }
+
+  openDrawer(): void {
+    this.isDrawerVisible = true;
+  }
+
+  closeDrawer(): void {
+    this.isDrawerVisible = false;
   }
 }
