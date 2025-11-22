@@ -4,7 +4,7 @@ export interface Test {
   id: string;
   title: string;
   description: string;
-  organizationId: string;
+  organizationId: number;
   profession: string;
   durationMinutes: number;
   passingScore: number;

@@ -4,6 +4,7 @@ namespace TalentBridge.Modules.Tests.DTOs.Requests;
 
 public class CreateTestRequest
 {
+    public int VacancyId { get; set; }
     public int OrganizationId { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }

@@ -5,7 +5,7 @@ export interface Organization {
 }
 
 export interface OrganizationList {
-  id: string;
+  id: number;
   name: string;
   typeName: string;
   contactEmail: string;

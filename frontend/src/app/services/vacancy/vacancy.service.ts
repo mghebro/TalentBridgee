@@ -59,7 +59,9 @@ export class VacancyService {
   deleteVacancy(id: number | string): Observable<void> {
     return this.http.delete<ServiceResult<string>>(`${this.apiUrl}/${id}`).pipe(map(() => void 0));
   }
-
+  getVacanciesByOrganization(orgId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/organization/${orgId}`);
+  }
   private unwrapResult<T>(response: ServiceResult<T>, fallbackMessage: string): T {
     if (!response.data) {
       throw new Error(response.message ?? response.errors?.[0] ?? fallbackMessage);

@@ -1,8 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ApplicationService } from '../../../services/application/application.service';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { NzModalModule, NzModalRef } from 'ng-zorro-antd/modal';
+import { NzModalModule, NzModalRef, NZ_MODAL_DATA } from 'ng-zorro-antd/modal';
 import { CommonModule } from '@angular/common';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -26,7 +26,7 @@ import { extractErrorMessage } from '../../../utils/api-error';
   styleUrls: ['./apply-modal.component.scss'],
 })
 export class ApplyModalComponent implements OnInit {
-  @Input() vacancyId!: number;
+  vacancyId!: number;
   applyForm!: FormGroup;
   isLoading = false;
 
@@ -34,8 +34,11 @@ export class ApplyModalComponent implements OnInit {
     private fb: FormBuilder,
     private applicationService: ApplicationService,
     private notification: NzNotificationService,
-    private modalRef: NzModalRef
-  ) {}
+    private modalRef: NzModalRef,
+    @Inject(NZ_MODAL_DATA) public data: { vacancyId: number }
+  ) {
+    this.vacancyId = data?.vacancyId;
+  }
 
   ngOnInit(): void {
     this.applyForm = this.fb.group({

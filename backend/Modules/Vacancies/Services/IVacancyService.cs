@@ -21,5 +21,5 @@ public interface IVacancyService
    
     Task<ServiceResult<string>> DeleteVacancyAsync(int id, int userId);
     Task<ServiceResult<VacancyAnalytics>> GetVacancyAnalyticsAsync(int id, int userId);
-    
+    Task<List<VacancyLookUp>> GetVacanciesByOrganizationAsync(int OrganizationId);
 }

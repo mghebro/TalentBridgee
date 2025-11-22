@@ -171,4 +171,9 @@ public class VacanciesController : BaseApiController
 
         return Ok(result);
     }
+    [HttpGet("organization/{organizationId}")]
+    public async Task<IActionResult> GetVacaniesForOrganization(int organizationId){
+        var vacancies = await _vacancyService.GetVacanciesByOrganizationAsync(organizationId);
+        return Ok(vacancies);
+    }
 }

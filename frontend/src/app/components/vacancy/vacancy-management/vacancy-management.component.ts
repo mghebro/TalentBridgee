@@ -32,15 +32,14 @@ export class VacancyManagementComponent implements OnInit {
     this.organizationService.getMyOrganizations().subscribe((orgs) => {
       this.myOrganizations = orgs;
       if (orgs.length > 0) {
-        this.loadVacancies(orgs[0].id);
+        orgs.forEach((element) => {
+          this.loadVacancies(element.id);
+        });
       }
     });
   }
 
-  loadVacancies(organizationId: string): void {
-    // This is a placeholder. The backend doesn't have a direct endpoint
-    // to get vacancies by organization id for the management view.
-    // We will filter the vacancies on the client side for now.
+  loadVacancies(organizationId: number): void {
     const orgId = Number(organizationId);
     this.vacancyService.getVacancies().subscribe((vacancies) => {
       this.vacancies = Number.isNaN(orgId)

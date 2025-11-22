@@ -159,4 +159,10 @@ public class VacancyService : IVacancyService
 
         return ServiceResult<VacancyAnalytics>.SuccessResult(analytics);
     }
+    public async Task <List<VacancyLookUp>> GetVacanciesByOrganizationAsync(int OrganizationId){
+        return await _context.Vacancies.Where(v=> v.OrganizationId == OrganizationId).Select(v => new VacancyLookUp{
+            Id = v.Id,
+            Title = v.Title
+        }).ToListAsync();
+    }
 }

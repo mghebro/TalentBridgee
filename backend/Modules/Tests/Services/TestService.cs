@@ -35,9 +35,11 @@ public class TestService : BaseService, ITestService
         }
 
         var test = _mapper.Map<Test>(request);
+        test.Industry = "General";
         test.CreatedBy = userId;
         test.CreatedAt = DateTime.UtcNow;
         test.TotalPoints = 0; 
+        test.VacancyId = request.VacancyId;
 
         _context.Tests.Add(test);
         await _context.SaveChangesAsync();
