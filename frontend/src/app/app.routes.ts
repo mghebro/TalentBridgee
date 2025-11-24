@@ -16,28 +16,29 @@ import { TestTakingComponent } from './components/test/test-taking/test-taking.c
 import { VerifyEmailComponent } from './components/auth/verify-email/verify-email.component';
 import { VacancyDetailComponent } from './components/vacancy/vacancy-detail/vacancy-detail.component';
 import { VacancyManagementComponent } from './components/vacancy/vacancy-management/vacancy-management.component';
+import { TestPlayerComponent } from './components/test/test-player/test-player.component';
+import { ApplicationOwnerGuard } from './guards/application-owner.guard';
 
 export const routes: Routes = [
-  {
-    path: 'auth',
-    children: [
-      { path: 'login', component: LoginComponent },
-      { path: 'register', component: RegisterComponent },
-      { path: 'verify-email', component: VerifyEmailComponent },
-    ],
-  },
   {
     path: '',
     component: LayoutComponent,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'vacancies' },
-
+      { path: 'auth/login', component: LoginComponent },
+      { path: 'auth/register', component: RegisterComponent },
+      { path: 'auth/verify-email', component: VerifyEmailComponent },
       { path: 'vacancies', pathMatch: 'full', component: VacancyListComponent },
       { path: 'vacancies/:id', component: VacancyDetailComponent },
       {
         path: 'my-applications',
         canActivate: [AuthGuard],
         component: MyApplicationsComponent,
+      },
+      {
+        path: 'applications/:id/test',
+        canActivate: [AuthGuard, ApplicationOwnerGuard],
+        component: TestPlayerComponent,
       },
       {
         path: 'organizations',
@@ -106,5 +107,5 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: '**', redirectTo: '' }, // Redirect any unmatched routes to the home page
+  { path: '**', redirectTo: '' },
 ];

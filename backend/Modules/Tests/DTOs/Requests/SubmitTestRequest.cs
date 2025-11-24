@@ -8,6 +8,7 @@ public class SubmitTestRequest
 public class SubmitAnswerRequest
 {
     public int QuestionId { get; set; }
-    public int? SelectedOptionId { get; set; } // For MultipleChoice
-    public string AnswerText { get; set; } // For ShortAnswer, Essay, Coding
+    public List<int> SelectedOptionIds { get; set; } = new List<int>(); 
+    public string? AnswerText { get; set; } 
+    public int TimeSpentSeconds { get; set; }
 }

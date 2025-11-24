@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AddReviewNoteRequest, Application } from '../../models/application/application';
 import { ApiResponse } from '../../models/api/api-response';
+import { TestForApplicationResponse, SubmitTestRequest, TestSubmissionResponse } from '../../models/test/test';
 
 @Injectable({
   providedIn: 'root'
@@ -48,6 +49,14 @@ export class ApplicationService {
     return this.http.post<ApiResponse<Application>>(`${this.apiUrl}/${applicationId}/notes`, request).pipe(
       map(response => this.unwrapResponse(response, 'Failed to add review note'))
     );
+  }
+
+  getTestForApplication(id: string): Observable<TestForApplicationResponse> {
+    return this.http.get<TestForApplicationResponse>(`${this.apiUrl}/${id}/test`);
+  }
+
+  submitTest(id: string, request: SubmitTestRequest): Observable<TestSubmissionResponse> {
+    return this.http.post<TestSubmissionResponse>(`${this.apiUrl}/${id}/submit`, request);
   }
 
   private unwrapResponse<T>(response: ApiResponse<T>, fallbackMessage: string): T {

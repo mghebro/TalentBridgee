@@ -118,6 +118,30 @@
             </nz-select>
           </nz-form-control>
         </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Points</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the points!">
+            <nz-input-number
+              formControlName="points"
+              [nzMin]="0"
+              [nzPrecision]="2"
+              [nzStep]="0.5"
+            ></nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24">Time Limit (seconds)</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Please input the time limit in seconds!">
+            <nz-input-number
+              formControlName="timeLimitSeconds"
+              [nzMin]="1"
+              [nzPlaceHolder]="'Optional - Leave empty for no time limit'"
+            ></nz-input-number>
+            <span nz-typography nzType="secondary" style="display: block; margin-top: 4px;">
+              Optional: Leave empty if there's no time limit for this question
+            </span>
+          </nz-form-control>
+        </nz-form-item>
 
         <div
           *ngIf="

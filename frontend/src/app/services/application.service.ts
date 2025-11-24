@@ -30,7 +30,7 @@ export class ApplicationService {
   }
 
   updateApplicationStatus(id: number, status: string): Observable<Application> {
-    const request: UpdateApplicationStatusRequest = { status: status as any }; // TODO: Fix type casting
+    const request: UpdateApplicationStatusRequest = { status: status as any }; 
     return this.http.put<Application>(`${this.apiUrl}/${id}/status`, request);
   }
 
@@ -41,4 +41,41 @@ export class ApplicationService {
   addReviewNote(id: number, request: AddReviewNoteRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/${id}/notes`, request);
   }
+
+  getTestForApplication(id: number): Observable<Test> {
+    return this.http.get<Test>(`${this.apiUrl}/${id}/test`);
+  }
+
+  submitTest(id: number, submission: Submission): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/submit`, submission);
+  }
+}
+
+export interface Test {
+  id: number;
+  title: string;
+  description: string;
+  questions: Question[];
+}
+
+export interface Question {
+  id: number;
+  questionText: string;
+  questionType: 'MultipleChoice' | 'ShortAnswer' | 'Essay' | 'Coding' | 'MultipleChoiceMultipleAnswer'; 
+  options: QuestionOption[];
+}
+
+export interface QuestionOption {
+  id: number;
+  optionText: string;
+}
+
+export interface Submission {
+  answers: Answer[];
+}
+
+export interface Answer {
+  questionId: number;
+  selectedOptionIds: number[];
+  answerText: string;
 }

@@ -3,12 +3,24 @@
   <nz-list [nzDataSource]="applications" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 2, xl: 3, xxl: 3 }">
     <ng-template #item let-application>
       <nz-list-item>
-        <a [routerLink]="['/vacancies', application.vacancyId]">
-          <nz-card [nzTitle]="application.vacancyTitle">
-            <p><strong>Status:</strong> {{ application.status }}</p>
+        <nz-card>
+          <nz-card-meta
+            [nzTitle]="titleTemplate"
+            [nzDescription]="descriptionTemplate"
+          ></nz-card-meta>
+          <ng-template #titleTemplate>
+            <a [routerLink]="['/vacancies', application.vacancyId]">{{ application.vacancyTitle }}</a>
+          </ng-template>
+          <ng-template #descriptionTemplate>
+            <p><strong>Status:</strong> {{ getStatusText(application.status) }}</p>
             <p><strong>Applied on:</strong> {{ application.appliedAt | date }}</p>
-          </nz-card>
-        </a>
+          </ng-template>
+          <div class="application-actions" *ngIf="application.testAssignmentId && (application.testAssignmentStatus === 'Assigned' || application.testAssignmentStatus === 'InProgress')">
+            <button nz-button nzType="primary" (click)="startTest(application)">
+              {{ application.testAssignmentStatus === 'InProgress' ? 'Resume Test' : 'Start Test' }}
+            </button>
+          </div>
+        </nz-card>
       </nz-list-item>
     </ng-template>
   </nz-list>

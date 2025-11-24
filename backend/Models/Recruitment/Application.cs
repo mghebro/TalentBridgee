@@ -1,6 +1,7 @@
 using TalentBridge.Common.Entities;
 using TalentBridge.Enums.Recruitment;
 using TalentBridge.Models.Roles;
+using TalentBridge.Models.Testing;
 
 namespace TalentBridge.Models.Recruitment;
 
@@ -23,4 +24,5 @@ public class Application : BaseEntity
     public string? RejectionReason { get; set; }
     
     public List<ApplicationTimeline>? Timelines { get; set; }
+    public TestAssignment? TestAssignment { get; set; }
 }

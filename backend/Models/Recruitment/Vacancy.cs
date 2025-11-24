@@ -39,7 +39,8 @@ public class Vacancy : BaseEntity
     public int ViewCount { get; set; } = 0;
     public bool IsDeleted { get; set; } = false;
     public DateTime? DeletedAt { get; set; }
-    public List<Test>? Tests { get; set; }
+    public int? TestId { get; set; }
+    public Test? Test { get; set; }
     public List<Application>? Applications { get; set; }
     public List<SavedVacancy>? SavedByUsers { get; set; }
     public List<VacancyView>? Views { get; set; }

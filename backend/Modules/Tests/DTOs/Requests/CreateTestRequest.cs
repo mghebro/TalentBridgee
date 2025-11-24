@@ -12,4 +12,20 @@ public class CreateTestRequest
     public int DurationMinutes { get; set; }
     public decimal PassingScore { get; set; }
     public TEST_DIFFICULTY Difficulty { get; set; }
+    public List<CreateQuestionInTestRequest>? Questions { get; set; }
+}
+
+public class CreateQuestionInTestRequest
+{
+    public string Text { get; set; }
+    public string Type { get; set; }
+    public decimal Points { get; set; }
+    public int? TimeLimitSeconds { get; set; }
+    public List<CreateQuestionOptionInTestRequest>? Options { get; set; }
+}
+
+public class CreateQuestionOptionInTestRequest
+{
+    public string Text { get; set; }
+    public bool IsCorrect { get; set; }
 }

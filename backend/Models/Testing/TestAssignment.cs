@@ -19,5 +19,5 @@ public class TestAssignment : BaseEntity
     public DateTime? StartedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
     public TEST_ASSIGNMENT_STATUS Status { get; set; }
-    public string AccessToken { get; set; }
+    public string? AccessToken { get; set; }
 }

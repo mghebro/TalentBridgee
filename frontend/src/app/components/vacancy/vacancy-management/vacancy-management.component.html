@@ -18,6 +18,7 @@
         <td>{{ vacancy.statusName || vacancy.status }}</td>
         <td>
           <button nz-button nzType="primary" (click)="openVacancyModal(vacancy.id)">Edit</button>
+          <button nz-button nzType="default" (click)="openAssignTestModal(vacancy)">Assign Test</button>
           <button
             nz-button
             nzType="default"

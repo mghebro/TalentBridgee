@@ -40,7 +40,6 @@ public class AuthService : IAuthService
 
  public async Task<ApiResponse<bool>> Register(RegisterRequest request)
 {
-    // Validate first
     var result = _registerValidator.Validate(request);
     if (!result.IsValid)
     {
@@ -53,7 +52,6 @@ public class AuthService : IAuthService
         };
     }
 
-    // Check if user exists
     var userExists = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
     if (userExists != null)
     {
@@ -65,7 +63,6 @@ public class AuthService : IAuthService
         };
     }
 
-    // Map user manually or use AutoMapper (but NOT for Organization)
     var user = new User
     {
         Email = request.Email,
@@ -76,7 +73,6 @@ public class AuthService : IAuthService
         IsVerified = false,
     };
 
-    // Assign role
     user.Role = request.DesiredRole switch
     {
         "USER" => ROLES.USER,
@@ -137,6 +133,7 @@ public class AuthService : IAuthService
 
             var newOrganization = new Organization  
             {
+                UserId = user.Id,
                 Name = request.OrganizationDetails.Name,
                 Type = request.OrganizationDetails.Type,
                 Address = request.OrganizationDetails.Address,
@@ -164,13 +161,11 @@ public class AuthService : IAuthService
             break;
 
         case ROLES.USER:
-            // No additional setup needed
             break;
     }
 
     await _context.SaveChangesAsync();
 
-    // Send verification email
     string verificationCode = await SMTPService.SendVerificationCodeAsync(user.Email!, user.FirstName);
 
     var emailVerification = new EmailVerification

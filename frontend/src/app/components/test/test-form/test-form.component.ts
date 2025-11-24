@@ -115,6 +115,7 @@ export class TestFormComponent implements OnInit {
         text: [q.text, Validators.required],
         type: [q.type, Validators.required],
         points: [q.points || 0, Validators.required],
+        timeLimitSeconds: [q.timeLimitSeconds || null],
         options: this.fb.array(q.options.map((o: any) => this.newOption(o))),
       })
     );
@@ -126,6 +127,7 @@ export class TestFormComponent implements OnInit {
       text: ['', Validators.required],
       type: ['SINGLE_CHOICE', Validators.required],
       points: [0, Validators.required],
+      timeLimitSeconds: [null],
       options: this.fb.array([]),
     });
   }

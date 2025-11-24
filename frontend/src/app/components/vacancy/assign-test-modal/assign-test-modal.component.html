@@ -1,0 +1,24 @@
+<div class="assign-test-modal-container">
+  <div class="modal-header">
+    <h3>Assign Test to {{ vacancy?.title }}</h3>
+  </div>
+  <div class="modal-content">
+    <nz-list [nzDataSource]="tests" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 1, sm: 1, md: 1, lg: 1, xl: 1, xxl: 1 }">
+      <ng-template #item let-test>
+        <nz-list-item>
+          <nz-card [nzTitle]="test.title">
+            <p><strong>Description:</strong> {{ test.description }}</p>
+            <p><strong>Difficulty:</strong> {{ test.difficulty }}</p>
+            <p><strong>Duration:</strong> {{ test.durationMinutes }} minutes</p>
+            <div class="test-actions">
+              <button nz-button nzType="primary" (click)="assignTest(test.id)">Assign</button>
+            </div>
+          </nz-card>
+        </nz-list-item>
+      </ng-template>
+    </nz-list>
+  </div>
+  <div class="modal-footer">
+    <button nz-button nzType="default" (click)="close()">Cancel</button>
+  </div>
+</div>

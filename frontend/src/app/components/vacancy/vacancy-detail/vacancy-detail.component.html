@@ -37,7 +37,11 @@
       <button nz-button nzType="default" *ngIf="canViewApplications()" (click)="viewApplications()">
         View Applications
       </button>
-      <button nz-button nzType="primary" (click)="apply()">Apply Now</button>
+      <button nz-button nzType="primary" (click)="apply()" [disabled]="!canApply() || isApplying || hasApplied">
+        <span *ngIf="isApplying">Applying...</span>
+        <span *ngIf="!isApplying && !hasApplied">Apply Now</span>
+        <span *ngIf="!isApplying && hasApplied">Already Applied</span>
+      </button>
     </div>
   </nz-card>
 </div>

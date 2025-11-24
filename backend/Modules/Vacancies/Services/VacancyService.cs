@@ -8,7 +8,10 @@ using TalentBridge.Modules.Vacancies.DTOs.Requests;
 using TalentBridge.Modules.Vacancies.DTOs.Responses;
 using System.Linq.Expressions;
 using TalentBridge.Enums.Recruitment;
+using TalentBridge.Enums.Testing;
 using TalentBridge.Models.Roles;
+using TalentBridge.Models.Testing;
+using TalentBridge.Modules.Applications.DTOs.Responses;
 
 namespace TalentBridge.Modules.Vacancies.Services;
 
@@ -139,14 +142,12 @@ public class VacancyService : IVacancyService
         if (hrManager == null)
             return ServiceResult<VacancyAnalytics>.FailureResult("User is not authorized to view analytics for this vacancy.");
 
-        // This is a placeholder implementation. A real implementation would involve more complex queries.
         var analytics = new VacancyAnalytics
         {
             VacancyId = vacancy.Id,
             VacancyTitle = vacancy.Title,
             TotalViews = vacancy.ViewCount,
             TotalApplications = await _context.Applications.CountAsync(a => a.VacancyId == id),
-            // Placeholder values for other properties
             TestsCompleted = 0,
             Hired = 0,
             ViewToApplicationRate = 0,
@@ -164,5 +165,105 @@ public class VacancyService : IVacancyService
             Id = v.Id,
             Title = v.Title
         }).ToListAsync();
+    }
+
+    public async Task<ServiceResult<ApplicationResponse>> ApplyAsync(int vacancyId, int userId)
+    {
+        var vacancy = await _context.Vacancies.Include(v => v.Test)
+            .FirstOrDefaultAsync(v => v.Id == vacancyId && v.Status == VACANCY_STATUS.Active && !v.IsDeleted);
+
+        if (vacancy == null)
+            return ServiceResult<ApplicationResponse>.FailureResult("Vacancy not found or is not active.");
+
+        var alreadyApplied = await _context.Applications.AnyAsync(a => a.VacancyId == vacancyId && a.UserId == userId);
+        if (alreadyApplied)
+            return ServiceResult<ApplicationResponse>.FailureResult("You have already applied for this vacancy.");
+
+        var application = new Application
+        {
+            VacancyId = vacancyId,
+            UserId = userId,
+            AppliedAt = DateTime.UtcNow,
+            Status = vacancy.TestId.HasValue ? APPLICATION_STATUS.TestAssigned : APPLICATION_STATUS.UnderReview,
+        };
+        _context.Applications.Add(application);
+
+        if (vacancy.TestId.HasValue)
+        {
+            var testAssignment = new TestAssignment
+            {
+                Application = application, 
+                TestId = vacancy.TestId.Value,
+                AssignedBy = userId,
+                AssignedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddDays(7), 
+                Status = TEST_ASSIGNMENT_STATUS.Assigned,
+                AccessToken = Guid.NewGuid().ToString() 
+            };
+            _context.TestAssignments.Add(testAssignment);
+        }
+
+        await _context.SaveChangesAsync();
+
+        var applicationResponse = _mapper.Map<ApplicationResponse>(application);
+        return ServiceResult<ApplicationResponse>.SuccessResult(applicationResponse, "Successfully applied for the vacancy.");
+    }
+
+    public async Task<ServiceResult<VacancyDetails>> AssignTestToVacancyAsync(int vacancyId, int testId, int userId)
+    {
+        var vacancy = await _context.Vacancies
+            .Include(v => v.Applications) 
+            .FirstOrDefaultAsync(v => v.Id == vacancyId);
+            
+        if (vacancy == null)
+            return ServiceResult<VacancyDetails>.FailureResult("Vacancy not found.");
+
+        var test = await _context.Tests.FindAsync(testId);
+        if (test == null)
+            return ServiceResult<VacancyDetails>.FailureResult("Test not found.");
+            
+        var hrManager = await _context.HrManagers.FirstOrDefaultAsync(hr => hr.UserId == userId && hr.OrganizationId == vacancy.OrganizationId);
+        if (hrManager == null)
+            return ServiceResult<VacancyDetails>.FailureResult("User is not authorized to assign a test to this vacancy.");
+
+        if (vacancy.OrganizationId != test.OrganizationId)
+            return ServiceResult<VacancyDetails>.FailureResult("Vacancy and test do not belong to the same organization.");
+        
+        if (vacancy.TestId.HasValue && vacancy.TestId != testId)
+        {
+            return ServiceResult<VacancyDetails>.FailureResult("A different test is already assigned. Please remove it first.");
+        }
+
+        vacancy.TestId = testId;
+
+        var applicationsToUpdate = vacancy.Applications
+            .Where(app => app.Status == APPLICATION_STATUS.UnderReview || app.Status == APPLICATION_STATUS.Submitted)
+            .ToList();
+
+        foreach (var app in applicationsToUpdate)
+        {
+            var existingAssignment = await _context.TestAssignments.AnyAsync(ta => ta.ApplicationId == app.Id);
+            if (!existingAssignment)
+            {
+                app.Status = APPLICATION_STATUS.TestAssigned;
+                var testAssignment = new TestAssignment
+                {
+                    ApplicationId = app.Id,
+                    TestId = testId,
+                    AssignedBy = userId,
+                    AssignedByHRManagerId = hrManager.Id,
+                    AssignedAt = DateTime.UtcNow,
+                    ExpiresAt = DateTime.UtcNow.AddDays(7),
+                    Status = TEST_ASSIGNMENT_STATUS.Assigned,
+                    AccessToken = Guid.NewGuid().ToString()
+                };
+                _context.TestAssignments.Add(testAssignment);
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        var vacancyDetails = _mapper.Map<VacancyDetails>(vacancy);
+        return ServiceResult<VacancyDetails>.SuccessResult(vacancyDetails, "Test assigned successfully.");
     }
 }

@@ -176,4 +176,44 @@ public class VacanciesController : BaseApiController
         var vacancies = await _vacancyService.GetVacanciesByOrganizationAsync(organizationId);
         return Ok(vacancies);
     }
+    
+    [HttpPost("{id}/apply")]
+    [Authorize(Roles = nameof(ROLES.USER))]
+    public async Task<IActionResult> Apply(int id)
+    {
+        var currentUserResponse = await GetCurrentUserIdAsync();
+        if (currentUserResponse.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(currentUserResponse.Status, currentUserResponse);
+        }
+
+        var result = await _vacancyService.ApplyAsync(id, currentUserResponse.Data);
+
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
+    [HttpPost("{id}/assign-test/{testId}")]
+    [Authorize(Roles = $"{nameof(ROLES.ORGANIZATION_ADMIN)},{nameof(ROLES.HR_MANAGER)}")]
+    public async Task<IActionResult> AssignTestToVacancy(int id, int testId)
+    {
+        var currentUserResponse = await GetCurrentUserIdAsync();
+        if (currentUserResponse.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(currentUserResponse.Status, currentUserResponse);
+        }
+
+        var result = await _vacancyService.AssignTestToVacancyAsync(id, testId, currentUserResponse.Data);
+
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
 }

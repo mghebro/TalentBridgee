@@ -20,16 +20,13 @@ namespace TalentBridge.Modules.Organizations.Services;
 public class OrganizationServices : BaseService, IOrganizationServices
 {
     private readonly IMapper _mapper;
-    private readonly IFileService _fileService; 
 
     public OrganizationServices(
         IMapper mapper, 
-        DataContext context,
-        IFileService fileService
+        DataContext context
      ) : base(context)
     {
         _mapper = mapper;
-        _fileService = fileService;
     }
 
     
@@ -256,41 +253,21 @@ public class OrganizationServices : BaseService, IOrganizationServices
 
     private async Task<OrganizationDetails?> GetOrganizationDetailsWithStats(int organizationId)
 {
-    // 1️⃣ Load organization
     var organization = await _context.Organizations
         .FirstOrDefaultAsync(o => o.Id == organizationId);
 
     if (organization == null)
         return null;
 
-    // 2️⃣ Load vacancies
     var vacancies = await _context.Vacancies
         .Where(v => v.OrganizationId == organizationId)
         .ToListAsync();
 
-    // 3️⃣ Load applications
     var applications = await _context.Applications
         .Where(a => vacancies.Select(v => v.Id).Contains(a.VacancyId))
         .ToListAsync();
 
-    // 4️⃣ Load tests
-    var tests = await _context.Tests
-        .Where(t => vacancies.Select(v => v.Id).Contains(t.VacancyId))
-        .ToListAsync();
-
-    // 5️⃣ Load completed test assignments
-    var testAssignments = await _context.TestAssignments
-        .Where(ta => tests.Select(t => t.Id).Contains(ta.TestId) &&
-                     ta.Status == TEST_ASSIGNMENT_STATUS.Completed)
-        .ToListAsync();
-
-    // 6️⃣ Load submissions with scores
-    var testSubmissions = await _context.TestSubmissions
-        .Where(ts => testAssignments.Select(ta => ta.Id).Contains(ts.TestAssignmentId) &&
-                     ts.PercentageScore.HasValue)
-        .ToListAsync();
-
-    // 7️⃣ Compute statistics
+   
     var stats = new OrganizationStatistics
     {
         TotalVacancies = vacancies.Count,
@@ -300,10 +277,6 @@ public class OrganizationServices : BaseService, IOrganizationServices
         PendingApplications = applications.Count(a => a.Status == APPLICATION_STATUS.Submitted),
         ReviewedApplications = applications.Count(a => a.Status == APPLICATION_STATUS.UnderReview),
         TotalHires = applications.Count(a => a.Status == APPLICATION_STATUS.Hired),
-        TotalTests = tests.Count,
-        AverageTestScore = testSubmissions.Any() 
-            ? testSubmissions.Average(s => s.PercentageScore!.Value) 
-            : 0,
         LastVacancyPosted = vacancies
             .OrderByDescending(v => v.CreatedAt)
             .Select(v => (DateTime?)v.CreatedAt)
@@ -314,11 +287,9 @@ public class OrganizationServices : BaseService, IOrganizationServices
             .FirstOrDefault()
     };
 
-    // 8️⃣ Map to DTO
     var organizationDetails = _mapper.Map<OrganizationDetails>(organization);
     organizationDetails.Statistics = stats;
 
-    // 9️⃣ Calculate AverageTimeToHire
     var hiredApplications = applications
         .Where(a => a.Status == APPLICATION_STATUS.Hired && a.HiredAt.HasValue)
         .ToList();

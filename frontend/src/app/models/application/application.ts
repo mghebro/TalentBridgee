@@ -9,6 +9,8 @@ export interface Application {
   status: string;
   coverLetter?: string;
   appliedAt: string;
+  testAssignmentId?: number;
+  testAssignmentStatus?: string;
 }
 
 export interface UpdateApplicationStatusRequest {

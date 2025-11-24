@@ -8,8 +8,6 @@ using TalentBridge.Enums.Auth;
 using TalentBridge.Data;
 using System.Text;
 using FluentValidation;
-using TalentBridge.Common.Services;
-using TalentBridge.Infrastructure.Services;
 using TalentBridge.Modules.Organizations;
 using TalentBridge.Modules.Vacancies;
 using TalentBridge.Modules.Applications;
@@ -124,7 +122,6 @@ public static class ServiceExtensions
                     .AllowAnyMethod();
             });
         });
-        services.AddScoped<IFileService, FileService>();
 
         return services;
     }

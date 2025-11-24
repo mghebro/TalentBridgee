@@ -1,0 +1,79 @@
+<div class="test-player-container">
+  <div *ngIf="isLoading" class="loading-overlay">
+    <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+    <p>Loading Test...</p>
+  </div>
+
+  <div *ngIf="!isLoading && test">
+    <h1 class="test-title">{{ test.title }}</h1>
+    <p class="test-description">{{ test.description }}</p>
+
+    <div class="question-header">
+      <strong>Question {{ currentQuestionIndex + 1 }} of {{ questions.length }}</strong>
+    </div>
+
+    <nz-card *ngIf="currentQuestion" class="question-card" [nzLoading]="isSubmitting">
+      <div class="card-header">
+        <p class="question-text">{{ currentQuestion.questionText }} ({{ currentQuestion.points }} pts)</p>
+        
+        <div *ngIf="currentQuestion.timeLimitSeconds" class="timer">
+          <span class="timer-text">{{ timeLeft | number: '2.0-0' }}s</span>
+          <nz-progress 
+            [nzPercent]="timePercentage" 
+            [nzShowInfo]="false" 
+            nzStrokeLinecap="square"
+            [nzStrokeColor]="{'0%': '#108ee9', '100%': '#87d068'}"
+            [nzStatus]="timeLeft > 10 ? 'normal' : 'exception'">
+          </nz-progress>
+        </div>
+      </div>
+
+      <div class="question-body">
+        <ng-container [ngSwitch]="currentQuestion.questionType">
+          
+          <div *ngSwitchCase="'MultipleChoice'">
+            <nz-radio-group 
+              [(ngModel)]="currentQuestion.selectedOptionId"
+              (ngModelChange)="onOptionChange($event)"
+              [class.disabled]="currentQuestion.isLocked">
+              <label 
+                *ngFor="let option of currentQuestion.options" 
+                nz-radio 
+                [nzValue]="option.id" 
+                [nzDisabled]="currentQuestion.isLocked">
+                {{ option.optionText }}
+              </label>
+            </nz-radio-group>
+          </div>
+
+          <div *ngSwitchCase="'ShortAnswer'">
+            <textarea 
+              nz-input 
+              [(ngModel)]="currentQuestion.answerText"
+              placeholder="Your answer here..." 
+              [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+              [disabled]="currentQuestion.isLocked">
+            </textarea>
+          </div>
+          
+          <div *ngSwitchDefault>
+            <p>This question type is not yet supported.</p>
+          </div>
+        </ng-container>
+      </div>
+    </nz-card>
+    
+    <div class="footer-actions">
+      <button 
+        nz-button 
+        nzType="primary" 
+        (click)="submitAnswer()"
+        [nzLoading]="isSubmitting"
+        [disabled]="currentQuestion.isLocked || isSubmitting"
+        class="submit-button">
+        <span *ngIf="!currentQuestion.isLocked">Submit Answer</span>
+        <span *ngIf="currentQuestion.isLocked && !isSubmitting">Next Question</span>
+      </button>
+    </div>
+  </div>
+</div>

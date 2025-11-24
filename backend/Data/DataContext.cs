@@ -4,7 +4,6 @@ using TalentBridge.Models;
 using TalentBridge.Models.Auth;
 using TalentBridge.Models.Roles;
 using TalentBridge.Models.Recruitment;
-using TalentBridge.Models.Roles;
 using TalentBridge.Models.UserRelated;
 using TalentBridge.Models.Communication;
 using TalentBridge.Models.Analytics;
@@ -43,6 +42,7 @@ public class DataContext : DbContext
     public DbSet<TestSubmission> TestSubmissions { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<QuestionOption> QuestionOptions { get; set; }
+    public DbSet<SelectedQuestionOption> SelectedQuestionOptions { get; set; }
     
     //UserRelated
     public DbSet<Education> Educations { get; set; }
@@ -61,6 +61,28 @@ public class DataContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
+        modelBuilder.Entity<Vacancy>()
+            .HasOne(v => v.Test)
+            .WithOne(t => t.Vacancy)
+            .HasForeignKey<Test>(t => t.VacancyId);
+            
+        modelBuilder.Entity<Application>()
+            .HasOne(a => a.TestAssignment)
+            .WithOne(t => t.Application)
+            .HasForeignKey<TestAssignment>(t => t.ApplicationId);
+
+        modelBuilder.Entity<SelectedQuestionOption>()
+            .HasKey(sqo => new { sqo.SubmissionAnswerId, sqo.QuestionOptionId });
+
+        modelBuilder.Entity<SelectedQuestionOption>()
+            .HasOne(sqo => sqo.SubmissionAnswer)
+            .WithMany(sa => sa.SelectedOptions)
+            .HasForeignKey(sqo => sqo.SubmissionAnswerId);
+
+        modelBuilder.Entity<SelectedQuestionOption>()
+            .HasOne(sqo => sqo.QuestionOption)
+            .WithMany()
+            .HasForeignKey(sqo => sqo.QuestionOptionId);
         
         foreach (var relationship in modelBuilder.Model.GetEntityTypes()
                      .SelectMany(e => e.GetForeignKeys()))

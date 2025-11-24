@@ -1,13 +1,11 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TalentBridge.Common.DTOs.Responses;
+using TalentBridge.Common.Controllers;
 using TalentBridge.Data;
 using TalentBridge.Enums.Auth;
 using TalentBridge.Modules.Tests.DTOs.Requests;
 using TalentBridge.Modules.Tests.Services;
-using TalentBridge.Common.Controllers;
 
 namespace TalentBridge.Modules.Tests.Controllers;
 
@@ -26,6 +24,57 @@ public class TestsController : BaseApiController
         _testService = testService;
     }
 
+    #region New Per-Question Endpoints
+
+    [HttpPost("assignments/{assignmentId:int}/questions/{questionId:int}/submit")]
+    [Authorize(Roles = nameof(ROLES.USER))]
+    public async Task<IActionResult> SubmitAnswer(int assignmentId, int questionId, [FromBody] SubmitAnswerRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var currentUserResponse = await GetCurrentUserIdAsync();
+        if (currentUserResponse.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(currentUserResponse.Status, currentUserResponse.Message);
+        }
+
+        var result = await _testService.SubmitAnswerAsync(assignmentId, questionId, request, currentUserResponse.Data);
+
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+    
+    [HttpPost("assignments/{assignmentId:int}/questions/{questionId:int}/timeout")]
+    [Authorize(Roles = nameof(ROLES.USER))]
+    public async Task<IActionResult> HandleQuestionTimeout(int assignmentId, int questionId)
+    {
+        var currentUserResponse = await GetCurrentUserIdAsync();
+        if (currentUserResponse.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(currentUserResponse.Status, currentUserResponse.Message);
+        }
+
+        var result = await _testService.HandleQuestionTimeoutAsync(assignmentId, questionId, currentUserResponse.Data);
+        
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
+        
+        return Ok(result);
+    }
+
+    #endregion
+
+    #region Existing Endpoints
+    
     [HttpPost]
     [Authorize(Roles = $"{nameof(ROLES.ORGANIZATION_ADMIN)},{nameof(ROLES.HR_MANAGER)}")]
     public async Task<IActionResult> CreateTest([FromBody] CreateTestRequest request)
@@ -105,7 +154,7 @@ public class TestsController : BaseApiController
         return Ok(result);
     }
 
-    [HttpPost("{testAssignmentId}/start")]
+    [HttpPost("assignments/{testAssignmentId}/start")]
     [Authorize(Roles = nameof(ROLES.USER))]
     public async Task<IActionResult> StartTestSubmission(int testAssignmentId)
     {
@@ -126,7 +175,7 @@ public class TestsController : BaseApiController
         return Ok(result);
     }
 
-    [HttpPost("{testSubmissionId}/submit")]
+    [HttpPost("submissions/{testSubmissionId}/submit")]
     [Authorize(Roles = nameof(ROLES.USER))]
     public async Task<IActionResult> SubmitTestSubmission(int testSubmissionId, [FromBody] SubmitTestRequest request)
     {
@@ -162,7 +211,6 @@ public class TestsController : BaseApiController
             return BadRequest(result);
         }
 
-
         return Ok(result);
     }
 
@@ -174,8 +222,8 @@ public class TestsController : BaseApiController
         return Ok(result);
     }
 
-    [HttpGet("{testSubmissionId}/result")]
-    [Authorize(Roles = nameof(ROLES.USER))]
+    [HttpGet("submissions/{testSubmissionId}/result")]
+    [Authorize] 
     public async Task<IActionResult> GetTestSubmissionResult(int testSubmissionId)
     {
         var currentUserResponse = await GetCurrentUserIdAsync();
@@ -219,4 +267,6 @@ public class TestsController : BaseApiController
 
         return Ok(result);
     }
+    
+    #endregion
 }

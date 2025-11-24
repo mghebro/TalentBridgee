@@ -7,6 +7,7 @@ using TalentBridge.Enums.Auth;
 using TalentBridge.Modules.Applications.DTOs.Requests;
 using TalentBridge.Modules.Applications.Services;
 using TalentBridge.Common.Controllers;
+using TalentBridge.Modules.Tests.DTOs.Requests;
 
 namespace TalentBridge.Modules.Applications.Controllers;
 
@@ -155,5 +156,45 @@ public class ApplicationsController : BaseApiController
         }
 
         return StatusCode(result.Status, result);
+    }
+
+    [HttpGet("{id}/test")]
+    [Authorize(Roles = nameof(ROLES.USER))]
+    public async Task<IActionResult> GetTestForApplication(int id)
+    {
+        var currentUserResponse = await GetCurrentUserIdAsync();
+        if (currentUserResponse.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(currentUserResponse.Status, new { currentUserResponse.Message });
+        }
+
+        var result = await _applicationService.GetTestForApplicationAsync(id, currentUserResponse.Data);
+
+        if (result.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(result.Status, new { result.Message });
+        }
+
+        return Ok(result.Data);
+    }
+
+    [HttpPost("{id}/submit")]
+    [Authorize(Roles = nameof(ROLES.USER))]
+    public async Task<IActionResult> SubmitTest(int id, [FromBody] SubmitTestRequest request)
+    {
+        var currentUserResponse = await GetCurrentUserIdAsync();
+        if (currentUserResponse.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(currentUserResponse.Status, new { currentUserResponse.Message });
+        }
+
+        var result = await _applicationService.SubmitTestAsync(id, currentUserResponse.Data, request);
+
+        if (result.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(result.Status, new { result.Message });
+        }
+
+        return Ok(result.Data);
     }
 }

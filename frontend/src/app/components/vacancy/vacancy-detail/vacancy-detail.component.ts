@@ -22,6 +22,8 @@ import { ApplyModalComponent } from '../apply-modal/apply-modal.component';
 export class VacancyDetailComponent implements OnInit {
   vacancy: VacancyDetails | undefined;
   currentUser: User | null = null;
+  hasApplied = false;
+  isApplying = false; 
 
   constructor(
     private route: ActivatedRoute,
@@ -60,7 +62,7 @@ export class VacancyDetailComponent implements OnInit {
   }
 
   canApply(): boolean {
-    return !!this.currentUser && this.currentUser.role === 'USER';
+    return !!this.currentUser && this.currentUser.role === 'USER' && !this.hasApplied && !this.isApplying;
   }
 
   apply(): void {
@@ -70,25 +72,25 @@ export class VacancyDetailComponent implements OnInit {
     }
 
     if (!this.canApply()) {
-      this.notification.warning('Permission Denied', 'Only users can apply to vacancies.');
       return;
     }
+    
+    this.isApplying = true; 
 
     if (this.vacancy) {
-      const modal = this.modalService.create({
-        nzTitle: `Apply for ${this.vacancy.title}`,
-        nzContent: ApplyModalComponent,
-        nzData: {
-          vacancyId: this.vacancy.id,
+      this.vacancyService.applyToVacancy(this.vacancy.id).subscribe({
+        next: () => {
+          this.notification.success('Success', 'You have successfully applied for this vacancy.');
+          this.hasApplied = true;
+          this.isApplying = false; 
         },
-        nzFooter: null,
+        error: (err) => {
+          this.notification.error('Error', err.message);
+          this.isApplying = false; 
+        },
       });
-
-      modal.afterClose.subscribe((result) => {
-        if (result) {
-          // Handle successful application if needed
-        }
-      });
+    } else {
+      this.isApplying = false; 
     }
   }
 }

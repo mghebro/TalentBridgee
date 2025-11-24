@@ -1,9 +1,8 @@
 <nz-layout class="layout" [class.mobile-layout]="isMobileLayout$ | async">
-  
-  <nz-sider 
+  <nz-sider
     *ngIf="!(isMobileLayout$ | async)"
-    nzCollapsible 
-    [(nzCollapsed)]="isCollapsed" 
+    nzCollapsible
+    [(nzCollapsed)]="isCollapsed"
     [nzWidth]="240"
   >
     <div class="logo">
@@ -25,7 +24,7 @@
           nzType="menu"
           (click)="openDrawer()"
         ></i>
-        
+
         <i
           *ngIf="!(isMobileLayout$ | async)"
           class="trigger"
@@ -35,15 +34,6 @@
         ></i>
 
         <div class="right-content">
-          <div class="theme-toggle">
-            <span>{{ isDarkMode ? 'Night' : 'Day' }} Mode</span>
-            <nz-switch
-              [ngModel]="isDarkMode"
-              (ngModelChange)="onThemeChange($event)"
-              nzCheckedChildren="🌙"
-              nzUnCheckedChildren="☀️"
-            ></nz-switch>
-          </div>
           <ng-container *ngIf="currentUser$ | async as user; else loginRegister">
             <a nz-dropdown [nzDropdownMenu]="userMenu" nzPlacement="bottomRight">
               <i nz-icon nzType="user" nzTheme="outline"></i> {{ user.firstName }}
@@ -81,12 +71,11 @@
 >
   <div *nzDrawerContent class="drawer-content">
     <div class="logo-drawer">
-        <img src="assets/logo.png" alt="logo" width="150" height="32" />
+      <img src="assets/logo.png" alt="logo" width="150" height="32" />
     </div>
     <ng-container *ngTemplateOutlet="menuContent; context: { inDrawer: true }"></ng-container>
   </div>
 </nz-drawer>
-
 
 <ng-template #menuContent let-inDrawer="inDrawer">
   <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed && !inDrawer">
@@ -104,11 +93,21 @@
       </ul>
     </li>
     <ng-container *ngIf="currentUser$ | async as user">
-      <li nz-menu-item routerLink="/my-applications" *ngIf="user.role === 'USER'" (click)="inDrawer && closeDrawer()">
+      <li
+        nz-menu-item
+        routerLink="/my-applications"
+        *ngIf="user.role === 'USER'"
+        (click)="inDrawer && closeDrawer()"
+      >
         <i nz-icon nzType="solution"></i>
         <span>My Applications</span>
       </li>
-      <li nz-menu-item routerLink="/tests" *ngIf="user.role === 'USER'" (click)="inDrawer && closeDrawer()">
+      <li
+        nz-menu-item
+        routerLink="/tests"
+        *ngIf="user.role === 'USER'"
+        (click)="inDrawer && closeDrawer()"
+      >
         <i nz-icon nzType="form"></i>
         <span>My Tests</span>
       </li>
@@ -131,8 +130,12 @@
         *ngIf="user.role === 'ORGANIZATION_ADMIN' || user.role === 'HR_MANAGER'"
       >
         <ul>
-          <li nz-menu-item routerLink="/vacancy-management" (click)="inDrawer && closeDrawer()">Manage Vacancies</li>
-          <li nz-menu-item routerLink="/applications" (click)="inDrawer && closeDrawer()">View Applications</li>
+          <li nz-menu-item routerLink="/vacancy-management" (click)="inDrawer && closeDrawer()">
+            Manage Vacancies
+          </li>
+          <li nz-menu-item routerLink="/applications" (click)="inDrawer && closeDrawer()">
+            View Applications
+          </li>
         </ul>
       </li>
     </ng-container>

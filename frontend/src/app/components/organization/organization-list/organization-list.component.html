@@ -34,7 +34,7 @@
         <a
           nz-popconfirm
           nzPopconfirmTitle="Are you sure you want to delete this organization?"
-          (nzOnConfirm)="deleteOrganization(data.id)"
+          (nzOnConfirm)="deleteOrganization(data.id.toString())"
           >Delete</a
         >
       </td>

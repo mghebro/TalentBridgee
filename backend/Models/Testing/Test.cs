@@ -22,7 +22,7 @@ public class Test : BaseEntity
     public TEST_DIFFICULTY Difficulty { get; set; }
     public bool IsActive { get; set; }
     public string? Instructions { get; set; }
-    public int VacancyId { get; set; }
+    public int? VacancyId { get; set; }
     public Vacancy? Vacancy { get; set; }
     public Organization Organization { get; set; }
     public List<Question>? Questions { get; set; }

@@ -1,4 +1,5 @@
 using TalentBridge.Enums.Recruitment;
+using TalentBridge.Enums.Testing;
 using TalentBridge.Models.Roles;
 
 namespace TalentBridge.Modules.Applications.DTOs.Responses;
@@ -15,4 +16,6 @@ public class ApplicationResponse
     public APPLICATION_STATUS Status { get; set; }
     public string? CoverLetter { get; set; }
     public DateTime AppliedAt { get; set; }
+    public int? TestAssignmentId { get; set; }
+    public TEST_ASSIGNMENT_STATUS? TestAssignmentStatus { get; set; }
 }

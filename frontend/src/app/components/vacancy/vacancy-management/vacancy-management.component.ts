@@ -10,6 +10,7 @@ import { VacancyFormComponent } from '../vacancy-form/vacancy-form.component';
 import { OrganizationService } from '../../../services/organization/organization.service';
 import { Organization } from '../../../models/organization/organization';
 import { OrganizationList } from '../../../models/organization.model';
+import { AssignTestModalComponent } from '../assign-test-modal/assign-test-modal.component';
 
 @Component({
   selector: 'app-vacancy-management',
@@ -61,6 +62,26 @@ export class VacancyManagementComponent implements OnInit {
 
     modal.afterClose.subscribe((result) => {
       if (result === 'created' || result === 'updated') {
+        if (this.myOrganizations.length > 0) {
+          this.loadVacancies(this.myOrganizations[0].id);
+        }
+      }
+    });
+  }
+
+  openAssignTestModal(vacancy: Vacancy): void {
+    const modal = this.modalService.create({
+      nzTitle: `Assign Test to ${vacancy.title}`,
+      nzContent: AssignTestModalComponent,
+      nzComponentParams: {
+        vacancy: vacancy,
+      },
+      nzFooter: null,
+      nzWidth: '80%',
+    } as any);
+
+    modal.afterClose.subscribe((result) => {
+      if (result === 'assigned') {
         if (this.myOrganizations.length > 0) {
           this.loadVacancies(this.myOrganizations[0].id);
         }

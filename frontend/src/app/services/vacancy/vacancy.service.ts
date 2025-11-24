@@ -12,6 +12,8 @@ import {
 import { VacancyFilter } from '../../models/vacancy/vacancy-filter';
 import { PaginatedResult, ServiceResult } from '../../models/api/api-response';
 
+import { Application } from '../../models/application/application';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -62,6 +64,22 @@ export class VacancyService {
   getVacanciesByOrganization(orgId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/organization/${orgId}`);
   }
+
+  applyToVacancy(id: number | string): Observable<Application> {
+    return this.http
+      .post<ServiceResult<Application>>(`${this.apiUrl}/${id}/apply`, {})
+      .pipe(map((response) => this.unwrapResult(response, 'Failed to apply to vacancy')));
+  }
+
+  assignTestToVacancy(
+    vacancyId: number | string,
+    testId: number | string
+  ): Observable<VacancyDetails> {
+    return this.http
+      .post<ServiceResult<VacancyDetails>>(`${this.apiUrl}/${vacancyId}/assign-test/${testId}`, {})
+      .pipe(map((response) => this.unwrapResult(response, 'Failed to assign test to vacancy')));
+  }
+
   private unwrapResult<T>(response: ServiceResult<T>, fallbackMessage: string): T {
     if (!response.data) {
       throw new Error(response.message ?? response.errors?.[0] ?? fallbackMessage);

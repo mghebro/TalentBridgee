@@ -12,7 +12,7 @@ public class Question : BaseEntity
     public QUESTION_TYPE QuestionType { get; set; }
     public decimal Points { get; set; }
     public int OrderNumber { get; set; }
-    public int? TimeLimitSeconds { get; set; }
+    public int TimeLimitSeconds { get; set; }
     public bool IsRequired { get; set; }
     public string? Explanation { get; set; }
     
