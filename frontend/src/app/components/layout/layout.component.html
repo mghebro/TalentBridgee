@@ -6,7 +6,7 @@
     [nzWidth]="240"
   >
     <div class="logo">
-      <a routerLink="/">
+      <a routerLink="/home">
         <img *ngIf="isCollapsed" src="assets/minilogooooo.png" alt="logo" width="48" height="40" />
         <img *ngIf="!isCollapsed" src="assets/logo.png" alt="logo" width="150" height="32" />
       </a>
@@ -71,7 +71,9 @@
 >
   <div *nzDrawerContent class="drawer-content">
     <div class="logo-drawer">
-      <img src="assets/logo.png" alt="logo" width="150" height="32" />
+      <a routerLink="/home">
+        <img src="assets/logo.png" alt="logo" width="150" height="32" />
+      </a>
     </div>
     <ng-container *ngTemplateOutlet="menuContent; context: { inDrawer: true }"></ng-container>
   </div>
@@ -79,10 +81,10 @@
 
 <ng-template #menuContent let-inDrawer="inDrawer">
   <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed && !inDrawer">
-    <li nz-menu-item routerLink="/welcome" (click)="inDrawer && closeDrawer()">
+    <!-- <li nz-menu-item routerLink="/welcome" (click)="inDrawer && closeDrawer()">
       <i nz-icon nzType="dashboard"></i>
       <span>Dashboard</span>
-    </li>
+    </li> -->
     <li nz-menu-item routerLink="/vacancies" (click)="inDrawer && closeDrawer()">
       <i nz-icon nzType="profile"></i>
       <span>Vacancies</span>
@@ -139,5 +141,14 @@
         </ul>
       </li>
     </ng-container>
+
+    <li nz-menu-item routerLink="/about-us" (click)="inDrawer && closeDrawer()">
+      <i nz-icon nzType="info-circle"></i>
+      <span>About Us</span>
+    </li>
+    <li nz-menu-item routerLink="/contact-us" (click)="inDrawer && closeDrawer()">
+      <i nz-icon nzType="customer-service"></i>
+      <span>Contact Us</span>
+    </li>
   </ul>
 </ng-template>

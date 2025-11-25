@@ -24,7 +24,7 @@ export const routes: Routes = [
     path: '',
     component: LayoutComponent,
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'vacancies' },
+      { path: '', pathMatch: 'full', redirectTo: 'home' },
       { path: 'auth/login', component: LoginComponent },
       { path: 'auth/register', component: RegisterComponent },
       { path: 'auth/verify-email', component: VerifyEmailComponent },
@@ -104,6 +104,18 @@ export const routes: Routes = [
         path: 'tests/:id',
         canActivate: [AuthGuard],
         component: TestTakingComponent,
+      },
+      {
+        path: 'about-us',
+        loadComponent: () => import('./components/about/about').then((m) => m.About),
+      },
+      {
+        path: 'contact-us',
+        loadComponent: () => import('./components/contact/contact').then((m) => m.Contact),
+      },
+      {
+        path: 'home',
+        loadComponent: () => import('./components/landing/landing').then((m) => m.Landing),
       },
     ],
   },

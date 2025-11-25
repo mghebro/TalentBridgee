@@ -1,0 +1,325 @@
+<div class="landing-container">
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">
+          Transform Your <span class="gradient-text">Recruitment</span> Process
+        </h1>
+        <p class="hero-subtitle">
+          The universal HR platform connecting talented professionals with leading organizations
+          across all industries. Experience faster, fairer, and smarter hiring with comprehensive
+          testing and analytics.
+        </p>
+        <div class="hero-actions">
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="large"
+            class="hero-btn primary-btn"
+            [routerLink]="['/auth/register']"
+          >
+            <span nz-icon nzType="user-add" nzTheme="outline"></span>
+            Get Started Free
+          </button>
+          <button
+            nz-button
+            nzType="default"
+            nzSize="large"
+            class="hero-btn secondary-btn"
+            (click)="scrollToSection('how-it-works')"
+          >
+            <span nz-icon nzType="play-circle" nzTheme="outline"></span>
+            See How It Works
+          </button>
+        </div>
+        <div class="hero-tags">
+          <nz-tag [nzColor]="'blue'">
+            <span nz-icon nzType="check-circle" nzTheme="fill"></span>
+            No Credit Card Required
+          </nz-tag>
+          <nz-tag [nzColor]="'green'">
+            <span nz-icon nzType="safety" nzTheme="fill"></span>
+            GDPR Compliant
+          </nz-tag>
+          <nz-tag [nzColor]="'purple'">
+            <span nz-icon nzType="thunderbolt" nzTheme="fill"></span>
+            Setup in Minutes
+          </nz-tag>
+        </div>
+      </div>
+      <div class="hero-image">
+        <div class="hero-card floating">
+          <span nz-icon nzType="rocket" nzTheme="outline" class="hero-card-icon"></span>
+          <div class="hero-card-text">
+            <h4>Fast & Efficient</h4>
+            <p>Reduce hiring time by 50%</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-section">
+    <div class="container">
+      <div nz-row [nzGutter]="[24, 24]" [nzJustify]="'center'">
+        <div nz-col [nzXs]="12" [nzSm]="12" [nzMd]="6" *ngFor="let stat of stats">
+          <div class="stat-item">
+            <nz-statistic
+              [nzValue]="stat.value"
+              [nzSuffix]="stat.suffix"
+              [nzValueStyle]="{ color: '#1890ff', fontSize: '36px', fontWeight: 'bold' }"
+            >
+            </nz-statistic>
+            <p class="stat-label">{{ stat.label }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Why Choose TalentBridge?</h2>
+        <p class="section-subtitle">
+          Everything you need for modern recruitment in one powerful platform
+        </p>
+      </div>
+
+      <div nz-row [nzGutter]="[24, 24]">
+        <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" *ngFor="let feature of features">
+          <nz-card [nzHoverable]="true" class="feature-card">
+            <div class="feature-icon-wrapper" [style.background]="feature.color + '15'">
+              <span
+                nz-icon
+                [nzType]="feature.icon"
+                nzTheme="outline"
+                class="feature-icon"
+                [style.color]="feature.color"
+              ></span>
+            </div>
+            <h3 class="feature-title">{{ feature.title }}</h3>
+            <p class="feature-description">{{ feature.description }}</p>
+          </nz-card>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="test-types-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">6 Powerful Testing Formats</h2>
+        <p class="section-subtitle">Comprehensive assessment tools for every role and industry</p>
+      </div>
+
+      <div nz-row [nzGutter]="[16, 16]">
+        <div nz-col [nzXs]="12" [nzSm]="12" [nzMd]="8" [nzLg]="4" *ngFor="let test of testTypes">
+          <nz-card class="test-type-card" [nzHoverable]="true">
+            <div class="test-icon-circle">
+              <span nz-icon [nzType]="test.icon" nzTheme="outline"></span>
+            </div>
+            <h4 class="test-name">{{ test.name }}</h4>
+            <p class="test-description">{{ test.description }}</p>
+          </nz-card>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how-it-works-section" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">Simple steps to transform your hiring or job search</p>
+      </div>
+
+      <div class="role-tabs">
+        <button
+          class="role-tab"
+          [class.active]="activeTab === 'candidate'"
+          (click)="switchTab('candidate')"
+        >
+          <span nz-icon nzType="user" nzTheme="outline"></span>
+          For Job Seekers
+        </button>
+        <button
+          class="role-tab"
+          [class.active]="activeTab === 'employer'"
+          (click)="switchTab('employer')"
+        >
+          <span nz-icon nzType="bank" nzTheme="outline"></span>
+          For Employers
+        </button>
+      </div>
+
+      <div class="steps-container" *ngIf="activeTab === 'candidate'">
+        <div nz-row [nzGutter]="[24, 24]">
+          <div
+            nz-col
+            [nzXs]="24"
+            [nzSm]="12"
+            [nzMd]="6"
+            *ngFor="let step of candidateSteps; let i = index"
+          >
+            <div class="step-card">
+              <div class="step-number">{{ i + 1 }}</div>
+              <div class="step-icon-wrapper">
+                <span nz-icon [nzType]="step.icon" nzTheme="outline" class="step-icon"></span>
+              </div>
+              <h3 class="step-title">{{ step.title }}</h3>
+              <p class="step-description">{{ step.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="steps-container" *ngIf="activeTab === 'employer'">
+        <div nz-row [nzGutter]="[24, 24]">
+          <div
+            nz-col
+            [nzXs]="24"
+            [nzSm]="12"
+            [nzMd]="6"
+            *ngFor="let step of employerSteps; let i = index"
+          >
+            <div class="step-card">
+              <div class="step-number">{{ i + 1 }}</div>
+              <div class="step-icon-wrapper">
+                <span nz-icon [nzType]="step.icon" nzTheme="outline" class="step-icon"></span>
+              </div>
+              <h3 class="step-title">{{ step.title }}</h3>
+              <p class="step-description">{{ step.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Trusted by Thousands</h2>
+        <p class="section-subtitle">See what our users say about TalentBridge</p>
+      </div>
+
+      <div nz-row [nzGutter]="[24, 24]">
+        <div nz-col [nzXs]="24" [nzMd]="8" *ngFor="let testimonial of testimonials">
+          <nz-card class="testimonial-card">
+            <div class="testimonial-header">
+              <div class="testimonial-avatar">{{ testimonial.avatar }}</div>
+              <div class="testimonial-info">
+                <h4 class="testimonial-name">{{ testimonial.name }}</h4>
+                <p class="testimonial-role">{{ testimonial.role }}</p>
+                <p class="testimonial-company">{{ testimonial.company }}</p>
+              </div>
+            </div>
+            <div class="testimonial-rating">
+              <span
+                nz-icon
+                nzType="star"
+                nzTheme="fill"
+                *ngFor="let star of [1, 2, 3, 4, 5]"
+                class="star-icon"
+              ></span>
+            </div>
+            <p class="testimonial-comment">"{{ testimonial.comment }}"</p>
+          </nz-card>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="vacancies-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Latest Opportunities</h2>
+        <p class="section-subtitle">Start your journey with these recent vacancies</p>
+      </div>
+
+      <div nz-row [nzGutter]="[24, 24]">
+        <div nz-col [nzXs]="24" [nzMd]="12" *ngFor="let vacancy of recentVacancies">
+          <nz-card class="vacancy-card" [nzHoverable]="true">
+            <div class="vacancy-header">
+              <h3 class="vacancy-title">{{ vacancy.title }}</h3>
+              <nz-tag [nzColor]="'blue'">{{ vacancy.type }}</nz-tag>
+            </div>
+            <div class="vacancy-company">
+              <span nz-icon nzType="bank" nzTheme="outline"></span>
+              {{ vacancy.company }}
+            </div>
+            <div class="vacancy-details">
+              <div class="vacancy-detail">
+                <span nz-icon nzType="environment" nzTheme="outline"></span>
+                {{ vacancy.location }}
+              </div>
+              <div class="vacancy-detail">
+                <span nz-icon nzType="dollar" nzTheme="outline"></span>
+                {{ vacancy.salary }}
+              </div>
+            </div>
+            <div class="vacancy-footer">
+              <div class="vacancy-meta">
+                <span class="vacancy-date">{{ vacancy.postedDate }}</span>
+                <span class="vacancy-applicants">
+                  <span nz-icon nzType="user" nzTheme="outline"></span>
+                  {{ vacancy.applicants }} applicants
+                </span>
+              </div>
+              <button
+                nz-button
+                nzType="primary"
+                nzSize="small"
+                [routerLink]="['/vacancies', vacancy.id]"
+              >
+                View Details
+              </button>
+            </div>
+          </nz-card>
+        </div>
+      </div>
+
+      <div class="view-all-btn-wrapper">
+        <button nz-button nzType="default" nzSize="large" [routerLink]="['/vacancies']">
+          View All Vacancies
+          <span nz-icon nzType="arrow-right" nzTheme="outline"></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content">
+        <h2 class="cta-title">Ready to Transform Your Hiring?</h2>
+        <p class="cta-text">
+          Join thousands of organizations and candidates using TalentBridge to make better hiring
+          decisions.
+        </p>
+        <div class="cta-buttons">
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="large"
+            class="cta-btn"
+            [routerLink]="['/auth/register']"
+          >
+            <span nz-icon nzType="rocket" nzTheme="outline"></span>
+            Start Free Trial
+          </button>
+          <button
+            nz-button
+            nzType="default"
+            nzSize="large"
+            class="cta-btn secondary"
+            [routerLink]="['/contact']"
+          >
+            <span nz-icon nzType="phone" nzTheme="outline"></span>
+            Contact Sales
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

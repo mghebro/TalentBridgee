@@ -1,0 +1,185 @@
+<div class="about-us-container">
+  
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-header">
+        <span nz-icon nzType="bank" nzTheme="outline" class="hero-icon"></span>
+        <h1 class="hero-title">TalentBridge</h1>
+      </div>
+      <p class="hero-subtitle">
+        Transforming recruitment with intelligent technology, objective assessments, and seamless experiences for every industry.
+      </p>
+    </div>
+  </div>
+
+  <div class="stats-section">
+    <div nz-row [nzGutter]="[16, 16]">
+      <div nz-col [nzXs]="12" [nzSm]="12" [nzMd]="6" *ngFor="let stat of stats">
+        <nz-card class="stat-card" [nzHoverable]="true">
+          <nz-statistic 
+            [nzValue]="stat.number" 
+            [nzTitle]="stat.label"
+            [nzValueStyle]="{ color: '#1890ff', fontSize: '32px', fontWeight: 'bold' }">
+          </nz-statistic>
+          <p class="stat-subtext">{{ stat.subtext }}</p>
+        </nz-card>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    
+    <section class="content-section">
+      <div class="section-header">
+        <span nz-icon nzType="bank" nzTheme="outline" class="section-icon"></span>
+        <h2 class="section-title">Who We Are</h2>
+      </div>
+      <nz-card [nzBordered]="true" class="content-card">
+        <p class="text-content">
+          TalentBridge is a universal HR management and recruitment platform designed to transform how organizations discover, evaluate, and hire exceptional talent. Built with modern technology and a deep understanding of recruitment challenges across industries, we serve schools, clinics, companies, government agencies, and NGOs with equal excellence.
+        </p>
+        <p class="text-content">
+          We believe that finding the right people shouldn't be complicated, expensive, or biased. That's why we've created a platform that combines sophisticated assessment tools with intuitive design, making professional recruitment accessible to organizations of every size.
+        </p>
+      </nz-card>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header">
+        <span nz-icon nzType="bulb" nzTheme="outline" class="section-icon"></span>
+        <h2 class="section-title">What We Do</h2>
+      </div>
+      <nz-card [nzBordered]="true" class="content-card">
+        <p class="text-content mb-large">
+          We provide a comprehensive web platform that streamlines the entire hiring journey—from posting vacancies to evaluating candidates through sophisticated online assessments. Our system features intelligent <strong class="highlight">six-format testing capabilities</strong>, automated scoring with manual review options, real-time communication tools, and powerful analytics that help organizations make data-driven hiring decisions.
+        </p>
+        <div nz-row [nzGutter]="16">
+          <div nz-col [nzXs]="24" [nzMd]="12">
+            <nz-card class="feature-card employer-card">
+              <div class="feature-content">
+                <span nz-icon nzType="check-circle" nzTheme="fill" class="feature-icon"></span>
+                <div>
+                  <h4 class="feature-title">For Employers</h4>
+                  <p class="feature-text">Post vacancies, create custom tests, review applications, and communicate with candidates—all in one place.</p>
+                </div>
+              </div>
+            </nz-card>
+          </div>
+          <div nz-col [nzXs]="24" [nzMd]="12">
+            <nz-card class="feature-card candidate-card">
+              <div class="feature-content">
+                <span nz-icon nzType="check-circle" nzTheme="fill" class="feature-icon"></span>
+                <div>
+                  <h4 class="feature-title">For Candidates</h4>
+                  <p class="feature-text">Build rich profiles, discover opportunities, take standardized assessments, and track your applications seamlessly.</p>
+                </div>
+              </div>
+            </nz-card>
+          </div>
+        </div>
+      </nz-card>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header">
+        <span nz-icon nzType="aim" nzTheme="outline" class="section-icon"></span>
+        <h2 class="section-title">The Problem We Solve</h2>
+      </div>
+      <nz-card [nzBordered]="true" class="content-card problem-card">
+        <p class="text-content">
+          Organizations across Georgia and beyond face mounting challenges in talent acquisition. Traditional hiring methods are time-consuming, expensive, and often subjective. Physical interviews limit candidate pools. Paper-based testing lacks standardization. Managing hundreds of applications becomes overwhelming without proper tools.
+        </p>
+        <p class="text-content">
+          Small businesses struggle without dedicated HR departments. Government agencies need transparent, accountable hiring processes. The cost of poor hiring decisions extends far beyond wasted time—it includes training expenses, low productivity, and high turnover rates.
+        </p>
+        <nz-card class="solution-highlight">
+          <p class="solution-text">
+            <span nz-icon nzType="check-circle" nzTheme="fill" style="color: #1890ff; margin-right: 8px;"></span>
+            TalentBridge eliminates these barriers by providing enterprise-grade recruitment tools at accessible prices, enabling objective evaluation, and ensuring every qualified candidate has a fair chance.
+          </p>
+        </nz-card>
+      </nz-card>
+    </section>
+
+    <section class="content-section">
+      <div nz-row [nzGutter]="16">
+        <div nz-col [nzXs]="24" [nzMd]="12">
+          <nz-card class="mission-card">
+            <div class="mission-header">
+              <span nz-icon nzType="aim" nzTheme="outline" class="mission-icon"></span>
+              <h2 class="mission-title">Our Mission</h2>
+            </div>
+            <p class="mission-text">
+              To democratize professional recruitment by providing world-class HR technology that's accessible, objective, and effective for organizations of all sizes across every industry. We're committed to making hiring faster, fairer, and more data-driven.
+            </p>
+          </nz-card>
+        </div>
+        <div nz-col [nzXs]="24" [nzMd]="12">
+          <nz-card class="vision-card">
+            <div class="vision-header">
+              <span nz-icon nzType="eye" nzTheme="outline" class="vision-icon"></span>
+              <h2 class="vision-title">Our Vision</h2>
+            </div>
+            <p class="vision-text">
+              To become the leading HR platform in Georgia and expand across neighboring countries and global markets, where every organization has the tools to find their perfect talent match, and every candidate experiences a transparent, respectful hiring journey.
+            </p>
+          </nz-card>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header">
+        <span nz-icon nzType="heart" nzTheme="outline" class="section-icon"></span>
+        <h2 class="section-title">Our Core Values</h2>
+      </div>
+      <div nz-row [nzGutter]="16">
+        <div nz-col [nzXs]="24" [nzMd]="12" *ngFor="let value of values">
+          <nz-card [nzHoverable]="true" class="value-card">
+            <div class="value-content">
+              <div class="value-icon-wrapper">
+                <span nz-icon [nzType]="value.icon" nzTheme="outline" class="value-icon"></span>
+              </div>
+              <div class="value-text">
+                <h3 class="value-title">{{ value.title }}</h3>
+                <p class="value-description">{{ value.description }}</p>
+              </div>
+            </div>
+          </nz-card>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-header">
+        <span nz-icon nzType="bulb" nzTheme="outline" class="section-icon"></span>
+        <h2 class="section-title">Our Story</h2>
+      </div>
+      <nz-card [nzBordered]="true" class="content-card story-card">
+        <p class="text-content">
+          TalentBridge was born from a simple observation: talented individuals were being overlooked, and organizations were struggling to identify the right candidates. Traditional recruitment processes favored those with connections over those with competence. Testing was inconsistent. Feedback was rare. The entire system needed reimagining.
+        </p>
+        <p class="text-content">
+          We set out to build something different—a platform where skills speak louder than resumes, where every candidate gets objective evaluation, and where organizations of all sizes have access to professional-grade recruitment tools. Starting with the Georgian market, we've designed TalentBridge to understand local needs while maintaining global standards.
+        </p>
+        <p class="text-content">
+          Today, we're proud to offer a system that includes comprehensive testing (multiple choice, essays, coding challenges, and more), complete audit trails for transparency, built-in communication tools, and analytics that help organizations continuously improve their hiring processes.
+        </p>
+      </nz-card>
+    </section>
+
+    <section class="cta-section">
+      <nz-card class="cta-card">
+        <h2 class="cta-title">Join Us in Transforming Recruitment</h2>
+        <p class="cta-text">
+          Whether you're building your dream team or searching for your next opportunity, TalentBridge is here to make the journey transparent, efficient, and rewarding for everyone involved.
+        </p>
+        <button nz-button nzType="primary" nzSize="large" class="cta-button">
+          Get Started Today
+          <span nz-icon nzType="arrow-right" nzTheme="outline"></span>
+        </button>
+      </nz-card>
+    </section>
+
+  </div>
+</div>
