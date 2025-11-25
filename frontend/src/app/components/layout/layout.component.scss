@@ -1,10 +1,23 @@
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$dark-blue: #0f172a;
+$light-blue: #60a5fa;
+$grey-50: #f8fafc;
+$grey-100: #f1f5f9;
+$grey-200: #e2e8f0;
+$grey-300: #cbd5e1;
+$grey-600: #475569;
+$grey-700: #334155;
+$grey-800: #1e293b;
+$grey-900: #0f172a;
+
 :host {
-  color: var(--text-color);
+  color: $grey-900;
 }
 
 .layout {
   min-height: 100vh;
-  background: var(--layout-bg);
+  background: $grey-50;
   transition: background 0.3s ease;
 }
 
@@ -14,12 +27,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 nz-header {
-  background: var(--header-bg);
+  background: white;
   padding: 0;
   transition: background 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .trigger {
@@ -28,13 +48,15 @@ nz-header {
   padding: 0 24px;
   cursor: pointer;
   transition: color 0.3s;
+  color: $grey-700;
 }
 
 .trigger:hover {
-  color: var(--accent-color);
+  color: $secondary-blue;
 }
 
 .app-header {
+  border-bottom: 2px solid $primary-blue;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -46,6 +68,35 @@ nz-header {
   display: flex;
   align-items: center;
   gap: 16px;
+
+  a {
+    color: $grey-700;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-weight: 500;
+
+    &:hover {
+      color: $secondary-blue;
+    }
+  }
+
+  // Dropdown link styling
+  a[nz-dropdown] {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+
+    i[nz-icon] {
+      font-size: 16px;
+    }
+
+    &:hover {
+      background: $grey-100;
+    }
+  }
 }
 
 .theme-toggle {
@@ -53,31 +104,42 @@ nz-header {
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: var(--text-color-muted);
+  color: $grey-600;
 }
 
 .login-link,
 .register-link {
-  color: var(--text-color);
+  color: $grey-700;
   text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+
+  // &:hover {
+  //   color: $secondary-blue;
+  //   background: $grey-100;
+  // }
 }
 
-.login-link:hover,
-.register-link:hover {
-  color: var(--accent-color);
-}
+// .register-link {
+//   background: $secondary-blue;
+//   color: white;
+
+//   &:hover {
+//     background: $light-blue;
+//     color: white;
+//   }
 
 nz-content {
-  margin: 24px 16px;
   padding: 24px;
-  background: var(--content-bg);
+  background: $grey-50;
   min-height: 280px;
   transition: background 0.3s ease, color 0.3s ease;
 }
 
 .inner-content {
-  padding: 24px;
-  background: var(--content-bg);
+  background: $grey-50;
   min-height: 360px;
   transition: background 0.3s ease, color 0.3s ease;
 }
@@ -87,8 +149,9 @@ nz-content {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid var(--border-color-split, #303030);
+  border-bottom: 1px solid $grey-700;
   margin-bottom: 8px;
+  background: $dark-blue;
 }
 
 .mobile-layout .app-header {
@@ -97,4 +160,127 @@ nz-content {
 
 .mobile-layout .trigger {
   padding: 0;
+}
+
+// Sidebar styling
+::ng-deep {
+  .ant-layout-sider {
+    background: $dark-blue;
+
+    .ant-menu-dark {
+      background: $dark-blue;
+
+      .ant-menu-item,
+      .ant-menu-submenu-title {
+        color: rgba(255, 255, 255, 0.85);
+
+        &:hover {
+          background: $primary-blue;
+          color: white;
+        }
+
+        &.ant-menu-item-selected {
+          background: $secondary-blue;
+          color: white;
+        }
+      }
+
+      .ant-menu-submenu-open {
+        > .ant-menu-submenu-title {
+          background: $primary-blue;
+        }
+      }
+
+      .ant-menu-sub {
+        background: rgba(0, 0, 0, 0.2);
+
+        .ant-menu-item {
+          &:hover {
+            background: $primary-blue;
+          }
+
+          &.ant-menu-item-selected {
+            background: $secondary-blue;
+          }
+        }
+      }
+    }
+
+    .ant-layout-sider-trigger {
+      background: $grey-900;
+      border-top: 1px solid $grey-800;
+
+      &:hover {
+        background: $grey-800;
+      }
+    }
+  }
+
+  // Drawer styling
+  .ant-drawer-body {
+    padding: 0;
+    background: $dark-blue;
+
+    .drawer-content {
+      background: $dark-blue;
+
+      .ant-menu-dark {
+        background: $dark-blue;
+      }
+    }
+  }
+
+  .ant-drawer-header {
+    background: $dark-blue;
+    border-bottom: 1px solid $grey-700;
+
+    .ant-drawer-close {
+      color: rgba(255, 255, 255, 0.85);
+
+      &:hover {
+        color: white;
+      }
+    }
+
+    .ant-drawer-title {
+      color: white;
+    }
+  }
+
+  // Dropdown menu styling
+  .ant-dropdown-menu {
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    .ant-dropdown-menu-item {
+      &:hover {
+        background: $grey-100;
+        color: $secondary-blue;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .right-content {
+    gap: 8px;
+
+    .login-link,
+    .register-link {
+      padding: 6px 12px;
+      font-size: 14px;
+    }
+  }
+
+  nz-content {
+    padding: 16px;
+  }
+}
+.logo {
+  position: sticky;
+  top: 16px;
+}
+.nz-menu {
+  position: sticky;
+  top: 64px;
 }

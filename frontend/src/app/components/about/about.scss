@@ -1,14 +1,26 @@
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$dark-blue: #0f172a;
+$light-blue: #60a5fa;
+$grey-50: #f8fafc;
+$grey-100: #f1f5f9;
+$grey-200: #e2e8f0;
+$grey-300: #cbd5e1;
+$grey-600: #475569;
+$grey-700: #334155;
+$grey-800: #1e293b;
+$grey-900: #0f172a;
 
 .about-us-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8f4f8 50%, #f5f7fa 100%);
+  background: $grey-50;
 }
 
 .hero-section {
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  background: linear-gradient(135deg, $dark-blue 0%, $primary-blue 100%);
   color: white;
-  padding: 48px 24px;
-
+  padding: 60px 24px;
+  border-radius: 32px 32px 0 0;
   .hero-content {
     max-width: 1200px;
     margin: 0 auto;
@@ -27,9 +39,10 @@
 
   .hero-title {
     font-size: 48px;
-    font-weight: bold;
+    font-weight: 700;
     margin: 0;
     color: white;
+    letter-spacing: -0.02em;
 
     @media (max-width: 768px) {
       font-size: 36px;
@@ -38,7 +51,7 @@
 
   .hero-subtitle {
     font-size: 20px;
-    color: #e6f7ff;
+    color: rgba(255, 255, 255, 0.9);
     max-width: 800px;
     line-height: 1.6;
     margin: 0;
@@ -58,21 +71,32 @@
 
   .stat-card {
     text-align: center;
-    transition: transform 0.3s ease;
+    transition: all 0.2s ease;
+    border: 1px solid $grey-200;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
     &:hover {
       transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+      border-color: $grey-300;
     }
 
     ::ng-deep .ant-statistic-title {
       font-weight: 600;
       margin-bottom: 8px;
+      color: $grey-700;
+    }
+
+    ::ng-deep .ant-statistic-content-value {
+      color: $secondary-blue;
     }
   }
 
   .stat-subtext {
     font-size: 12px;
-    color: #8c8c8c;
+    color: $grey-600;
     margin-top: 8px;
     margin-bottom: 0;
   }
@@ -96,14 +120,15 @@
 
   .section-icon {
     font-size: 32px;
-    color: #1890ff;
+    color: $secondary-blue;
   }
 
   .section-title {
     font-size: 32px;
-    font-weight: bold;
-    color: #262626;
+    font-weight: 700;
+    color: $grey-900;
     margin: 0;
+    letter-spacing: -0.02em;
 
     @media (max-width: 768px) {
       font-size: 24px;
@@ -112,11 +137,14 @@
 }
 
 .content-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid $grey-200;
+  border-radius: 8px;
+  background: white;
 
   .text-content {
     font-size: 16px;
-    color: #595959;
+    color: $grey-600;
     line-height: 1.8;
     margin-bottom: 16px;
 
@@ -130,14 +158,15 @@
   }
 
   .highlight {
-    color: #1890ff;
+    color: $secondary-blue;
     font-weight: 600;
   }
 }
 
 .feature-card {
-  background: #f0f5ff;
-  border: none;
+  background: $grey-50;
+  border: 1px solid $grey-200;
+  border-radius: 8px;
   height: 100%;
 
   .feature-content {
@@ -148,37 +177,39 @@
 
   .feature-icon {
     font-size: 24px;
-    color: #1890ff;
+    color: $secondary-blue;
     flex-shrink: 0;
   }
 
   .feature-title {
     font-size: 18px;
     font-weight: 600;
-    color: #262626;
+    color: $grey-900;
     margin-bottom: 8px;
   }
 
   .feature-text {
     font-size: 14px;
-    color: #595959;
+    color: $grey-600;
     margin: 0;
     line-height: 1.6;
   }
 }
 
 .problem-card {
-  background: linear-gradient(135deg, #fff1f0 0%, #fff7e6 100%);
-  border: 1px solid #ffa39e;
+  background: white;
+  border: 1px solid $grey-200;
+  border-radius: 8px;
 
   .solution-highlight {
     margin-top: 24px;
-    background: white;
-    border-left: 4px solid #1890ff;
+    background: $grey-50;
+    border-left: 4px solid $secondary-blue;
+    border-radius: 6px;
 
     .solution-text {
       font-weight: 600;
-      color: #262626;
+      color: $grey-900;
       margin: 0;
       display: flex;
       align-items: center;
@@ -191,6 +222,7 @@
   height: 100%;
   color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
 
   ::ng-deep .ant-card-body {
     padding: 32px;
@@ -198,7 +230,7 @@
 }
 
 .mission-card {
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  background: linear-gradient(135deg, $primary-blue 0%, $dark-blue 100%);
 
   .mission-header,
   .vision-header {
@@ -214,21 +246,21 @@
 
   .mission-title {
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 700;
     color: white;
     margin: 0;
   }
 
   .mission-text {
     font-size: 16px;
-    color: #e6f7ff;
+    color: rgba(255, 255, 255, 0.9);
     line-height: 1.8;
     margin: 0;
   }
 }
 
 .vision-card {
-  background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+  background: linear-gradient(135deg, $grey-800 0%, $grey-900 100%);
 
   .vision-icon {
     font-size: 32px;
@@ -236,14 +268,14 @@
 
   .vision-title {
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 700;
     color: white;
     margin: 0;
   }
 
   .vision-text {
     font-size: 16px;
-    color: #f9f0ff;
+    color: rgba(255, 255, 255, 0.9);
     line-height: 1.8;
     margin: 0;
   }
@@ -251,10 +283,16 @@
 
 .value-card {
   height: 100%;
-  transition: box-shadow 0.3s ease;
+  transition: all 0.2s ease;
+  border: 1px solid $grey-200;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+    border-color: $grey-300;
+    transform: translateY(-2px);
   }
 
   .value-content {
@@ -266,8 +304,8 @@
   .value-icon-wrapper {
     width: 48px;
     height: 48px;
-    background: #f0f5ff;
-    border-radius: 8px;
+    background: $grey-100;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -276,7 +314,7 @@
 
   .value-icon {
     font-size: 24px;
-    color: #1890ff;
+    color: $secondary-blue;
   }
 
   .value-text {
@@ -285,32 +323,34 @@
 
   .value-title {
     font-size: 20px;
-    font-weight: bold;
-    color: #262626;
+    font-weight: 600;
+    color: $grey-900;
     margin-bottom: 8px;
   }
 
   .value-description {
     font-size: 14px;
-    color: #595959;
+    color: $grey-600;
     margin: 0;
     line-height: 1.6;
   }
 }
 
 .story-card {
-  background: linear-gradient(135deg, #f0f5ff 0%, #d6e4ff 100%);
-  border: 1px solid #91d5ff;
+  background: white;
+  border: 1px solid $grey-200;
+  border-radius: 8px;
 }
 
 .cta-section {
   margin-bottom: 0;
 
   .cta-card {
-    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
-    box-shadow: 0 8px 24px rgba(24, 144, 255, 0.3);
+    background: linear-gradient(135deg, $dark-blue 0%, $primary-blue 100%);
+    box-shadow: 0 8px 24px rgba(30, 58, 138, 0.2);
     text-align: center;
     border: none;
+    border-radius: 8px;
 
     ::ng-deep .ant-card-body {
       padding: 48px 24px;
@@ -319,9 +359,10 @@
 
   .cta-title {
     font-size: 32px;
-    font-weight: bold;
+    font-weight: 700;
     color: white;
     margin-bottom: 16px;
+    letter-spacing: -0.02em;
 
     @media (max-width: 768px) {
       font-size: 24px;
@@ -330,7 +371,7 @@
 
   .cta-text {
     font-size: 18px;
-    color: #e6f7ff;
+    color: rgba(255, 255, 255, 0.9);
     max-width: 800px;
     margin: 0 auto 32px;
     line-height: 1.8;
@@ -345,6 +386,16 @@
     padding: 0 32px;
     font-size: 16px;
     font-weight: 600;
+    background: white;
+    color: $primary-blue;
+    border: none;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $grey-100;
+      transform: translateY(-2px);
+    }
 
     ::ng-deep span[nz-icon] {
       margin-left: 8px;
@@ -354,7 +405,7 @@
 
 @media (max-width: 768px) {
   .hero-section {
-    padding: 32px 16px;
+    padding: 40px 16px;
   }
 
   .stats-section {
@@ -372,5 +423,18 @@
 
   .section-header {
     margin-bottom: 16px;
+  }
+
+  .hero-title {
+    font-size: 32px;
+  }
+
+  .mission-card,
+  .vision-card {
+    margin-bottom: 16px;
+
+    ::ng-deep .ant-card-body {
+      padding: 24px;
+    }
   }
 }

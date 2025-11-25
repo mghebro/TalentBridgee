@@ -1,48 +1,61 @@
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$dark-blue: #0f172a;
+$light-blue: #60a5fa;
+$grey-50: #f8fafc;
+$grey-100: #f1f5f9;
+$grey-200: #e2e8f0;
+$grey-300: #cbd5e1;
+$grey-600: #475569;
+$grey-700: #334155;
+$grey-800: #1e293b;
+$grey-900: #0f172a;
 
 .contact-us-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8f4f8 50%, #f5f7fa 100%);
+  background: $grey-50;
 }
 
 .hero-section {
-  background: linear-gradient(135deg, #13c2c2 0%, #08979c 100%);
+  background: linear-gradient(135deg, $dark-blue 0%, $primary-blue 100%);
   color: white;
-  padding: 48px 24px;
-  
+  padding: 60px 24px;
+  border-radius: 32px;
   .hero-content {
     max-width: 1200px;
     margin: 0 auto;
   }
-  
+
   .hero-header {
     display: flex;
     align-items: center;
     gap: 16px;
     margin-bottom: 16px;
   }
-  
+
   .hero-icon {
     font-size: 40px;
   }
-  
+
   .hero-title {
     font-size: 48px;
-    font-weight: bold;
+    font-weight: 700;
     margin: 0;
     color: white;
-    
+    letter-spacing: -0.02em;
+
     @media (max-width: 768px) {
       font-size: 36px;
     }
   }
-  
+
   .hero-subtitle {
     font-size: 18px;
-    color: #e6fffb;
+    color: rgba(255, 255, 255, 0.9);
     max-width: 700px;
     line-height: 1.6;
     margin: 0;
-    
+
     @media (max-width: 768px) {
       font-size: 16px;
     }
@@ -53,49 +66,81 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 48px 24px;
-  
+
   @media (max-width: 768px) {
     padding: 24px 16px;
   }
 }
 
 .contact-form-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid $grey-200;
+  border-radius: 8px;
   margin-bottom: 24px;
-  
+  background: white;
+
   ::ng-deep {
     .ant-card-head {
-      background: linear-gradient(135deg, #f0f5ff 0%, #e6f7ff 100%);
-      border-bottom: 2px solid #1890ff;
-      
+      background: $grey-50;
+      border-bottom: 1px solid $grey-200;
+      border-radius: 8px 8px 0 0;
+
       .ant-card-head-title {
         font-size: 20px;
         font-weight: 600;
-        color: #262626;
+        color: $grey-900;
       }
     }
-    
+
     .ant-form-item-label > label {
       font-weight: 500;
-      color: #262626;
+      color: $grey-900;
     }
-    
+
     .ant-input,
     .ant-input-number,
     .ant-select-selector {
       border-radius: 6px;
+      border-color: $grey-300;
+
+      &:hover {
+        border-color: $secondary-blue;
+      }
+
+      &:focus {
+        border-color: $secondary-blue;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+      }
     }
-    
+
     textarea.ant-input {
       border-radius: 6px;
+      border-color: $grey-300;
+
+      &:hover {
+        border-color: $secondary-blue;
+      }
+
+      &:focus {
+        border-color: $secondary-blue;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+      }
     }
-    
+
     .ant-btn-primary {
       height: 48px;
       font-size: 16px;
       font-weight: 600;
       border-radius: 6px;
-      
+      background: $secondary-blue;
+      border: none;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: $light-blue;
+        transform: translateY(-1px);
+      }
+
       span[nz-icon] {
         margin-right: 8px;
       }
@@ -104,80 +149,86 @@
 }
 
 .info-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid $grey-200;
+  border-radius: 8px;
   margin-bottom: 24px;
-  
+  background: white;
+
   ::ng-deep .ant-card-head {
-    background: linear-gradient(135deg, #fff7e6 0%, #fffbe6 100%);
-    border-bottom: 2px solid #faad14;
-    
+    background: $grey-50;
+    border-bottom: 1px solid $grey-200;
+    border-radius: 8px 8px 0 0;
+
     .ant-card-head-title {
       font-size: 18px;
       font-weight: 600;
-      color: #262626;
+      color: $grey-900;
     }
   }
-  
+
   .contact-info-list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
   }
-  
+
   .contact-info-item {
     display: flex;
     align-items: flex-start;
     gap: 16px;
-    padding: 12px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-    
+    padding: 16px;
+    border-radius: 6px;
+    border: 1px solid $grey-200;
+    transition: all 0.2s ease;
+
     &:hover {
-      background-color: #f5f5f5;
+      background-color: $grey-50;
+      border-color: $grey-300;
     }
   }
-  
+
   .info-icon-wrapper {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #13c2c2 0%, #08979c 100%);
-    border-radius: 8px;
+    width: 44px;
+    height: 44px;
+    background: $primary-blue;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
   }
-  
+
   .info-icon {
     font-size: 20px;
     color: white;
   }
-  
+
   .info-content {
     flex: 1;
   }
-  
+
   .info-title {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
-    color: #8c8c8c;
-    margin: 0 0 4px 0;
+    color: $grey-600;
+    margin: 0 0 6px 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-  
+
   .info-text {
-    font-size: 16px;
-    color: #262626;
+    font-size: 15px;
+    color: $grey-900;
     margin: 0;
-    
+
     &.link {
-      color: #1890ff;
+      color: $secondary-blue;
       text-decoration: none;
-      transition: color 0.3s ease;
-      
+      transition: color 0.2s ease;
+
       &:hover {
-        color: #096dd9;
+        color: $primary-blue;
         text-decoration: underline;
       }
     }
@@ -185,97 +236,99 @@
 }
 
 .social-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid $grey-200;
+  border-radius: 8px;
   margin-bottom: 24px;
-  
+  background: white;
+
   ::ng-deep .ant-card-head {
-    background: linear-gradient(135deg, #f9f0ff 0%, #efdbff 100%);
-    border-bottom: 2px solid #722ed1;
-    
+    background: $grey-50;
+    border-bottom: 1px solid $grey-200;
+    border-radius: 8px 8px 0 0;
+
     .ant-card-head-title {
       font-size: 18px;
       font-weight: 600;
-      color: #262626;
+      color: $grey-900;
     }
   }
-  
+
   .social-buttons {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
   }
-  
+
   .social-btn {
     width: 48px;
     height: 48px;
-    border-radius: 8px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
-    
+    transition: all 0.2s ease;
+    border: 2px solid $grey-300;
+    background: white;
+
     span[nz-icon] {
-      font-size: 24px;
+      font-size: 22px;
     }
-    
+
     &.linkedin {
-      border-color: #0077b5;
-      
       span[nz-icon] {
         color: #0077b5;
       }
-      
+
       &:hover {
         background: #0077b5;
-        
+        border-color: #0077b5;
+
         span[nz-icon] {
           color: white;
         }
       }
     }
-    
+
     &.facebook {
-      border-color: #1877f2;
-      
       span[nz-icon] {
         color: #1877f2;
       }
-      
+
       &:hover {
         background: #1877f2;
-        
+        border-color: #1877f2;
+
         span[nz-icon] {
           color: white;
         }
       }
     }
-    
+
     &.twitter {
-      border-color: #1da1f2;
-      
       span[nz-icon] {
         color: #1da1f2;
       }
-      
+
       &:hover {
         background: #1da1f2;
-        
+        border-color: #1da1f2;
+
         span[nz-icon] {
           color: white;
         }
       }
     }
-    
+
     &.github {
-      border-color: #333;
-      
       span[nz-icon] {
         color: #333;
       }
-      
+
       &:hover {
         background: #333;
-        
+        border-color: #333;
+
         span[nz-icon] {
           color: white;
         }
@@ -285,120 +338,126 @@
 }
 
 .response-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
-  background: linear-gradient(135deg, #e6fffb 0%, #b5f5ec 100%);
-  border: 1px solid #87e8de;
-  
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid $grey-200;
+  border-radius: 8px;
+  background: white;
+
   .response-content {
     display: flex;
     align-items: flex-start;
     gap: 16px;
   }
-  
+
   .response-icon {
     font-size: 32px;
-    color: #13c2c2;
+    color: $secondary-blue;
     flex-shrink: 0;
   }
-  
+
   .response-title {
     font-size: 16px;
     font-weight: 600;
-    color: #262626;
+    color: $grey-900;
     margin: 0 0 8px 0;
   }
-  
+
   .response-text {
     font-size: 14px;
-    color: #595959;
+    color: $grey-600;
     margin: 0;
     line-height: 1.6;
   }
 }
 
 .faq-section {
-  margin-top: 24px;
+  margin-top: 32px;
   margin-bottom: 32px;
-  
+
   .faq-card {
     height: 100%;
-    transition: all 0.3s ease;
-    
+    transition: all 0.2s ease;
+    border: 1px solid $grey-200;
+    border-radius: 8px;
+    background: white;
+
     &:hover {
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.08);
       transform: translateY(-2px);
+      border-color: $grey-300;
     }
   }
-  
+
   .faq-question {
     font-size: 16px;
     font-weight: 600;
-    color: #262626;
+    color: $grey-900;
     margin-bottom: 12px;
     display: flex;
     align-items: flex-start;
-    gap: 8px;
+    gap: 10px;
   }
-  
+
   .faq-icon {
-    color: #1890ff;
+    color: $secondary-blue;
     font-size: 18px;
     flex-shrink: 0;
     margin-top: 2px;
   }
-  
+
   .faq-answer {
     font-size: 14px;
-    color: #595959;
+    color: $grey-600;
     line-height: 1.7;
     margin: 0;
-    padding-left: 26px;
+    padding-left: 28px;
   }
 }
 
 .help-card {
-  background: linear-gradient(135deg, #fff7e6 0%, #ffe7ba 100%);
-  border: 2px solid #ffd666;
-  box-shadow: 0 2px 8px rgba(250, 173, 20, 0.2);
-  
+  background: $grey-100;
+  border: 1px solid $grey-300;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
   .help-content {
     display: flex;
     align-items: flex-start;
     gap: 16px;
   }
-  
+
   .help-icon {
     font-size: 32px;
-    color: #faad14;
+    color: $secondary-blue;
     flex-shrink: 0;
   }
-  
+
   .help-text-wrapper {
     flex: 1;
   }
-  
+
   .help-title {
     font-size: 18px;
     font-weight: 600;
-    color: #262626;
+    color: $grey-900;
     margin: 0 0 8px 0;
   }
-  
+
   .help-text {
     font-size: 14px;
-    color: #595959;
+    color: $grey-600;
     margin: 0;
     line-height: 1.6;
   }
-  
+
   .help-link {
-    color: #1890ff;
+    color: $secondary-blue;
     font-weight: 500;
     text-decoration: none;
-    transition: color 0.3s ease;
-    
+    transition: color 0.2s ease;
+
     &:hover {
-      color: #096dd9;
+      color: $primary-blue;
       text-decoration: underline;
     }
   }
@@ -408,20 +467,32 @@
   .ant-divider-inner-text {
     font-size: 20px;
     font-weight: 600;
-    color: #262626;
+    color: $grey-900;
+  }
+
+  .ant-divider {
+    border-color: $grey-300;
   }
 }
 
 @media (max-width: 768px) {
   .hero-section {
-    padding: 32px 16px;
+    padding: 40px 16px;
   }
-  
+
+  .hero-title {
+    font-size: 32px;
+  }
+
   .social-buttons {
     justify-content: center;
   }
-  
+
   .faq-section {
-    margin-top: 16px;
+    margin-top: 24px;
+  }
+
+  .contact-info-item {
+    padding: 12px;
   }
 }

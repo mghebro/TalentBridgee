@@ -21,9 +21,19 @@
           <label nz-checkbox formControlName="remember">
             <span>Remember me</span>
           </label>
-          <a class="login-form-forgot" class="login-form-forgot" routerLink="/auth/forgot-password">Forgot password</a>
-          <button nz-button class="login-form-button" [nzType]="'primary'" [nzLoading]="isLoading" [disabled]="!loginForm.valid">Log in</button>
-          Or <a routerLink="/auth/register">register now!</a>
+          <a class="login-form-forgot" class="login-form-forgot" routerLink="/auth/forgot-password"
+            >Forgot password</a
+          >
+          <button
+            nz-button
+            class="login-form-button"
+            [nzType]="'primary'"
+            [nzLoading]="isLoading"
+            [disabled]="!loginForm.valid"
+          >
+            Log in
+          </button>
+          Dont Have Account? <a routerLink="/auth/register">register now!</a>
         </nz-form-control>
       </nz-form-item>
     </form>
