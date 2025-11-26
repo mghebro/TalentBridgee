@@ -5,11 +5,10 @@ using TalentBridge.Modules.Tests.DTOs.Responses;
 
 namespace TalentBridge.Modules.Tests.Profiles;
 
-public class TestsMapper : Profile
+public class TestsMapper : AutoMapper.Profile
 {
     public TestsMapper()
     {
-        // --- TEST ---
         CreateMap<CreateTestRequest, Test>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.Questions, opt => opt.Ignore())
@@ -17,7 +16,6 @@ public class TestsMapper : Profile
 
         CreateMap<Test, TestDetailsResponse>();
 
-        // --- QUESTION ---
         CreateMap<CreateQuestionRequest, Question>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.Test, opt => opt.Ignore())
@@ -25,20 +23,16 @@ public class TestsMapper : Profile
 
         CreateMap<Question, QuestionResponse>();
 
-        // --- QUESTION OPTION ---
         CreateMap<CreateQuestionOptionRequest, QuestionOption>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.OptionText, opt => opt.Ignore());
 
         CreateMap<QuestionOption, QuestionOptionResponse>();
 
-        // --- TEST SUBMISSION ---
         CreateMap<TestSubmission, TestSubmissionResponse>();
 
-        // --- SUBMISSION ANSWER ---
         CreateMap<SubmissionAnswer, SubmissionAnswerResponse>();
-
-        // --- TEST ASSIGNMENT ---
+    
         CreateMap<TestAssignment, TestAssignmentResponse>();
     }
 }

@@ -1,7 +1,236 @@
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$grey-50: #f8fafc;
+$grey-100: #f1f5f9;
+$grey-200: #e2e8f0;
+$grey-600: #475569;
+$grey-900: #0f172a;
+
 .test-player-container {
   padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+  
+  @media (max-width: 576px) {
+    padding: 12px;
+  }
 }
 
-nz-card {
+.loading-overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  
+  p {
+    margin-top: 16px;
+    font-size: 16px;
+    color: $grey-600;
+  }
+}
+
+.test-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: $grey-900;
+  margin-bottom: 12px;
+  
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
+  
+  @media (max-width: 576px) {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+}
+
+.test-description {
+  font-size: 16px;
+  color: $grey-600;
   margin-bottom: 24px;
+  line-height: 1.6;
+  
+  @media (max-width: 576px) {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+}
+
+.question-header {
+  background: $grey-100;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  
+  strong {
+    font-size: 14px;
+    color: $grey-900;
+  }
+  
+  @media (max-width: 576px) {
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    
+    strong {
+      font-size: 13px;
+    }
+  }
+}
+
+.question-card {
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  
+  @media (max-width: 576px) {
+    margin-bottom: 16px;
+    border-radius: 12px;
+    margin-left: -12px;
+    margin-right: -12px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  ::ng-deep .ant-card-body {
+    padding: 24px;
+    
+    @media (max-width: 576px) {
+      padding: 16px;
+    }
+  }
+}
+
+.card-header {
+  margin-bottom: 20px;
+  
+  @media (max-width: 576px) {
+    margin-bottom: 16px;
+  }
+}
+
+.question-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: $grey-900;
+  margin-bottom: 16px;
+  line-height: 1.5;
+  
+  @media (max-width: 576px) {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: $grey-50;
+  padding: 12px 16px;
+  border-radius: 8px;
+  
+  @media (max-width: 576px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  
+  .timer-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: $secondary-blue;
+    min-width: 60px;
+    
+    @media (max-width: 576px) {
+      font-size: 18px;
+      text-align: center;
+    }
+  }
+  
+  ::ng-deep .ant-progress {
+    flex: 1;
+    
+    @media (max-width: 576px) {
+      width: 100%;
+    }
+  }
+}
+
+.question-body {
+  ::ng-deep {
+    .ant-radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      
+      label {
+        padding: 12px 16px;
+        border: 1px solid $grey-200;
+        border-radius: 8px;
+        margin: 0;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          border-color: $secondary-blue;
+          background: rgba(59, 130, 246, 0.05);
+        }
+        
+        &.ant-radio-wrapper-checked {
+          border-color: $secondary-blue;
+          background: rgba(59, 130, 246, 0.1);
+        }
+        
+        @media (max-width: 576px) {
+          padding: 14px 12px;
+          font-size: 15px;
+        }
+      }
+      
+      &.disabled label {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+    }
+    
+    textarea.ant-input {
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 15px;
+      
+      @media (max-width: 576px) {
+        font-size: 16px;
+        padding: 12px;
+      }
+    }
+  }
+}
+
+.footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  
+  @media (max-width: 576px) {
+    justify-content: stretch;
+  }
+  
+  .submit-button {
+    min-width: 160px;
+    height: 48px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    
+    @media (max-width: 576px) {
+      width: 100%;
+      height: 50px;
+    }
+  }
 }

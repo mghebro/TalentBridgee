@@ -177,4 +177,58 @@ public class OrganizationsController : BaseApiController
 
         return Ok(result);
     }
+
+    [HttpPost("{id}/logo")]
+    [Authorize(Roles = $"{nameof(ROLES.HR_MANAGER)},{nameof(ROLES.ORGANIZATION_ADMIN)}")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadOrganizationLogo(int id, IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest(ServiceResult<string>.FailureResult("No file uploaded"));
+
+        var currentUserResponse = await GetCurrentUserIdAsync();
+        if (currentUserResponse.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(currentUserResponse.Status, 
+                ServiceResult<string>.FailureResult(currentUserResponse.Message));
+        }
+
+        var result = await _organizationServices.UploadOrganizationLogoAsync(id, file, currentUserResponse.Data);
+
+        if (!result.Success)
+        {
+            if (result.Errors.Any(e => e.Contains("not found")))
+                return NotFound(result);
+            if (result.Errors.Any(e => e.Contains("permission")))
+                return StatusCode(StatusCodes.Status403Forbidden, result);
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
+    [HttpDelete("{id}/logo")]
+    [Authorize(Roles = $"{nameof(ROLES.HR_MANAGER)},{nameof(ROLES.ORGANIZATION_ADMIN)}")]
+    public async Task<IActionResult> DeleteOrganizationLogo(int id)
+    {
+        var currentUserResponse = await GetCurrentUserIdAsync();
+        if (currentUserResponse.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(currentUserResponse.Status, 
+                ServiceResult<bool>.FailureResult(currentUserResponse.Message));
+        }
+
+        var result = await _organizationServices.DeleteOrganizationLogoAsync(id, currentUserResponse.Data);
+
+        if (!result.Success)
+        {
+            if (result.Errors.Any(e => e.Contains("not found")))
+                return NotFound(result);
+            if (result.Errors.Any(e => e.Contains("permission")))
+                return StatusCode(StatusCodes.Status403Forbidden, result);
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
 }

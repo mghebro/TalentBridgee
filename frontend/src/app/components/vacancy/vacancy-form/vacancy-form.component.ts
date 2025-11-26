@@ -73,7 +73,25 @@ export class VacancyFormComponent implements OnInit {
       this.vacancyService.getVacancyById(this.vacancyId!).subscribe({
         next: (vacancy) => {
           this.vacancy = vacancy;
-          this.form.patchValue(vacancy);
+          // Properly map the vacancy data to form
+          this.form.patchValue({
+            title: vacancy.title,
+            organizationId: vacancy.organizationId,
+            description: vacancy.description,
+            requirements: vacancy.requirements,
+            responsibilities: vacancy.responsibilities,
+            profession: vacancy.profession,
+            industry: vacancy.industry,
+            employmentType: vacancy.employmentType,
+            experienceLevel: vacancy.experienceLevel,
+            salaryMin: vacancy.salaryMin,
+            salaryMax: vacancy.salaryMax,
+            salaryCurrency: vacancy.salaryCurrency || 'GEL',
+            location: vacancy.location,
+            isRemote: vacancy.isRemote,
+            status: vacancy.status,
+            applicationDeadline: vacancy.applicationDeadline ? new Date(vacancy.applicationDeadline) : null,
+          });
           this.isLoading = false;
         },
         error: (error) => {

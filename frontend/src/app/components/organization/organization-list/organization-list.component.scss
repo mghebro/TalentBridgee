@@ -1,4 +1,104 @@
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$grey-50: #f8fafc;
+$grey-200: #e2e8f0;
+$grey-600: #475569;
+$grey-900: #0f172a;
+
 :host {
-  padding: 24px;
   display: block;
+  padding: 24px;
+  
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+  
+  @media (max-width: 576px) {
+    padding: 12px;
+  }
+}
+
+button[nz-button] {
+  @media (max-width: 576px) {
+    width: 100%;
+    height: 46px;
+    margin-bottom: 16px;
+  }
+}
+
+::ng-deep {
+  .ant-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+    background: white;
+    
+    @media (max-width: 768px) {
+      margin: 0 -16px;
+      padding: 0 16px;
+      border-radius: 0;
+    }
+    
+    @media (max-width: 576px) {
+      margin: 0 -12px;
+      padding: 0 12px;
+    }
+  }
+  
+  .ant-table {
+    min-width: 600px;
+    
+    @media (max-width: 768px) {
+      font-size: 13px;
+    }
+  }
+  
+  .ant-table-thead > tr > th {
+    white-space: nowrap;
+    background: $grey-50;
+    font-weight: 600;
+    
+    @media (max-width: 768px) {
+      padding: 10px 8px !important;
+    }
+  }
+  
+  .ant-table-tbody > tr > td {
+    @media (max-width: 768px) {
+      padding: 10px 8px !important;
+    }
+    
+    a {
+      color: $secondary-blue;
+      
+      &:hover {
+        color: $primary-blue;
+        text-decoration: underline;
+      }
+    }
+  }
+  
+  .ant-tag {
+    @media (max-width: 768px) {
+      font-size: 11px;
+      padding: 0 6px;
+    }
+  }
+  
+  .ant-divider-vertical {
+    @media (max-width: 576px) {
+      display: none;
+    }
+  }
+  
+  td:last-child {
+    white-space: nowrap;
+    
+    a {
+      @media (max-width: 576px) {
+        display: block;
+        padding: 4px 0;
+      }
+    }
+  }
 }

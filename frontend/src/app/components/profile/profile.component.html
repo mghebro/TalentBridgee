@@ -1,0 +1,490 @@
+<div class="profile-container">
+  <div *ngIf="isLoading" class="loading-container">
+    <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+  </div>
+
+  <div *ngIf="!isLoading && profile" class="profile-content">
+    <!-- Header Section -->
+    <div class="profile-header">
+      <div class="header-bg"></div>
+      <div class="header-content">
+        <div class="avatar-section">
+          <div class="avatar-wrapper">
+            <nz-avatar
+              [nzSize]="120"
+              [nzSrc]="getFileUrl(profile.profilePictureUrl) || ''"
+              [nzText]="profile.firstName.charAt(0) + profile.lastName.charAt(0)"
+              nzIcon="user"
+            ></nz-avatar>
+            <div class="avatar-overlay" *ngIf="!isUploadingAvatar">
+              <label class="upload-btn">
+                <span nz-icon nzType="camera" nzTheme="outline"></span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  (change)="onAvatarChange($event)"
+                  hidden
+                />
+              </label>
+              <button
+                *ngIf="profile.profilePictureUrl"
+                class="delete-btn"
+                (click)="deleteAvatar()"
+              >
+                <span nz-icon nzType="delete" nzTheme="outline"></span>
+              </button>
+            </div>
+            <div class="avatar-loading" *ngIf="isUploadingAvatar">
+              <nz-spin nzSimple></nz-spin>
+            </div>
+          </div>
+        </div>
+
+        <div class="user-info">
+          <h1 class="user-name">{{ profile.firstName }} {{ profile.lastName }}</h1>
+          <p class="user-email">{{ profile.email }}</p>
+          <nz-tag [nzColor]="'blue'">{{ profile.role }}</nz-tag>
+        </div>
+
+        <div class="header-actions">
+          <button
+            nz-button
+            [nzType]="isEditing ? 'default' : 'primary'"
+            (click)="toggleEdit()"
+          >
+            <span nz-icon [nzType]="isEditing ? 'close' : 'edit'"></span>
+            {{ isEditing ? 'Cancel' : 'Edit Profile' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="profile-main">
+      <nz-tabset nzType="card">
+        <!-- About Tab -->
+        <nz-tab nzTitle="About">
+          <div class="tab-content">
+            <nz-card [nzBordered]="false" class="info-card">
+              <form
+                nz-form
+                [formGroup]="profileForm"
+                (ngSubmit)="saveProfile()"
+                *ngIf="isEditing"
+              >
+                <div nz-row [nzGutter]="24">
+                  <div nz-col [nzXs]="24" [nzSm]="12">
+                    <nz-form-item>
+                      <nz-form-label nzRequired>First Name</nz-form-label>
+                      <nz-form-control nzErrorTip="First name is required">
+                        <input nz-input formControlName="firstName" />
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col [nzXs]="24" [nzSm]="12">
+                    <nz-form-item>
+                      <nz-form-label nzRequired>Last Name</nz-form-label>
+                      <nz-form-control nzErrorTip="Last name is required">
+                        <input nz-input formControlName="lastName" />
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col [nzXs]="24" [nzSm]="12">
+                    <nz-form-item>
+                      <nz-form-label>Phone</nz-form-label>
+                      <nz-form-control>
+                        <input nz-input formControlName="phoneNumber" />
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col [nzXs]="24" [nzSm]="12">
+                    <nz-form-item>
+                      <nz-form-label>Gender</nz-form-label>
+                      <nz-form-control>
+                        <nz-select formControlName="gender" nzPlaceHolder="Select gender">
+                          <nz-option
+                            *ngFor="let option of genderOptions"
+                            [nzValue]="option.value"
+                            [nzLabel]="option.label"
+                          ></nz-option>
+                        </nz-select>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col [nzSpan]="24">
+                    <nz-form-item>
+                      <nz-form-label>Bio</nz-form-label>
+                      <nz-form-control>
+                        <textarea
+                          nz-input
+                          formControlName="bio"
+                          [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+                          placeholder="Tell us about yourself..."
+                        ></textarea>
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                  <div nz-col [nzSpan]="24">
+                    <nz-form-item>
+                      <nz-form-label>Skills</nz-form-label>
+                      <nz-form-control>
+                        <input
+                          nz-input
+                          formControlName="skills"
+                          placeholder="e.g. JavaScript, Python, Project Management (comma separated)"
+                        />
+                      </nz-form-control>
+                    </nz-form-item>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button nz-button nzType="primary" [nzLoading]="isSaving">
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+
+              <!-- View Mode -->
+              <div *ngIf="!isEditing" class="info-view">
+                <div class="info-section">
+                  <h3 class="section-title">
+                    <span nz-icon nzType="user" nzTheme="outline"></span>
+                    Personal Information
+                  </h3>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span class="label">Phone</span>
+                      <span class="value">{{ profile.phoneNumber || 'Not provided' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">Gender</span>
+                      <span class="value">{{ profile.gender || 'Not specified' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="label">Member Since</span>
+                      <span class="value">{{ profile.createdAt | date: 'MMMM yyyy' }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <nz-divider></nz-divider>
+
+                <div class="info-section">
+                  <h3 class="section-title">
+                    <span nz-icon nzType="profile" nzTheme="outline"></span>
+                    Bio
+                  </h3>
+                  <p class="bio-text">{{ profile.bio || 'No bio added yet.' }}</p>
+                </div>
+
+                <nz-divider></nz-divider>
+
+                <div class="info-section">
+                  <h3 class="section-title">
+                    <span nz-icon nzType="tool" nzTheme="outline"></span>
+                    Skills
+                  </h3>
+                  <div class="skills-tags" *ngIf="getSkillsArray().length > 0">
+                    <nz-tag *ngFor="let skill of getSkillsArray()" nzColor="blue">
+                      {{ skill }}
+                    </nz-tag>
+                  </div>
+                  <p *ngIf="getSkillsArray().length === 0" class="empty-text">
+                    No skills added yet.
+                  </p>
+                </div>
+              </div>
+            </nz-card>
+          </div>
+        </nz-tab>
+
+        <!-- CV Tab -->
+        <nz-tab nzTitle="CV / Resume">
+          <div class="tab-content">
+            <nz-card [nzBordered]="false" class="cv-card">
+              <div class="cv-section">
+                <div class="cv-icon">
+                  <span nz-icon nzType="file-pdf" nzTheme="twotone" [nzTwotoneColor]="'#eb2f96'"></span>
+                </div>
+                <div class="cv-info" *ngIf="profile.cvPdfUrl">
+                  <h4>Your CV is uploaded</h4>
+                  <p>Last updated</p>
+                  <div class="cv-actions">
+                    <a [href]="getFileUrl(profile.cvPdfUrl)" target="_blank" nz-button nzType="primary">
+                      <span nz-icon nzType="eye"></span> View CV
+                    </a>
+                    <a [href]="getFileUrl(profile.cvPdfUrl)" download nz-button nzType="default">
+                      <span nz-icon nzType="download"></span> Download
+                    </a>
+                    <button nz-button nzType="default" nzDanger (click)="deleteCV()">
+                      <span nz-icon nzType="delete"></span> Remove
+                    </button>
+                  </div>
+                </div>
+                <div class="cv-info" *ngIf="!profile.cvPdfUrl">
+                  <h4>No CV uploaded</h4>
+                  <p>Upload your CV to increase your chances of getting hired</p>
+                </div>
+              </div>
+
+              <nz-divider></nz-divider>
+
+              <div class="upload-section">
+                <label class="upload-area" [class.uploading]="isUploadingCV">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    (change)="onCVChange($event)"
+                    hidden
+                    [disabled]="isUploadingCV"
+                  />
+                  <div *ngIf="!isUploadingCV">
+                    <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>
+                    <p>{{ profile.cvPdfUrl ? 'Upload new CV' : 'Click to upload CV' }}</p>
+                    <span class="hint">PDF only, max 5MB</span>
+                  </div>
+                  <nz-spin *ngIf="isUploadingCV" nzSimple></nz-spin>
+                </label>
+              </div>
+            </nz-card>
+          </div>
+        </nz-tab>
+
+        <!-- Education Tab -->
+        <nz-tab nzTitle="Education">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3>Education</h3>
+              <button nz-button nzType="primary" (click)="openAddEducationModal()">
+                <span nz-icon nzType="plus"></span> Add Education
+              </button>
+            </div>
+
+            <div *ngIf="profile.educations.length === 0" class="empty-section">
+              <nz-empty nzNotFoundContent="No education added yet"></nz-empty>
+            </div>
+
+            <nz-timeline *ngIf="profile.educations.length > 0">
+              <nz-timeline-item
+                *ngFor="let edu of profile.educations"
+                [nzColor]="edu.isCurrent ? 'blue' : 'gray'"
+              >
+                <nz-card class="timeline-card">
+                  <div class="card-header">
+                    <div>
+                      <h4>{{ edu.degree }} in {{ edu.fieldOfStudy }}</h4>
+                      <p class="institution">{{ edu.institution }}</p>
+                      <p class="dates">
+                        {{ edu.startDate | date: 'MMM yyyy' }} -
+                        {{ edu.isCurrent ? 'Present' : (edu.endDate | date: 'MMM yyyy') }}
+                      </p>
+                    </div>
+                    <div class="card-actions">
+                      <button nz-button nzType="text" (click)="openEditEducationModal(edu)">
+                        <span nz-icon nzType="edit"></span>
+                      </button>
+                      <button nz-button nzType="text" nzDanger (click)="deleteEducation(edu.id)">
+                        <span nz-icon nzType="delete"></span>
+                      </button>
+                    </div>
+                  </div>
+                  <p *ngIf="edu.description" class="description">{{ edu.description }}</p>
+                </nz-card>
+              </nz-timeline-item>
+            </nz-timeline>
+          </div>
+        </nz-tab>
+
+        <!-- Experience Tab -->
+        <nz-tab nzTitle="Experience">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3>Work Experience</h3>
+              <button nz-button nzType="primary" (click)="openAddExperienceModal()">
+                <span nz-icon nzType="plus"></span> Add Experience
+              </button>
+            </div>
+
+            <div *ngIf="profile.experiences.length === 0" class="empty-section">
+              <nz-empty nzNotFoundContent="No experience added yet"></nz-empty>
+            </div>
+
+            <nz-timeline *ngIf="profile.experiences.length > 0">
+              <nz-timeline-item
+                *ngFor="let exp of profile.experiences"
+                [nzColor]="exp.isCurrent ? 'green' : 'gray'"
+              >
+                <nz-card class="timeline-card">
+                  <div class="card-header">
+                    <div>
+                      <h4>{{ exp.position }}</h4>
+                      <p class="company">{{ exp.company }}</p>
+                      <p class="location" *ngIf="exp.location">
+                        <span nz-icon nzType="environment"></span> {{ exp.location }}
+                      </p>
+                      <p class="dates">
+                        {{ exp.startDate | date: 'MMM yyyy' }} -
+                        {{ exp.isCurrent ? 'Present' : (exp.endDate | date: 'MMM yyyy') }}
+                      </p>
+                    </div>
+                    <div class="card-actions">
+                      <button nz-button nzType="text" (click)="openEditExperienceModal(exp)">
+                        <span nz-icon nzType="edit"></span>
+                      </button>
+                      <button nz-button nzType="text" nzDanger (click)="deleteExperience(exp.id)">
+                        <span nz-icon nzType="delete"></span>
+                      </button>
+                    </div>
+                  </div>
+                  <p *ngIf="exp.description" class="description">{{ exp.description }}</p>
+                </nz-card>
+              </nz-timeline-item>
+            </nz-timeline>
+          </div>
+        </nz-tab>
+      </nz-tabset>
+    </div>
+  </div>
+</div>
+
+<!-- Education Modal -->
+<nz-modal
+  [(nzVisible)]="isEducationModalVisible"
+  [nzTitle]="editingEducationId ? 'Edit Education' : 'Add Education'"
+  (nzOnCancel)="isEducationModalVisible = false"
+  (nzOnOk)="saveEducation()"
+  [nzOkText]="editingEducationId ? 'Update' : 'Add'"
+>
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="educationForm">
+      <nz-form-item>
+        <nz-form-label nzRequired>Institution</nz-form-label>
+        <nz-form-control nzErrorTip="Institution is required">
+          <input nz-input formControlName="institution" placeholder="e.g. Harvard University" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired>Degree</nz-form-label>
+        <nz-form-control nzErrorTip="Degree is required">
+          <input nz-input formControlName="degree" placeholder="e.g. Bachelor's Degree" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired>Field of Study</nz-form-label>
+        <nz-form-control nzErrorTip="Field of study is required">
+          <input nz-input formControlName="fieldOfStudy" placeholder="e.g. Computer Science" />
+        </nz-form-control>
+      </nz-form-item>
+      <div nz-row [nzGutter]="16">
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label nzRequired>Start Date</nz-form-label>
+            <nz-form-control nzErrorTip="Start date is required">
+              <nz-date-picker formControlName="startDate" style="width: 100%"></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label>End Date</nz-form-label>
+            <nz-form-control>
+              <nz-date-picker
+                formControlName="endDate"
+                style="width: 100%"
+                [nzDisabled]="educationForm.get('isCurrent')?.value"
+              ></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <nz-form-item>
+        <nz-form-control>
+          <label nz-checkbox formControlName="isCurrent">I currently study here</label>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Description</nz-form-label>
+        <nz-form-control>
+          <textarea
+            nz-input
+            formControlName="description"
+            [nzAutosize]="{ minRows: 2, maxRows: 4 }"
+            placeholder="Additional details..."
+          ></textarea>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>
+
+<!-- Experience Modal -->
+<nz-modal
+  [(nzVisible)]="isExperienceModalVisible"
+  [nzTitle]="editingExperienceId ? 'Edit Experience' : 'Add Experience'"
+  (nzOnCancel)="isExperienceModalVisible = false"
+  (nzOnOk)="saveExperience()"
+  [nzOkText]="editingExperienceId ? 'Update' : 'Add'"
+>
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="experienceForm">
+      <nz-form-item>
+        <nz-form-label nzRequired>Company</nz-form-label>
+        <nz-form-control nzErrorTip="Company is required">
+          <input nz-input formControlName="company" placeholder="e.g. Google" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired>Position</nz-form-label>
+        <nz-form-control nzErrorTip="Position is required">
+          <input nz-input formControlName="position" placeholder="e.g. Software Engineer" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Location</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="location" placeholder="e.g. San Francisco, CA" />
+        </nz-form-control>
+      </nz-form-item>
+      <div nz-row [nzGutter]="16">
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label nzRequired>Start Date</nz-form-label>
+            <nz-form-control nzErrorTip="Start date is required">
+              <nz-date-picker formControlName="startDate" style="width: 100%"></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label>End Date</nz-form-label>
+            <nz-form-control>
+              <nz-date-picker
+                formControlName="endDate"
+                style="width: 100%"
+                [nzDisabled]="experienceForm.get('isCurrent')?.value"
+              ></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <nz-form-item>
+        <nz-form-control>
+          <label nz-checkbox formControlName="isCurrent">I currently work here</label>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Description</nz-form-label>
+        <nz-form-control>
+          <textarea
+            nz-input
+            formControlName="description"
+            [nzAutosize]="{ minRows: 2, maxRows: 4 }"
+            placeholder="Describe your responsibilities and achievements..."
+          ></textarea>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>
+

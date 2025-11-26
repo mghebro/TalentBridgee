@@ -42,6 +42,7 @@ export class OrganizationFormComponent implements OnInit {
   @Input() organizationId?: string;
   form!: FormGroup;
   logoFile?: File;
+  logoPreviewUrl?: string;
   organization?: OrganizationDetails;
   isLoading = false;
   organizationTypes = Object.values(OrganizationType);
@@ -95,6 +96,48 @@ export class OrganizationFormComponent implements OnInit {
     if (info.file.originFileObj) {
       this.logoFile = info.file.originFileObj;
     }
+  }
+
+  onLogoFileSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      
+      if (!file.type.startsWith('image/')) {
+        this.notification.error('Error', 'Please select an image file');
+        return;
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        this.notification.error('Error', 'Image must be less than 2MB');
+        return;
+      }
+
+      this.logoFile = file;
+      this.form.patchValue({ deleteLogo: false });
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.logoPreviewUrl = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  getLogoPreviewUrl(): string | null {
+    if (this.logoPreviewUrl) {
+      return this.logoPreviewUrl;
+    }
+    if (this.organization?.logoUrl) {
+      return this.organizationService.getLogoUrl(this.organization.logoUrl);
+    }
+    return null;
+  }
+
+  markLogoForDeletion(): void {
+    this.form.patchValue({ deleteLogo: true });
+    this.logoFile = undefined;
+    this.logoPreviewUrl = undefined;
   }
 
   submitForm(): void {

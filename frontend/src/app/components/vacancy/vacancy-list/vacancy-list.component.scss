@@ -1,8 +1,513 @@
-:host {
-  padding: 24px;
-  display: block;
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$dark-blue: #0f172a;
+$light-blue: #60a5fa;
+$grey-50: #f8fafc;
+$grey-100: #f1f5f9;
+$grey-200: #e2e8f0;
+$grey-300: #cbd5e1;
+$grey-600: #475569;
+$grey-700: #334155;
+$grey-900: #0f172a;
+
+.vacancy-page {
+  min-height: 100vh;
+  background: $grey-50;
+}
+
+.hero-section {
+  background: linear-gradient(135deg, $dark-blue 0%, $primary-blue 100%);
+  padding: 60px 24px 100px;
+  text-align: center;
+  
+  @media (max-width: 768px) {
+    padding: 40px 16px 80px;
+  }
+  
+  .hero-content {
+    max-width: 700px;
+    margin: 0 auto;
+    
+    h1 {
+      font-size: 42px;
+      font-weight: 800;
+      color: white;
+      margin: 0 0 16px;
+      
+      @media (max-width: 768px) {
+        font-size: 32px;
+      }
+      
+      @media (max-width: 576px) {
+        font-size: 26px;
+      }
+    }
+    
+    p {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.8);
+      margin: 0;
+      
+      @media (max-width: 576px) {
+        font-size: 15px;
+      }
+    }
+  }
+}
+
+.search-section {
+  max-width: 1000px;
+  margin: -50px auto 0;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+  
+  @media (max-width: 768px) {
+    margin-top: -40px;
+    padding: 0 16px;
+  }
+  
+  .search-form {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+    
+    @media (max-width: 768px) {
+      padding: 16px;
+      border-radius: 12px;
+    }
+  }
+  
+  .search-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: 16px;
+    align-items: center;
+    
+    @media (max-width: 992px) {
+      grid-template-columns: 1fr 1fr;
+    }
+    
+    @media (max-width: 576px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .search-field {
+    position: relative;
+    
+    &.main-search {
+      @media (max-width: 992px) {
+        grid-column: span 2;
+      }
+      
+      @media (max-width: 576px) {
+        grid-column: span 1;
+      }
+    }
+    
+    > span[nz-icon] {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $grey-600;
+      font-size: 18px;
+      z-index: 1;
+    }
+    
+    input[nz-input] {
+      padding-left: 44px;
+      height: 50px;
+      border-radius: 10px;
+      border: 2px solid $grey-200;
+      font-size: 15px;
+      
+      &:focus {
+        border-color: $secondary-blue;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+    }
+    
+    ::ng-deep .ant-select {
+      width: 100%;
+      
+      .ant-select-selector {
+        height: 50px !important;
+        border-radius: 10px !important;
+        border: 2px solid $grey-200 !important;
+        padding: 0 16px !important;
+        
+        .ant-select-selection-placeholder,
+        .ant-select-selection-item {
+          line-height: 46px !important;
+        }
+      }
+      
+      &.ant-select-focused .ant-select-selector {
+        border-color: $secondary-blue !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+      }
+    }
+  }
+  
+  .search-btn {
+    height: 50px;
+    padding: 0 28px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    background: $secondary-blue;
+    border-color: $secondary-blue;
+    
+    &:hover {
+      background: darken($secondary-blue, 8%);
+      border-color: darken($secondary-blue, 8%);
+    }
+    
+    @media (max-width: 992px) {
+      grid-column: span 2;
+    }
+    
+    @media (max-width: 576px) {
+      grid-column: span 1;
+    }
+  }
+}
+
+.results-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+  
+  @media (max-width: 768px) {
+    padding: 24px 16px 40px;
+  }
+  
+  .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: $grey-900;
+      margin: 0;
+      
+      @media (max-width: 576px) {
+        font-size: 18px;
+      }
+    }
+    
+    .view-toggle {
+      display: flex;
+      gap: 8px;
+      
+      button {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border-radius: 8px;
+      }
+    }
+  }
+}
+
+.vacancies-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 
 .vacancy-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid $grey-200;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(30, 58, 138, 0.12);
+    border-color: $secondary-blue;
+  }
+  
+  @media (max-width: 576px) {
+    padding: 20px;
+    border-radius: 12px;
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    
+    .org-logo {
+      ::ng-deep .ant-avatar {
+        border-radius: 10px;
+        background: $grey-100;
+      }
+    }
+    
+    .job-meta {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      
+      .org-name {
+        font-size: 14px;
+        font-weight: 500;
+        color: $grey-700;
+      }
+      
+      .post-date {
+        font-size: 12px;
+        color: $grey-600;
+      }
+    }
+  }
+  
+  .job-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: $grey-900;
+    margin: 0 0 12px;
+    line-height: 1.4;
+    
+    @media (max-width: 576px) {
+      font-size: 16px;
+    }
+  }
+  
+  .job-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+    
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: $grey-600;
+      
+      span[nz-icon] {
+        color: $secondary-blue;
+      }
+      
+      ::ng-deep .ant-tag {
+        margin: 0 0 0 8px;
+        border-radius: 4px;
+        font-size: 11px;
+      }
+    }
+  }
+  
+  .job-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+    
+    ::ng-deep .ant-tag {
+      margin: 0;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+  }
+  
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid $grey-100;
+    
+    .deadline {
+      font-size: 12px;
+      color: $grey-600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      
+      span[nz-icon] {
+        color: $grey-600;
+      }
+    }
+    
+    .apply-btn {
+      border-radius: 8px;
+      font-weight: 500;
+    }
+  }
 }
+
+.vacancies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vacancy-list-item {
+  background: white;
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid $grey-200;
+  
+  &:hover {
+    box-shadow: 0 4px 16px rgba(30, 58, 138, 0.1);
+    border-color: $secondary-blue;
+  }
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+    gap: 16px;
+  }
+  
+  .item-logo {
+    flex-shrink: 0;
+    
+    ::ng-deep .ant-avatar {
+      border-radius: 10px;
+      background: $grey-100;
+    }
+  }
+  
+  .item-content {
+    flex: 1;
+    min-width: 0;
+    
+    .item-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 4px;
+      
+      @media (max-width: 576px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+    
+    .job-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: $grey-900;
+      margin: 0;
+      
+      @media (max-width: 576px) {
+        font-size: 16px;
+      }
+    }
+    
+    .salary {
+      font-size: 16px;
+      font-weight: 600;
+      color: $secondary-blue;
+      white-space: nowrap;
+    }
+    
+    .org-name {
+      font-size: 14px;
+      color: $secondary-blue;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 8px;
+    }
+    
+    .item-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+      
+      @media (max-width: 576px) {
+        gap: 12px;
+      }
+      
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: $grey-600;
+        
+        span[nz-icon] {
+          color: $grey-600;
+        }
+      }
+      
+      ::ng-deep .ant-tag {
+        margin: 0;
+        border-radius: 4px;
+        font-size: 11px;
+      }
+    }
+  }
+  
+  .item-actions {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    
+    @media (max-width: 768px) {
+      width: 100%;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .post-date {
+      font-size: 13px;
+      color: $grey-600;
+    }
+    
+    .apply-btn {
+      border-radius: 8px;
+      font-weight: 500;
+      padding: 0 24px;
+      height: 40px;
+      
+      @media (max-width: 768px) {
+        flex: 1;
+        max-width: 200px;
+      }
+    }
+  }
+}
+
+::ng-deep .ant-empty {
+  padding: 60px 0;
+  
+  .ant-empty-description {
+    color: $grey-600;
+    font-size: 15px;
+  }
+}
+

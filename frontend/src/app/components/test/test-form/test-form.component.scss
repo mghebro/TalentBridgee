@@ -1,3 +1,184 @@
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$grey-50: #f8fafc;
+$grey-200: #e2e8f0;
+$grey-300: #cbd5e1;
+$grey-600: #475569;
+$grey-900: #0f172a;
+
 :host {
   display: block;
+  padding: 24px;
+  
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+  
+  @media (max-width: 576px) {
+    padding: 12px;
+  }
+}
+
+::ng-deep {
+  .ant-form-item {
+    margin-bottom: 20px;
+    
+    @media (max-width: 768px) {
+      margin-bottom: 16px;
+    }
+  }
+  
+  .ant-form-item-label {
+    @media (max-width: 768px) {
+      flex: 0 0 100% !important;
+      max-width: 100% !important;
+      padding: 0 0 6px !important;
+      text-align: left !important;
+      
+      > label {
+        font-size: 14px;
+      }
+    }
+  }
+  
+  .ant-form-item-control {
+    @media (max-width: 768px) {
+      flex: 0 0 100% !important;
+      max-width: 100% !important;
+    }
+  }
+  
+  .ant-input,
+  .ant-select-selector {
+    border-radius: 8px !important;
+    
+    @media (max-width: 576px) {
+      height: 44px !important;
+      font-size: 16px !important;
+    }
+  }
+  
+  textarea.ant-input {
+    height: auto !important;
+    min-height: 80px;
+    
+    @media (max-width: 576px) {
+      min-height: 100px;
+    }
+  }
+  
+  .ant-input-number {
+    width: 100%;
+    border-radius: 8px !important;
+    
+    @media (max-width: 576px) {
+      .ant-input-number-input {
+        height: 42px !important;
+        font-size: 16px !important;
+      }
+    }
+  }
+  
+  .ant-divider {
+    margin: 32px 0 24px;
+    
+    @media (max-width: 576px) {
+      margin: 24px 0 16px;
+    }
+    
+    .ant-divider-inner-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: $grey-900;
+      
+      @media (max-width: 576px) {
+        font-size: 16px;
+      }
+    }
+  }
+  
+  .ant-card {
+    margin-bottom: 20px;
+    border-radius: 12px;
+    
+    @media (max-width: 576px) {
+      margin-bottom: 16px;
+      margin-left: -12px;
+      margin-right: -12px;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+    }
+    
+    .ant-card-body {
+      @media (max-width: 576px) {
+        padding: 16px;
+      }
+    }
+    
+    h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: $grey-900;
+      
+      @media (max-width: 576px) {
+        font-size: 15px;
+      }
+    }
+    
+    h5 {
+      font-size: 14px;
+      font-weight: 600;
+      color: $grey-600;
+      margin: 16px 0 12px;
+    }
+  }
+  
+  // Question header row
+  [nz-row] {
+    @media (max-width: 576px) {
+      flex-direction: column;
+      
+      [nz-col] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        text-align: left !important;
+        margin-bottom: 8px;
+      }
+    }
+  }
+  
+  // Options row
+  .ant-form-item:has(.ant-checkbox) {
+    @media (max-width: 576px) {
+      .ant-form-item-control {
+        margin-top: 8px;
+      }
+    }
+  }
+}
+
+// Button for adding questions/options
+button[nzType="dashed"] {
+  margin-top: 16px;
+  
+  @media (max-width: 576px) {
+    width: 100%;
+    height: 44px;
+  }
+}
+
+// Submit button wrapper
+.ant-form-item:last-child {
+  margin-top: 32px;
+  
+  @media (max-width: 576px) {
+    margin-top: 24px;
+    
+    button[nzType="primary"] {
+      width: 100%;
+      height: 48px;
+      font-size: 16px;
+    }
+  }
 }

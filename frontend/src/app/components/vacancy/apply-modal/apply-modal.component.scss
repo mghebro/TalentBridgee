@@ -1,0 +1,94 @@
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$grey-50: #f8fafc;
+$grey-200: #e2e8f0;
+$grey-600: #475569;
+$grey-900: #0f172a;
+
+:host {
+  display: block;
+}
+
+::ng-deep {
+  .ant-modal {
+    @media (max-width: 576px) {
+      max-width: calc(100vw - 32px) !important;
+      margin: 16px !important;
+    }
+  }
+  
+  .ant-modal-content {
+    border-radius: 12px;
+    
+    @media (max-width: 576px) {
+      border-radius: 16px;
+    }
+  }
+  
+  .ant-modal-header {
+    border-radius: 12px 12px 0 0;
+    
+    @media (max-width: 576px) {
+      padding: 16px;
+      border-radius: 16px 16px 0 0;
+    }
+    
+    .ant-modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      
+      @media (max-width: 576px) {
+        font-size: 16px;
+      }
+    }
+  }
+  
+  .ant-modal-body {
+    padding: 24px;
+    
+    @media (max-width: 576px) {
+      padding: 16px;
+    }
+  }
+  
+  .ant-modal-footer {
+    padding: 16px 24px;
+    
+    @media (max-width: 576px) {
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 8px;
+      
+      button {
+        width: 100%;
+        margin: 0 !important;
+        height: 44px;
+      }
+    }
+  }
+  
+  .ant-form-item {
+    margin-bottom: 16px;
+    
+    @media (max-width: 576px) {
+      margin-bottom: 14px;
+    }
+  }
+  
+  .ant-input,
+  .ant-select-selector {
+    border-radius: 8px !important;
+    
+    @media (max-width: 576px) {
+      height: 44px !important;
+      font-size: 16px !important;
+    }
+  }
+  
+  textarea.ant-input {
+    height: auto !important;
+    min-height: 100px;
+  }
+}
+

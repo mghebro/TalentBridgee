@@ -1,16 +1,206 @@
-.verify-email-container {
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$grey-50: #f8fafc;
+$grey-100: #f1f5f9;
+$grey-600: #475569;
+$grey-900: #0f172a;
+
+.verify-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 86vh;
+  padding: 24px;
   background-color: var(--layout-bg);
 
-  .loading-spinner {
-    text-align: center;
+  @media (max-width: 576px) {
+    padding: 16px;
+    align-items: center;
+  }
+}
 
-    p {
-      margin-top: 16px;
+.verify-form {
+  width: 100%;
+  max-width: 420px;
+  padding: 40px 32px;
+  background-color: var(--content-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
+
+  @media (max-width: 576px) {
+    max-width: 100%;
+    padding: 32px 24px;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  @media (max-width: 400px) {
+    padding: 28px 20px;
+  }
+}
+
+h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: $grey-900;
+  margin-bottom: 16px;
+
+  @media (max-width: 576px) {
+    font-size: 24px;
+  }
+}
+
+.email-info {
+  font-size: 15px;
+  color: $grey-600;
+  margin-bottom: 8px;
+  line-height: 1.5;
+
+  strong {
+    color: $secondary-blue;
+    word-break: break-all;
+  }
+
+  @media (max-width: 576px) {
+    font-size: 14px;
+  }
+}
+
+.instructions {
+  font-size: 14px;
+  color: $grey-600;
+  margin-bottom: 28px;
+
+  @media (max-width: 576px) {
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+}
+
+form {
+  text-align: left;
+}
+
+::ng-deep {
+  .ant-form-item {
+    margin-bottom: 20px;
+
+    @media (max-width: 576px) {
+      margin-bottom: 16px;
+    }
+  }
+
+  .ant-input-affix-wrapper {
+    padding: 12px 14px;
+    border-radius: 8px;
+
+    @media (max-width: 576px) {
+      padding: 14px;
+    }
+
+    .ant-input {
       font-size: 16px;
+      text-align: center;
+      letter-spacing: 2px;
+
+      &::placeholder {
+        letter-spacing: normal;
+      }
+    }
+  }
+
+  .ant-input-affix-wrapper-lg {
+    .ant-input-prefix {
+      margin-right: 12px;
+
+      .anticon {
+        font-size: 18px;
+        color: $secondary-blue;
+      }
+    }
+  }
+
+  .ant-btn-lg {
+    height: 48px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+
+    @media (max-width: 576px) {
+      height: 50px;
+    }
+  }
+
+  .ant-result {
+    padding: 24px 0;
+
+    .ant-result-icon {
+      margin-bottom: 16px;
+
+      .anticon {
+        font-size: 48px;
+      }
+    }
+
+    .ant-result-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: $grey-900;
+
+      @media (max-width: 576px) {
+        font-size: 18px;
+      }
+    }
+
+    .ant-result-subtitle {
+      font-size: 14px;
+      color: $grey-600;
+
+      @media (max-width: 576px) {
+        font-size: 13px;
+      }
+    }
+
+    .ant-result-extra {
+      margin-top: 24px;
+
+      button {
+        min-width: 140px;
+      }
+    }
+  }
+}
+
+.resend-container {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 14px;
+  color: $grey-600;
+
+  @media (max-width: 576px) {
+    margin-top: 20px;
+    padding-top: 20px;
+    font-size: 13px;
+  }
+
+  a {
+    color: $secondary-blue;
+    cursor: pointer;
+    font-weight: 600;
+    margin-left: 8px;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $primary-blue;
+      text-decoration: underline;
+    }
+
+    &.disabled {
+      color: #cbd5e1;
+      cursor: not-allowed;
+      pointer-events: none;
     }
   }
 }

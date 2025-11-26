@@ -18,6 +18,9 @@ import { VacancyDetailComponent } from './components/vacancy/vacancy-detail/vaca
 import { VacancyManagementComponent } from './components/vacancy/vacancy-management/vacancy-management.component';
 import { TestPlayerComponent } from './components/test/test-player/test-player.component';
 import { ApplicationOwnerGuard } from './guards/application-owner.guard';
+import { ProfileComponent } from './components/profile/profile.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { OrganizationProfileComponent } from './components/organization/organization-profile/organization-profile.component';
 
 export const routes: Routes = [
   {
@@ -25,11 +28,21 @@ export const routes: Routes = [
     component: LayoutComponent,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'home' },
+      {
+        path: 'dashboard',
+        canActivate: [AuthGuard],
+        component: DashboardComponent,
+      },
       { path: 'auth/login', component: LoginComponent },
       { path: 'auth/register', component: RegisterComponent },
       { path: 'auth/verify-email', component: VerifyEmailComponent },
       { path: 'vacancies', pathMatch: 'full', component: VacancyListComponent },
       { path: 'vacancies/:id', component: VacancyDetailComponent },
+      {
+        path: 'profile',
+        canActivate: [AuthGuard],
+        component: ProfileComponent,
+      },
       {
         path: 'my-applications',
         canActivate: [AuthGuard],
@@ -42,8 +55,11 @@ export const routes: Routes = [
       },
       {
         path: 'organizations',
-        //canActivate: [AuthGuard],
         component: OrganizationListComponent,
+      },
+      {
+        path: 'organizations/:id',
+        component: OrganizationProfileComponent,
       },
       {
         path: 'organizations/new',

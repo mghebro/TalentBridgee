@@ -85,6 +85,26 @@ export class OrganizationService {
     );
   }
 
+  uploadLogo(id: string, file: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ServiceResult<string>>(`${this.apiUrl}/${id}/logo`, formData).pipe(
+      map(response => this.unwrapResult(response, 'Failed to upload logo'))
+    );
+  }
+
+  deleteLogo(id: string): Observable<boolean> {
+    return this.http.delete<ServiceResult<boolean>>(`${this.apiUrl}/${id}/logo`).pipe(
+      map(response => response.data ?? false)
+    );
+  }
+
+  getLogoUrl(relativePath: string | undefined | null): string | null {
+    if (!relativePath) return null;
+    const baseUrl = environment.apiUrl.replace('/api', '');
+    return `${baseUrl}${relativePath}`;
+  }
+
   private unwrapResult<T>(response: ServiceResult<T>, fallbackMessage: string): T {
     if (!response.data) {
       throw new Error(response.message ?? response.errors?.[0] ?? fallbackMessage);

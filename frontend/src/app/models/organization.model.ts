@@ -13,6 +13,8 @@ export interface OrganizationList {
   isActive: boolean;
   address: string;
   phoneNumber: string;
+  logo?: string;
+  logoUrl?: string;
 }
 
 export interface CreateOrganizationRequest {
@@ -35,8 +37,22 @@ export interface UpdateOrganizationRequest {
   deleteLogo?: boolean;
 }
 
+export interface OrganizationStatistics {
+  totalVacancies: number;
+  activeVacancies: number;
+  closedVacancies: number;
+  totalApplications: number;
+  pendingApplications: number;
+  reviewedApplications: number;
+  totalHires: number;
+  lastVacancyPosted?: Date;
+  lastApplicationReceived?: Date;
+  averageTimeToHire?: number;
+}
+
 export interface OrganizationDetails extends Organization {
   type: string;
+  typeName?: string;
   address: string;
   contactEmail: string;
   phoneNumber: string;
@@ -45,6 +61,8 @@ export interface OrganizationDetails extends Organization {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  logo?: string;
+  statistics?: OrganizationStatistics;
 }
 
 export enum OrganizationType {

@@ -20,13 +20,19 @@ namespace TalentBridge.Modules.Organizations.Services;
 public class OrganizationServices : BaseService, IOrganizationServices
 {
     private readonly IMapper _mapper;
+    private readonly IWebHostEnvironment _environment;
+    private readonly string _uploadsFolder;
 
     public OrganizationServices(
         IMapper mapper, 
-        DataContext context
+        DataContext context,
+        IWebHostEnvironment environment
      ) : base(context)
     {
         _mapper = mapper;
+        _environment = environment;
+        _uploadsFolder = Path.Combine(_environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads", "organizations");
+        Directory.CreateDirectory(_uploadsFolder);
     }
 
     
@@ -321,6 +327,72 @@ public class OrganizationServices : BaseService, IOrganizationServices
         await logoFile.CopyToAsync(memoryStream);
         return ServiceResult<byte[]>.SuccessResult(memoryStream.ToArray());
     }
-    
 
+    public async Task<ServiceResult<string>> UploadOrganizationLogoAsync(int organizationId, IFormFile file, int userId)
+    {
+        var organization = await _context.Organizations.FindAsync(organizationId);
+        if (organization == null)
+            return ServiceResult<string>.FailureResult("Organization not found");
+
+        if (!await UserCanManageOrganizationAsync(userId, organizationId))
+            return ServiceResult<string>.FailureResult("You don't have permission to update this organization");
+
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".svg" };
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(extension))
+            return ServiceResult<string>.FailureResult("Only JPG, PNG, WebP, and SVG images are allowed");
+
+        const int maxSize = 2 * 1024 * 1024; 
+        if (file.Length > maxSize)
+            return ServiceResult<string>.FailureResult("Image size must be less than 2MB");
+
+        if (!string.IsNullOrEmpty(organization.LogoUrl))
+        {
+            var oldPath = Path.Combine(_environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), 
+                organization.LogoUrl.TrimStart('/'));
+            if (File.Exists(oldPath))
+                File.Delete(oldPath);
+        }
+
+        var fileName = $"org_{organizationId}_{DateTime.UtcNow.Ticks}{extension}";
+        var filePath = Path.Combine(_uploadsFolder, fileName);
+        
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var relativePath = $"/uploads/organizations/{fileName}";
+        organization.LogoUrl = relativePath;
+        organization.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        return ServiceResult<string>.SuccessResult(relativePath, "Organization logo uploaded successfully");
+    }
+
+    public async Task<ServiceResult<bool>> DeleteOrganizationLogoAsync(int organizationId, int userId)
+    {
+        var organization = await _context.Organizations.FindAsync(organizationId);
+        if (organization == null)
+            return ServiceResult<bool>.FailureResult("Organization not found");
+
+        if (!await UserCanManageOrganizationAsync(userId, organizationId))
+            return ServiceResult<bool>.FailureResult("You don't have permission to update this organization");
+
+        if (string.IsNullOrEmpty(organization.LogoUrl))
+            return ServiceResult<bool>.FailureResult("No logo found to delete");
+
+        var filePath = Path.Combine(_environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), 
+            organization.LogoUrl.TrimStart('/'));
+        if (File.Exists(filePath))
+            File.Delete(filePath);
+
+        organization.LogoUrl = null;
+        organization.Logo = null;
+        organization.UpdatedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+
+        return ServiceResult<bool>.SuccessResult(true, "Organization logo deleted successfully");
+    }
 }

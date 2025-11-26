@@ -4,7 +4,7 @@ using TalentBridge.Modules.Tests.DTOs.Responses;
 
 namespace TalentBridge.Modules.Tests.Profiles
 {
-    public class TestApplicationProfile : Profile
+    public class TestApplicationProfile : AutoMapper.Profile
     {
         public TestApplicationProfile()
         {

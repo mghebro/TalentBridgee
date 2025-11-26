@@ -49,17 +49,25 @@
   <nz-form-item>
     <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="logo">Logo</nz-form-label>
     <nz-form-control [nzSm]="14" [nzXs]="24">
-      <nz-upload
-        nzAction="/api/files/upload"
-        nzListType="picture-card"
-        [nzShowUploadList]="false"
-        (nzChange)="onFileChange($event)">
-        <i nz-icon nzType="plus"></i>
-        <div class="ant-upload-text">Upload</div>
-      </nz-upload>
-      <div *ngIf="organization?.logoUrl" class="logo-preview">
-        <img [src]="apiUrl + '/' + organization?.logoUrl" alt="Logo Preview" />
-        <label nz-checkbox formControlName="deleteLogo">Delete Logo</label>
+      <div class="logo-upload-section">
+        <div class="logo-preview" *ngIf="getLogoPreviewUrl() && !form.get('deleteLogo')?.value">
+          <img [src]="getLogoPreviewUrl()" alt="Logo Preview" />
+          <div class="logo-actions">
+            <label class="change-logo-btn">
+              <input type="file" accept="image/*" (change)="onLogoFileSelect($event)" hidden />
+              <span nz-icon nzType="camera" nzTheme="outline"></span> Change
+            </label>
+            <button type="button" nz-button nzType="text" nzDanger (click)="markLogoForDeletion()">
+              <span nz-icon nzType="delete" nzTheme="outline"></span> Remove
+            </button>
+          </div>
+        </div>
+        <label class="upload-logo-area" *ngIf="!getLogoPreviewUrl() || form.get('deleteLogo')?.value">
+          <input type="file" accept="image/*" (change)="onLogoFileSelect($event)" hidden />
+          <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>
+          <span class="upload-text">Click to upload logo</span>
+          <span class="upload-hint">JPG, PNG, WebP, max 2MB</span>
+        </label>
       </div>
     </nz-form-control>
   </nz-form-item>

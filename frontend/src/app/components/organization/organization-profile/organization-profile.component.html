@@ -1,0 +1,158 @@
+<div class="org-profile-container">
+  <div *ngIf="isLoading" class="loading-container">
+    <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+  </div>
+
+  <div *ngIf="!isLoading && organization" class="org-profile-content">
+    <div class="profile-header">
+      <div class="header-bg"></div>
+      <div class="header-content">
+        <div class="logo-section">
+          <nz-avatar
+            [nzSize]="120"
+            [nzSrc]="getLogoUrl(organization.logoUrl)"
+            [nzText]="organization.name.charAt(0)"
+            nzIcon="bank"
+            nzShape="square"
+          ></nz-avatar>
+        </div>
+        <div class="org-info">
+          <h1 class="org-name">{{ organization.name }}</h1>
+          <p class="org-type">
+            <nz-tag nzColor="blue">{{ organization.typeName || organization.type }}</nz-tag>
+            <nz-tag [nzColor]="organization.isActive ? 'green' : 'red'">
+              {{ organization.isActive ? 'Active' : 'Inactive' }}
+            </nz-tag>
+          </p>
+          <div class="org-meta">
+            <span class="meta-item" *ngIf="organization.address">
+              <span nz-icon nzType="environment" nzTheme="outline"></span>
+              {{ organization.address }}
+            </span>
+            <span class="meta-item" *ngIf="organization.website">
+              <span nz-icon nzType="global" nzTheme="outline"></span>
+              <a [href]="organization.website" target="_blank">{{ organization.website }}</a>
+            </span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a [href]="'mailto:' + organization.contactEmail" nz-button nzType="primary">
+            <span nz-icon nzType="mail"></span> Contact
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-section">
+      <nz-card class="stat-card">
+        <nz-statistic [nzValue]="vacancies.length" nzTitle="Total Jobs Posted"></nz-statistic>
+      </nz-card>
+      <nz-card class="stat-card">
+        <nz-statistic
+          [nzValue]="getActiveVacanciesCount()"
+          nzTitle="Active Positions"
+        ></nz-statistic>
+      </nz-card>
+      <nz-card class="stat-card" *ngIf="organization.statistics">
+        <nz-statistic
+          [nzValue]="organization.statistics?.totalApplications || 0"
+          nzTitle="Applications"
+        ></nz-statistic>
+      </nz-card>
+      <nz-card class="stat-card" *ngIf="organization.statistics">
+        <nz-statistic
+          [nzValue]="organization.statistics?.totalHires || 0"
+          nzTitle="Total Hires"
+        ></nz-statistic>
+      </nz-card>
+    </div>
+
+    <!-- Main Content -->
+    <div class="profile-main">
+      <nz-tabset nzType="card">
+        <!-- About Tab -->
+        <nz-tab nzTitle="About">
+          <div class="tab-content">
+            <nz-card [nzBordered]="false">
+              <div class="about-section">
+                <h3 class="section-title">
+                  <span nz-icon nzType="info-circle" nzTheme="outline"></span>
+                  About Us
+                </h3>
+                <p class="description">
+                  {{ organization.description || 'No description provided.' }}
+                </p>
+              </div>
+
+              <nz-divider></nz-divider>
+
+              <div class="contact-section">
+                <h3 class="section-title">
+                  <span nz-icon nzType="contacts" nzTheme="outline"></span>
+                  Contact Information
+                </h3>
+                <nz-descriptions [nzColumn]="{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }">
+                  <nz-descriptions-item nzTitle="Email">
+                    <a [href]="'mailto:' + organization.contactEmail">{{
+                      organization.contactEmail
+                    }}</a>
+                  </nz-descriptions-item>
+                  <nz-descriptions-item nzTitle="Phone">
+                    {{ organization.phoneNumber || 'Not provided' }}
+                  </nz-descriptions-item>
+                  <nz-descriptions-item nzTitle="Address">
+                    {{ organization.address }}
+                  </nz-descriptions-item>
+                  <nz-descriptions-item nzTitle="Website" *ngIf="organization.website">
+                    <a [href]="organization.website" target="_blank">{{ organization.website }}</a>
+                  </nz-descriptions-item>
+                </nz-descriptions>
+              </div>
+            </nz-card>
+          </div>
+        </nz-tab>
+
+        <!-- Jobs Tab -->
+        <nz-tab nzTitle="Open Positions ({{ getActiveVacanciesCount() }})">
+          <div class="tab-content">
+            <div *ngIf="vacancies.length === 0" class="empty-section">
+              <nz-empty nzNotFoundContent="No open positions at the moment"></nz-empty>
+            </div>
+
+            <div class="vacancies-grid" *ngIf="vacancies.length > 0">
+              <nz-card
+                *ngFor="let vacancy of vacancies"
+                class="vacancy-card"
+                [routerLink]="['/vacancies', vacancy.id]"
+              >
+                <h4 class="vacancy-title">{{ vacancy.title }}</h4>
+                <div class="vacancy-meta">
+                  <span class="meta-item">
+                    <span nz-icon nzType="environment"></span>
+                    {{ vacancy.location }}
+                    <nz-tag *ngIf="vacancy.isRemote" nzColor="green">Remote</nz-tag>
+                  </span>
+                  <span class="meta-item">
+                    <span nz-icon nzType="clock-circle"></span>
+                    {{ vacancy.employmentTypeName || vacancy.employmentType }}
+                  </span>
+                </div>
+                <div class="vacancy-tags">
+                  <nz-tag nzColor="blue">{{
+                    vacancy.experienceLevelName || vacancy.experienceLevel
+                  }}</nz-tag>
+                  <nz-tag *ngIf="vacancy.salaryRange">{{ vacancy.salaryRange }}</nz-tag>
+                </div>
+                <p class="vacancy-deadline" *ngIf="vacancy.applicationDeadline">
+                  <span nz-icon nzType="calendar"></span>
+                  Deadline: {{ vacancy.applicationDeadline | date : 'MMM d, yyyy' }}
+                </p>
+              </nz-card>
+            </div>
+          </div>
+        </nz-tab>
+      </nz-tabset>
+    </div>
+  </div>
+</div>

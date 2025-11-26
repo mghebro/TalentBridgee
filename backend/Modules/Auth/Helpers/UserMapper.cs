@@ -6,7 +6,7 @@ using AutoMapper;
 
 namespace TalentBridge.Modules.Auth.Helpers;
 
-public class UserMapper : Profile
+public class UserMapper : AutoMapper.Profile
 {
     public UserMapper()
     {

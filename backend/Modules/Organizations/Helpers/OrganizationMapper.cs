@@ -6,7 +6,7 @@ using TalentBridge.Modules.Organizations.DTOs.Responses;
 
 namespace TalentBridge.Modules.Organizations;
 
-public class OrganizationMapper : Profile
+public class OrganizationMapper : AutoMapper.Profile
 {
     public OrganizationMapper()
     {

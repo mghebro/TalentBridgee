@@ -1,3 +1,117 @@
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$grey-50: #f8fafc;
+$grey-200: #e2e8f0;
+$grey-600: #475569;
+$grey-900: #0f172a;
+
 :host {
   display: block;
+}
+
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+::ng-deep {
+  .ant-form-item {
+    margin-bottom: 20px;
+    
+    @media (max-width: 768px) {
+      margin-bottom: 16px;
+    }
+  }
+  
+  .ant-form-item-label {
+    @media (max-width: 768px) {
+      flex: 0 0 100% !important;
+      max-width: 100% !important;
+      padding: 0 0 6px !important;
+      text-align: left !important;
+      
+      > label {
+        font-size: 14px;
+      }
+    }
+  }
+  
+  .ant-form-item-control {
+    @media (max-width: 768px) {
+      flex: 0 0 100% !important;
+      max-width: 100% !important;
+    }
+  }
+  
+  .ant-input,
+  .ant-select-selector,
+  .ant-picker {
+    border-radius: 8px !important;
+    
+    @media (max-width: 576px) {
+      height: 44px !important;
+      font-size: 16px !important;
+    }
+  }
+  
+  textarea.ant-input {
+    height: auto !important;
+    min-height: 80px;
+    
+    @media (max-width: 576px) {
+      min-height: 100px;
+    }
+  }
+  
+  .ant-input-number {
+    width: 100%;
+    border-radius: 8px !important;
+    
+    @media (max-width: 576px) {
+      .ant-input-number-input {
+        height: 42px !important;
+        font-size: 16px !important;
+      }
+    }
+  }
+  
+  nz-input-group.ant-input-group-compact {
+    display: flex;
+    flex-wrap: wrap;
+    
+    @media (max-width: 576px) {
+      gap: 8px;
+      
+      > * {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        margin-bottom: 8px;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid $grey-200;
+  
+  @media (max-width: 576px) {
+    flex-direction: column-reverse;
+    gap: 10px;
+    
+    button {
+      width: 100%;
+      height: 46px;
+    }
+  }
 }

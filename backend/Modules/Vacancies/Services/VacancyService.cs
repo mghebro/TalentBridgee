@@ -47,7 +47,10 @@ public class VacancyService : IVacancyService
 
     public async Task<ServiceResult<PaginatedResult<VacancyList>>> GetVacanciesAsync(VacancyFilterRequest request)
     {
-        var query = _context.Vacancies.AsQueryable();
+        var query = _context.Vacancies
+            .Include(v => v.Organization)
+            .Include(v => v.Applications)
+            .AsQueryable();
 
         if (!string.IsNullOrEmpty(request.Search))
             query = query.Where(v => v.Title.Contains(request.Search) || v.Description.Contains(request.Search));
@@ -68,7 +71,11 @@ public class VacancyService : IVacancyService
 
         var totalCount = await query.CountAsync();
         
-        var vacancies = await query.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).Where(v => v.IsDeleted == false).ToListAsync();
+        var vacancies = await query
+            .Where(v => v.IsDeleted == false)
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync();
         
         var vacancyList = _mapper.Map<List<VacancyList>>(vacancies);
 

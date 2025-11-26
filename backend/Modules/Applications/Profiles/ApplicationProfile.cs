@@ -6,7 +6,7 @@ using TalentBridge.Modules.Applications.DTOs.Responses;
 
 namespace TalentBridge.Modules.Applications.Profiles;
 
-public class ApplicationProfile : Profile
+public class ApplicationProfile : AutoMapper.Profile
 {
     public ApplicationProfile()
     {

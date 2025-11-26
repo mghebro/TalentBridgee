@@ -40,6 +40,9 @@ nz-header {
   padding: 0;
   transition: background 0.3s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .trigger {
@@ -80,7 +83,6 @@ nz-header {
     }
   }
 
-  // Dropdown link styling
   a[nz-dropdown] {
     display: flex;
     align-items: center;
@@ -116,20 +118,7 @@ nz-header {
   transition: all 0.2s ease;
   font-weight: 500;
 
-  // &:hover {
-  //   color: $secondary-blue;
-  //   background: $grey-100;
-  // }
 }
-
-// .register-link {
-//   background: $secondary-blue;
-//   color: white;
-
-//   &:hover {
-//     background: $light-blue;
-//     color: white;
-//   }
 
 nz-content {
   padding: 24px;
@@ -162,7 +151,6 @@ nz-content {
   padding: 0;
 }
 
-// Sidebar styling
 ::ng-deep {
   .ant-layout-sider {
     background: $dark-blue;
@@ -216,7 +204,6 @@ nz-content {
     }
   }
 
-  // Drawer styling
   .ant-drawer-body {
     padding: 0;
     background: $dark-blue;
@@ -247,7 +234,6 @@ nz-content {
     }
   }
 
-  // Dropdown menu styling
   .ant-dropdown-menu {
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -261,6 +247,18 @@ nz-content {
   }
 }
 
+@media (max-width: 992px) {
+  .app-header {
+    padding: 0 12px;
+    height: 56px;
+  }
+
+  .trigger {
+    line-height: 56px;
+    padding: 0 16px;
+  }
+}
+
 @media (max-width: 768px) {
   .right-content {
     gap: 8px;
@@ -270,12 +268,69 @@ nz-content {
       padding: 6px 12px;
       font-size: 14px;
     }
+
+    a[nz-dropdown] {
+      padding: 6px 8px;
+      font-size: 14px;
+
+      .ant-typography,
+      span:not([nz-icon]) {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
   }
 
   nz-content {
     padding: 16px;
   }
+
+  .inner-content {
+    min-height: calc(100vh - 120px);
+  }
 }
+
+@media (max-width: 576px) {
+  .app-header {
+    padding: 0 8px;
+    height: 52px;
+  }
+
+  .trigger {
+    font-size: 20px;
+    line-height: 52px;
+    padding: 0 12px;
+  }
+
+  .right-content {
+    gap: 4px;
+
+    .login-link,
+    .register-link {
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+
+    a[nz-dropdown] {
+      padding: 6px;
+
+      i[nz-icon] {
+        font-size: 14px;
+      }
+
+      span:not([nz-icon]) {
+        display: none;
+      }
+    }
+  }
+
+  nz-content {
+    padding: 12px;
+  }
+}
+
 .logo {
   position: sticky;
   top: 16px;

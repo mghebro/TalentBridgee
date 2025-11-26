@@ -496,3 +496,180 @@ $grey-900: #0f172a;
     padding: 12px;
   }
 }
+
+@media (max-width: 576px) {
+  .hero-section {
+    padding: 32px 12px;
+    border-radius: 20px;
+    margin: 0 8px;
+    
+    .hero-header {
+      flex-direction: column;
+      text-align: center;
+      gap: 10px;
+    }
+    
+    .hero-icon {
+      font-size: 32px;
+    }
+    
+    .hero-title {
+      font-size: 26px;
+    }
+    
+    .hero-subtitle {
+      font-size: 14px;
+      text-align: center;
+    }
+  }
+  
+  .main-content {
+    padding: 24px 12px;
+  }
+  
+  .contact-form-card,
+  .info-card,
+  .social-card,
+  .response-card {
+    margin-bottom: 16px;
+    border-radius: 12px;
+    
+    ::ng-deep .ant-card-head {
+      padding: 12px 16px;
+      
+      .ant-card-head-title {
+        font-size: 16px;
+      }
+    }
+    
+    ::ng-deep .ant-card-body {
+      padding: 16px;
+    }
+  }
+  
+  .contact-info-item {
+    padding: 12px;
+    
+    .info-icon-wrapper {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .info-icon {
+      font-size: 18px;
+    }
+    
+    .info-title {
+      font-size: 11px;
+    }
+    
+    .info-text {
+      font-size: 14px;
+    }
+  }
+  
+  .social-buttons {
+    gap: 10px;
+    
+    .social-btn {
+      width: 44px;
+      height: 44px;
+      
+      span[nz-icon] {
+        font-size: 20px;
+      }
+    }
+  }
+  
+  .response-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+    
+    .response-icon {
+      font-size: 28px;
+    }
+    
+    .response-title {
+      font-size: 15px;
+    }
+    
+    .response-text {
+      font-size: 13px;
+    }
+  }
+  
+  .faq-section {
+    margin-top: 16px;
+    margin-bottom: 24px;
+    
+    .faq-card {
+      border-radius: 12px;
+      
+      ::ng-deep .ant-card-body {
+        padding: 14px;
+      }
+    }
+    
+    .faq-question {
+      font-size: 14px;
+      gap: 8px;
+    }
+    
+    .faq-icon {
+      font-size: 16px;
+    }
+    
+    .faq-answer {
+      font-size: 13px;
+      padding-left: 24px;
+    }
+  }
+  
+  .help-card {
+    border-radius: 12px;
+    
+    ::ng-deep .ant-card-body {
+      padding: 16px;
+    }
+    
+    .help-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 12px;
+    }
+    
+    .help-icon {
+      font-size: 28px;
+    }
+    
+    .help-title {
+      font-size: 16px;
+    }
+    
+    .help-text {
+      font-size: 13px;
+    }
+  }
+  
+  ::ng-deep {
+    .ant-divider-inner-text {
+      font-size: 16px;
+    }
+    
+    .ant-form-item {
+      margin-bottom: 14px;
+    }
+    
+    .ant-input,
+    .ant-select-selector {
+      height: 44px !important;
+      font-size: 16px !important;
+    }
+    
+    .ant-btn-primary[nzBlock] {
+      height: 48px;
+      font-size: 16px;
+    }
+  }
+}

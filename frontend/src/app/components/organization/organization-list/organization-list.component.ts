@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { RouterLink } from '@angular/router';
 import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { OrganizationFilter } from '../../../models/organization/organization-filter';
 import { OrganizationType } from '../../../models/organization.model';
 import { extractErrorMessage } from '../../../utils/api-error';
@@ -38,6 +39,7 @@ import { AuthService } from '../../../services/auth/auth.service';
     NzSelectModule,
     FormsModule,
     NzTagModule,
+    NzAvatarModule,
   ],
   templateUrl: './organization-list.component.html',
   styleUrls: ['./organization-list.component.scss'],
@@ -144,5 +146,10 @@ export class OrganizationListComponent implements OnInit {
         );
       }
     );
+  }
+
+  getLogoUrl(relativePath: string | undefined | null): string {
+    const url = this.organizationService.getLogoUrl(relativePath);
+    return url || '';
   }
 }

@@ -5,6 +5,7 @@
 <nz-table #basicTable [nzData]="organizations" [nzLoading]="loading">
   <thead>
     <tr>
+      <th nzWidth="60px">Logo</th>
       <th>Name</th>
       <th>Type</th>
       <th>Contact</th>
@@ -16,7 +17,18 @@
   <tbody>
     <tr *ngFor="let data of basicTable.data">
       <td>
-        <a [routerLink]="['/organizations', data.id]">{{ data.name }}</a>
+        <nz-avatar
+          [nzSize]="40"
+          [nzSrc]="getLogoUrl(data.logoUrl)"
+          [nzText]="data.name.charAt(0)"
+          nzIcon="bank"
+          nzShape="square"
+          class="org-logo"
+        >
+        </nz-avatar>
+      </td>
+      <td>
+        <a [routerLink]="['/organizations', data.id]" class="org-name-link">{{ data.name }}</a>
       </td>
       <td>{{ data.typeName }}</td>
       <td>{{ data.contactEmail }}</td>

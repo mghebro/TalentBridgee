@@ -53,12 +53,12 @@ export class VacancyManagementComponent implements OnInit {
     const modal = this.modalService.create({
       nzTitle: vacancyId ? 'Edit Vacancy' : 'Create Vacancy',
       nzContent: VacancyFormComponent,
-      nzComponentParams: {
+      nzData: {
         vacancyId: vacancyId,
       },
       nzFooter: null,
       nzWidth: '80%',
-    } as any);
+    });
 
     modal.afterClose.subscribe((result) => {
       if (result === 'created' || result === 'updated') {
@@ -73,12 +73,12 @@ export class VacancyManagementComponent implements OnInit {
     const modal = this.modalService.create({
       nzTitle: `Assign Test to ${vacancy.title}`,
       nzContent: AssignTestModalComponent,
-      nzComponentParams: {
+      nzData: {
         vacancy: vacancy,
       },
       nzFooter: null,
       nzWidth: '80%',
-    } as any);
+    });
 
     modal.afterClose.subscribe((result) => {
       if (result === 'assigned') {

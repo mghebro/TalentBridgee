@@ -42,8 +42,16 @@
            
               <nz-dropdown-menu #userMenu="nzDropdownMenu">
                 <ul nz-menu>
-                  <li nz-menu-item>Profile</li>
-                  <li nz-menu-item (click)="logout()">Logout</li>
+                  <li nz-menu-item routerLink="/dashboard">
+                    <i nz-icon nzType="dashboard" nzTheme="outline"></i> Dashboard
+                  </li>
+                  <li nz-menu-item routerLink="/profile">
+                    <i nz-icon nzType="user" nzTheme="outline"></i> Profile
+                  </li>
+                  <li nz-menu-divider></li>
+                  <li nz-menu-item (click)="logout()">
+                    <i nz-icon nzType="logout" nzTheme="outline"></i> Logout
+                  </li>
                 </ul>
               </nz-dropdown-menu>
           </ng-container>
@@ -82,19 +90,24 @@
 
 <ng-template #menuContent let-inDrawer="inDrawer">
   <ul class="nz-menu" nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed && !inDrawer">
-    <!-- <li nz-menu-item routerLink="/welcome" (click)="inDrawer && closeDrawer()">
-      <i nz-icon nzType="dashboard"></i>
-      <span>Dashboard</span>
-    </li> -->
+    <ng-container *ngIf="currentUser$ | async as user">
+      <li nz-menu-item routerLink="/dashboard" (click)="inDrawer && closeDrawer()">
+        <i nz-icon nzType="dashboard"></i>
+        <span>Dashboard</span>
+      </li>
+    </ng-container>
+    
     <li nz-menu-item routerLink="/vacancies" (click)="inDrawer && closeDrawer()">
-      <i nz-icon nzType="profile"></i>
-      <span>Vacancies</span>
+      <i nz-icon nzType="search"></i>
+      <span>Browse Jobs</span>
     </li>
+    
     <li nz-submenu nzTitle="Organizations" nzIcon="bank">
       <ul>
         <li nz-menu-item routerLink="/organizations" (click)="inDrawer && closeDrawer()">List</li>
       </ul>
     </li>
+    
     <ng-container *ngIf="currentUser$ | async as user">
       <li
         nz-menu-item
@@ -117,28 +130,29 @@
 
       <li
         nz-submenu
-        nzTitle="Tests"
-        nzIcon="form"
-        *ngIf="user.role === 'ORGANIZATION_ADMIN' || user.role === 'HR_MANAGER'"
-      >
-        <ul>
-          <li nz-menu-item routerLink="/tests" (click)="inDrawer && closeDrawer()">List</li>
-          <li nz-menu-item routerLink="/tests/new" (click)="inDrawer && closeDrawer()">Create</li>
-        </ul>
-      </li>
-      <li
-        nz-submenu
-        nzTitle="Vacancies"
+        nzTitle="Manage Vacancies"
         nzIcon="profile"
         *ngIf="user.role === 'ORGANIZATION_ADMIN' || user.role === 'HR_MANAGER'"
       >
         <ul>
           <li nz-menu-item routerLink="/vacancy-management" (click)="inDrawer && closeDrawer()">
-            Manage Vacancies
+            All Vacancies
           </li>
           <li nz-menu-item routerLink="/applications" (click)="inDrawer && closeDrawer()">
-            View Applications
+            Applications
           </li>
+        </ul>
+      </li>
+      
+      <li
+        nz-submenu
+        nzTitle="Tests"
+        nzIcon="form"
+        *ngIf="user.role === 'ORGANIZATION_ADMIN' || user.role === 'HR_MANAGER'"
+      >
+        <ul>
+          <li nz-menu-item routerLink="/tests" (click)="inDrawer && closeDrawer()">All Tests</li>
+          <li nz-menu-item routerLink="/tests/new" (click)="inDrawer && closeDrawer()">Create Test</li>
         </ul>
       </li>
     </ng-container>

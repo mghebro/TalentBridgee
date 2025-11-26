@@ -12,6 +12,7 @@ using TalentBridge.Modules.Organizations;
 using TalentBridge.Modules.Vacancies;
 using TalentBridge.Modules.Applications;
 using TalentBridge.Modules.Tests;
+using TalentBridge.Modules.UserProfile;
 
 namespace TalentBridge.Core.Extensions;
 
@@ -93,6 +94,7 @@ public static class ServiceExtensions
         services.AddVacanciesModule();
         services.AddApplicationsModule();
         services.AddTestsModule();
+        services.AddUserProfileModule();
         return services;
     }
 

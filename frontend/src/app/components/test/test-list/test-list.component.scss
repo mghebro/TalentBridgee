@@ -1,4 +1,102 @@
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$grey-50: #f8fafc;
+$grey-200: #e2e8f0;
+$grey-600: #475569;
+$grey-900: #0f172a;
+
 :host {
-  padding: 24px;
   display: block;
+  padding: 24px;
+  
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+  
+  @media (max-width: 576px) {
+    padding: 12px;
+  }
+}
+
+.test-list-container {
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: $grey-900;
+    margin-bottom: 24px;
+    
+    @media (max-width: 768px) {
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+    
+    @media (max-width: 576px) {
+      font-size: 22px;
+    }
+  }
+}
+
+::ng-deep {
+  .ant-list-grid {
+    @media (max-width: 576px) {
+      .ant-col {
+        padding: 6px !important;
+      }
+    }
+  }
+  
+  .ant-card {
+    height: 100%;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    @media (max-width: 576px) {
+      border-radius: 12px;
+    }
+    
+    .ant-card-head {
+      @media (max-width: 576px) {
+        padding: 12px 16px;
+      }
+      
+      .ant-card-head-title {
+        font-size: 18px;
+        font-weight: 600;
+        
+        @media (max-width: 576px) {
+          font-size: 16px;
+        }
+      }
+    }
+    
+    .ant-card-body {
+      padding: 16px 20px;
+      
+      @media (max-width: 576px) {
+        padding: 12px 16px;
+      }
+      
+      p {
+        margin: 0;
+        font-size: 14px;
+        color: $grey-600;
+        line-height: 1.6;
+        
+        @media (max-width: 576px) {
+          font-size: 13px;
+        }
+      }
+    }
+  }
+  
+  a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
 }

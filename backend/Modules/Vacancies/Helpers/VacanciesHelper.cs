@@ -7,7 +7,7 @@ using TalentBridge.Modules.Vacancies.DTOs.Responses;
 
 namespace TalentBridge.Modules.Vacancies.Helpers;
 
-public class VacanciesHelper : Profile
+public class VacanciesHelper : AutoMapper.Profile
 {
      public VacanciesHelper()
      {

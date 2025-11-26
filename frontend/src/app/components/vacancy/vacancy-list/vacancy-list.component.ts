@@ -9,9 +9,14 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { VacancyFilter } from '../../../models/vacancy/vacancy-filter';
 import { EmploymentType } from '../../../models/enums';
 import { Router } from '@angular/router';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-vacancy-list',
@@ -25,6 +30,10 @@ import { Router } from '@angular/router';
     NzInputModule,
     NzButtonModule,
     NzSelectModule,
+    NzTagModule,
+    NzAvatarModule,
+    NzEmptyModule,
+    NzIconModule,
   ],
   templateUrl: './vacancy-list.component.html',
   styleUrls: ['./vacancy-list.component.scss'],
@@ -33,6 +42,7 @@ export class VacancyListComponent implements OnInit {
   vacancies: Vacancy[] = [];
   filter: VacancyFilter = {};
   employmentTypes = Object.values(EmploymentType);
+  viewMode: 'grid' | 'list' = 'grid';
 
   constructor(private vacancyService: VacancyService, private router: Router) {}
 
@@ -52,5 +62,11 @@ export class VacancyListComponent implements OnInit {
 
   viewVacancy(vacancy: Vacancy): void {
     this.router.navigate(['/vacancies', vacancy.id]);
+  }
+
+  getLogoUrl(relativePath: string | null | undefined): string {
+    if (!relativePath) return '';
+    const baseUrl = environment.apiUrl.replace('/api', '');
+    return `${baseUrl}${relativePath}`;
   }
 }
