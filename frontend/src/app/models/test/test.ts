@@ -10,6 +10,7 @@ export interface Test {
   passingScore: number;
   difficulty: string;
   questions: Question[];
+  questionCount?: number;
 }
 
 export interface TestForApplicationResponse {

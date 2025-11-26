@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ApplicationService } from '../../../services/application/application.service';
 import { Application } from '../../../models/application/application';
 import { ApplicationStatus } from '../../../models/enums';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
@@ -11,35 +11,57 @@ import { CommonModule } from '@angular/common';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { extractErrorMessage } from '../../../utils/api-error';
+import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-application-list',
   standalone: true,
-  imports: [CommonModule, NzTableModule, NzTagModule, NzDividerModule, NzDropDownModule, RouterLink, NzIconModule, NzMenuModule],
+  imports: [
+    CommonModule,
+    NzTableModule,
+    NzTagModule,
+    NzDividerModule,
+    NzDropDownModule,
+    RouterLink,
+    NzIconModule,
+    NzMenuModule,
+    NzEmptyModule,
+  ],
   templateUrl: './application-list.component.html',
-  styleUrls: ['./application-list.component.scss']
+  styleUrls: ['./application-list.component.scss'],
 })
 export class ApplicationListComponent implements OnInit {
   @Input() vacancyId?: string;
   applications: Application[] = [];
   loading = true;
-  ApplicationStatus = ApplicationStatus; // Make enum available in template
+  isOrgAdmin = false;
+  ApplicationStatus = ApplicationStatus; 
 
   constructor(
     private applicationService: ApplicationService,
     private route: ActivatedRoute,
-    private notification: NzNotificationService
-  ) { }
+    private router: Router,
+    private notification: NzNotificationService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
+    const user = this.authService.currentUserValue;
+    this.isOrgAdmin = user?.role === 'ORGANIZATION_ADMIN' || user?.role === 'HR_MANAGER';
+
+    this.route.params.subscribe((params) => {
       if (params['vacancyId']) {
         this.vacancyId = params['vacancyId'];
         if (this.vacancyId) {
           this.loadApplicationsForVacancy(this.vacancyId);
         }
       } else {
+        if (this.isOrgAdmin) {
+          this.router.navigate(['/vacancy-management']);
+          return;
+        }
         this.loadMyApplications();
       }
     });
@@ -48,14 +70,14 @@ export class ApplicationListComponent implements OnInit {
   loadMyApplications(): void {
     this.loading = true;
     this.applicationService.getMyApplications().subscribe({
-      next: data => {
+      next: (data) => {
         this.applications = data;
         this.loading = false;
       },
-      error: error => {
+      error: (error) => {
         this.notification.error('Error', extractErrorMessage(error, 'Failed to load applications'));
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -68,27 +90,35 @@ export class ApplicationListComponent implements OnInit {
       return;
     }
     this.applicationService.getApplicationsForVacancy(numericId).subscribe({
-      next: data => {
+      next: (data) => {
         this.applications = data;
         this.loading = false;
       },
-      error: error => {
-        this.notification.error('Error', extractErrorMessage(error, 'Failed to load applications for vacancy'));
+      error: (error) => {
+        this.notification.error(
+          'Error',
+          extractErrorMessage(error, 'Failed to load applications for vacancy')
+        );
         this.loading = false;
-      }
+      },
     });
   }
 
   updateStatus(application: Application, status: string): void {
-    this.applicationService.updateApplicationStatus(application.id, status as ApplicationStatus).subscribe({
-      next: () => {
-        this.notification.success('Success', 'Application status updated successfully');
-        application.status = status;
-      },
-      error: error => {
-        this.notification.error('Error', extractErrorMessage(error, 'Failed to update application status'));
-      }
-    });
+    this.applicationService
+      .updateApplicationStatus(application.id, status as ApplicationStatus)
+      .subscribe({
+        next: () => {
+          this.notification.success('Success', 'Application status updated successfully');
+          application.status = status;
+        },
+        error: (error) => {
+          this.notification.error(
+            'Error',
+            extractErrorMessage(error, 'Failed to update application status')
+          );
+        },
+      });
   }
 
   getStatusColor(status: string): string {

@@ -22,10 +22,12 @@ public class TestListResponse
 {
     public int Id { get; set; }
     public string Title { get; set; }
+    public string? Description { get; set; }
     public string OrganizationName { get; set; }
     public string Profession { get; set; }
     public TEST_DIFFICULTY Difficulty { get; set; }
     public int DurationMinutes { get; set; }
+    public decimal PassingScore { get; set; }
     public decimal TotalPoints { get; set; }
     public int QuestionCount { get; set; }
 }

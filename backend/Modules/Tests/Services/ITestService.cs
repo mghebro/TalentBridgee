@@ -18,4 +18,6 @@ public interface ITestService
     Task<ServiceResult<PaginatedResult<TestListResponse>>> GetTestsAsync(TestFilterRequest request);
     Task<ServiceResult<TestAssignmentResponse>> AssignTestAsync(CreateTestAssignmentRequest request, int userId);
     Task<ServiceResult<SubmissionAnswerResponse>> GradeSubmissionAnswerAsync(int submissionAnswerId, GradeAnswerRequest request, int hrManagerUserId);
+    Task<ServiceResult<PaginatedResult<TestListResponse>>> GetAssignedTestsForUserAsync(int userId);
+    Task<ServiceResult<PaginatedResult<TestListResponse>>> GetTestsCreatedByUserAsync(int userId);
 }

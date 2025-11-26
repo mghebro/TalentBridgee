@@ -19,6 +19,9 @@ import { OrganizationFilter } from '../../../models/organization/organization-fi
 import { OrganizationType } from '../../../models/organization.model';
 import { extractErrorMessage } from '../../../utils/api-error';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { map, Observable } from 'rxjs';
 import { User } from '../../../models/user.model';
 import { AuthService } from '../../../services/auth/auth.service';
@@ -40,6 +43,9 @@ import { AuthService } from '../../../services/auth/auth.service';
     FormsModule,
     NzTagModule,
     NzAvatarModule,
+    NzIconModule,
+    NzEmptyModule,
+    NzSpinModule,
   ],
   templateUrl: './organization-list.component.html',
   styleUrls: ['./organization-list.component.scss'],
@@ -95,9 +101,6 @@ export class OrganizationListComponent implements OnInit {
   }
 
   onQueryParamsChange(params: NzTableQueryParams): void {
-    // No longer handling pagination and sorting via query params in this component
-    // as the OrganizationFilter model has changed.
-    // If pagination/sorting is needed, OrganizationFilter needs to be updated.
   }
 
   openCreateModal(): void {

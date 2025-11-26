@@ -49,7 +49,6 @@ export class VacancyFormComponent implements OnInit {
   vacancy?: VacancyDetails;
   isLoading = false;
 
-  // Enums for template
   EmploymentType = Object.values(EmploymentType);
   ExperienceLevel = Object.values(ExperienceLevel);
   VacancyStatus = Object.values(VacancyStatus);
@@ -73,7 +72,6 @@ export class VacancyFormComponent implements OnInit {
       this.vacancyService.getVacancyById(this.vacancyId!).subscribe({
         next: (vacancy) => {
           this.vacancy = vacancy;
-          // Properly map the vacancy data to form
           this.form.patchValue({
             title: vacancy.title,
             organizationId: vacancy.organizationId,
@@ -90,7 +88,9 @@ export class VacancyFormComponent implements OnInit {
             location: vacancy.location,
             isRemote: vacancy.isRemote,
             status: vacancy.status,
-            applicationDeadline: vacancy.applicationDeadline ? new Date(vacancy.applicationDeadline) : null,
+            applicationDeadline: vacancy.applicationDeadline
+              ? new Date(vacancy.applicationDeadline)
+              : null,
           });
           this.isLoading = false;
         },
@@ -190,4 +190,8 @@ export class VacancyFormComponent implements OnInit {
   cancel(): void {
     this.modalRef.destroy();
   }
+
+  disabledDate = (current: Date): boolean => {
+    return current && current < new Date(new Date().setHours(0, 0, 0, 0));
+  };
 }

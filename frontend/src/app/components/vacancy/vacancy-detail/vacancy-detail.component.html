@@ -1,47 +1,139 @@
-<div class="vacancy-detail-container" *ngIf="vacancy">
-  <nz-card [nzTitle]="vacancy.title">
-    <p>
-      <strong>{{ vacancy.organizationName || 'Organization' }}</strong>
-    </p>
-    <p>
-      <strong>Location:</strong> {{ vacancy.location }}
-      <span *ngIf="vacancy.isRemote">(Remote)</span>
-    </p>
-    <p>
-      <strong>Employment Type:</strong> {{ vacancy.employmentTypeName || vacancy.employmentType }}
-    </p>
-    <p>
-      <strong>Experience Level:</strong>
-      {{ vacancy.experienceLevelName || vacancy.experienceLevel }}
-    </p>
-    <p>
-      <strong>Salary:</strong>
-      {{ vacancy.salaryRange || 'From ' + vacancy.salaryMin + ' ' + vacancy.salaryCurrency }}
-    </p>
-    <p><strong>Status:</strong> {{ vacancy.statusName || vacancy.status }}</p>
-    <p><strong>Application Deadline:</strong> {{ vacancy.applicationDeadline | date }}</p>
-    <p *ngIf="vacancy.publishedAt">
-      <strong>Published At:</strong> {{ vacancy.publishedAt | date }}
-    </p>
-
-    <h3>Description</h3>
-    <p>{{ vacancy.description }}</p>
-
-    <h3>Requirements</h3>
-    <p>{{ vacancy.requirements }}</p>
-
-    <h3>Responsibilities</h3>
-    <p>{{ vacancy.responsibilities }}</p>
-
-    <div class="vacancy-actions">
-      <button nz-button nzType="default" *ngIf="canViewApplications()" (click)="viewApplications()">
-        View Applications
-      </button>
-      <button nz-button nzType="primary" (click)="apply()" [disabled]="!canApply() || isApplying || hasApplied">
-        <span *ngIf="isApplying">Applying...</span>
-        <span *ngIf="!isApplying && !hasApplied">Apply Now</span>
-        <span *ngIf="!isApplying && hasApplied">Already Applied</span>
-      </button>
+<div class="vacancy-detail-page" *ngIf="vacancy">
+  <div class="vacancy-header">
+    <div class="header-content">
+      <div class="org-info">
+        <nz-avatar
+          [nzSize]="64"
+          [nzSrc]="getLogoUrl(vacancy.organizationLogo || '')"
+          [nzText]="(vacancy.organizationName || 'O').charAt(0)"
+          nzIcon="bank"
+          nzShape="square"
+          class="org-avatar"
+        >
+        </nz-avatar>
+        <div class="org-details">
+          <span class="org-name">{{ vacancy.organizationName || 'Company' }}</span>
+          <span class="posted-date">Posted {{ vacancy.createdAt | date : 'MMM d, yyyy' }}</span>
+        </div>
+      </div>
+      <h1 class="job-title">{{ vacancy.title }}</h1>
+      <div class="job-meta">
+        <span class="meta-item">
+          <span nz-icon nzType="environment" nzTheme="outline"></span>
+          {{ vacancy.location }}
+          <nz-tag *ngIf="vacancy.isRemote" nzColor="green" class="remote-tag">Remote</nz-tag>
+        </span>
+        <span class="meta-item">
+          <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+          {{ vacancy.employmentTypeName || vacancy.employmentType }}
+        </span>
+        <span class="meta-item">
+          <span nz-icon nzType="trophy" nzTheme="outline"></span>
+          {{ vacancy.experienceLevelName || vacancy.experienceLevel }}
+        </span>
+      </div>
     </div>
-  </nz-card>
+  </div>
+
+  <div class="vacancy-content">
+    <div class="content-grid">
+      <div class="main-content">
+        <section class="content-section">
+          <h2 class="section-title">
+            <span nz-icon nzType="file-text" nzTheme="outline"></span>
+            Job Description
+          </h2>
+          <div class="section-content" [innerHTML]="formatContent(vacancy.description)"></div>
+        </section>
+
+        <section class="content-section">
+          <h2 class="section-title">
+            <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+            Requirements
+          </h2>
+          <div class="section-content" [innerHTML]="formatContent(vacancy.requirements)"></div>
+        </section>
+
+        <section class="content-section">
+          <h2 class="section-title">
+            <span nz-icon nzType="unordered-list" nzTheme="outline"></span>
+            Responsibilities
+          </h2>
+          <div class="section-content" [innerHTML]="formatContent(vacancy.responsibilities)"></div>
+        </section>
+      </div>
+      
+      <div class="sidebar">
+        <div class="sidebar-card apply-card">
+          <div class="salary-info" *ngIf="vacancy.salaryRange || vacancy.salaryMin">
+            <span class="salary-label">Salary</span>
+            <span class="salary-value">{{
+              vacancy.salaryRange || 'From ' + vacancy.salaryMin + ' ' + vacancy.salaryCurrency
+            }}</span>
+          </div>
+          <div class="deadline-info" *ngIf="vacancy.applicationDeadline">
+            <span class="deadline-label">Application Deadline</span>
+            <span class="deadline-value">{{
+              vacancy.applicationDeadline | date : 'MMMM d, yyyy'
+            }}</span>
+          </div>
+          <div class="status-info">
+            <nz-tag [nzColor]="vacancy.status === 'Active' ? 'green' : 'default'">{{
+              vacancy.statusName || vacancy.status
+            }}</nz-tag>
+          </div>
+          <div class="apply-actions">
+            <button
+              nz-button
+              nzType="primary"
+              nzSize="large"
+              nzBlock
+              (click)="apply()"
+              [disabled]="!canApply() || isApplying || hasApplied"
+              [nzLoading]="isApplying"
+            >
+              <span *ngIf="!isApplying && !hasApplied">
+                <span nz-icon nzType="send" nzTheme="outline"></span>
+                Apply Now
+              </span>
+              <span *ngIf="hasApplied">
+                <span nz-icon nzType="check" nzTheme="outline"></span>
+                Already Applied
+              </span>
+            </button>
+            <button
+              nz-button
+              nzSize="large"
+              nzBlock
+              *ngIf="canViewApplications()"
+              (click)="viewApplications()"
+            >
+              <span nz-icon nzType="team" nzTheme="outline"></span>
+              View Applications
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-card info-card">
+          <h3 class="card-title">Job Details</h3>
+          <div class="info-row">
+            <span class="info-label">Industry</span>
+            <span class="info-value">{{ vacancy.industry || 'Not specified' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Profession</span>
+            <span class="info-value">{{ vacancy.profession || 'Not specified' }}</span>
+          </div>
+          <div class="info-row" *ngIf="vacancy.publishedAt">
+            <span class="info-label">Published</span>
+            <span class="info-value">{{ vacancy.publishedAt | date : 'MMM d, yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loading-container" *ngIf="!vacancy">
+  <nz-spin nzSize="large"></nz-spin>
 </div>

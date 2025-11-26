@@ -38,7 +38,7 @@ public class OrganizationServices : BaseService, IOrganizationServices
     
     public async Task<ServiceResult<OrganizationDetails>> CreateOrganizationAsync(
         CreateOrganizationRequest dto, 
-        IFormFile logoFile, 
+        IFormFile? logoFile, 
         int createdByUserId)
     {
         var user = await _context.Users.FindAsync(createdByUserId);
@@ -52,17 +52,6 @@ public class OrganizationServices : BaseService, IOrganizationServices
             return ServiceResult<OrganizationDetails>.FailureResult("Organization with this name already exists");
 
         Organization organization = _mapper.Map<Organization>(dto);
-        
-        
-
-        if (logoFile != null)
-        {
-            var logoResult = await ValidateAndProcessLogoAsync(logoFile);
-            if (!logoResult.Success)
-                return ServiceResult<OrganizationDetails>.FailureResult(logoResult.Errors);
-            
-            organization.Logo = logoResult.Data;
-        }
 
         organization.UserId = createdByUserId;
         organization.IsActive = true;
@@ -70,8 +59,30 @@ public class OrganizationServices : BaseService, IOrganizationServices
         _context.Organizations.Add(organization);
         await _context.SaveChangesAsync();
 
-        var organizationDetails = await GetOrganizationDetailsWithStats(organization.Id);
+        if (logoFile != null)
+        {
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".svg" };
+            var extension = Path.GetExtension(logoFile.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(extension))
+                return ServiceResult<OrganizationDetails>.FailureResult("Only JPG, PNG, WebP, and SVG images are allowed");
 
+            const int maxSize = 2 * 1024 * 1024;
+            if (logoFile.Length > maxSize)
+                return ServiceResult<OrganizationDetails>.FailureResult("Image size must be less than 2MB");
+
+            var fileName = $"org_{organization.Id}_{DateTime.UtcNow.Ticks}{extension}";
+            var filePath = Path.Combine(_uploadsFolder, fileName);
+            
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await logoFile.CopyToAsync(stream);
+            }
+
+            organization.LogoUrl = $"/uploads/organizations/{fileName}";
+            await _context.SaveChangesAsync();
+        }
+
+        var organizationDetails = await GetOrganizationDetailsWithStats(organization.Id);
 
         return ServiceResult<OrganizationDetails>.SuccessResult(
             organizationDetails,
@@ -176,14 +187,44 @@ public class OrganizationServices : BaseService, IOrganizationServices
 
         if (logoFile != null)
         {
-            var logoResult = await ValidateAndProcessLogoAsync(logoFile);
-            if (!logoResult.Success)
-                return ServiceResult<OrganizationDetails>.FailureResult(logoResult.Errors);
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".svg" };
+            var extension = Path.GetExtension(logoFile.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(extension))
+                return ServiceResult<OrganizationDetails>.FailureResult("Only JPG, PNG, WebP, and SVG images are allowed");
+
+            const int maxSize = 2 * 1024 * 1024;
+            if (logoFile.Length > maxSize)
+                return ServiceResult<OrganizationDetails>.FailureResult("Image size must be less than 2MB");
+
+            if (!string.IsNullOrEmpty(organization.LogoUrl))
+            {
+                var oldPath = Path.Combine(_environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), 
+                    organization.LogoUrl.TrimStart('/'));
+                if (File.Exists(oldPath))
+                    File.Delete(oldPath);
+            }
+
+            var fileName = $"org_{id}_{DateTime.UtcNow.Ticks}{extension}";
+            var filePath = Path.Combine(_uploadsFolder, fileName);
             
-            organization.Logo = logoResult.Data;
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await logoFile.CopyToAsync(stream);
+            }
+
+            organization.LogoUrl = $"/uploads/organizations/{fileName}";
+            organization.Logo = null; 
         }
         else if (dto.DeleteLogo)
         {
+            if (!string.IsNullOrEmpty(organization.LogoUrl))
+            {
+                var oldPath = Path.Combine(_environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), 
+                    organization.LogoUrl.TrimStart('/'));
+                if (File.Exists(oldPath))
+                    File.Delete(oldPath);
+            }
+            organization.LogoUrl = null;
             organization.Logo = null;
         }
 

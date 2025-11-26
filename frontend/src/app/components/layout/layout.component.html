@@ -39,21 +39,21 @@
               <i nz-icon nzType="user" nzTheme="outline"></i> {{ user.firstName }}
               {{ user.lastName }} <i nz-icon nzType="down"></i>
             </a>
-           
-              <nz-dropdown-menu #userMenu="nzDropdownMenu">
-                <ul nz-menu>
-                  <li nz-menu-item routerLink="/dashboard">
-                    <i nz-icon nzType="dashboard" nzTheme="outline"></i> Dashboard
-                  </li>
-                  <li nz-menu-item routerLink="/profile">
-                    <i nz-icon nzType="user" nzTheme="outline"></i> Profile
-                  </li>
-                  <li nz-menu-divider></li>
-                  <li nz-menu-item (click)="logout()">
-                    <i nz-icon nzType="logout" nzTheme="outline"></i> Logout
-                  </li>
-                </ul>
-              </nz-dropdown-menu>
+
+            <nz-dropdown-menu #userMenu="nzDropdownMenu">
+              <ul nz-menu>
+                <li nz-menu-item routerLink="/dashboard">
+                  <i nz-icon nzType="dashboard" nzTheme="outline"></i> Dashboard
+                </li>
+                <li nz-menu-item routerLink="/profile">
+                  <i nz-icon nzType="user" nzTheme="outline"></i> Profile
+                </li>
+                <li nz-menu-divider></li>
+                <li nz-menu-item (click)="logout()">
+                  <i nz-icon nzType="logout" nzTheme="outline"></i> Logout
+                </li>
+              </ul>
+            </nz-dropdown-menu>
           </ng-container>
           <ng-template #loginRegister>
             <a routerLink="auth/login" class="login-link">Login</a>
@@ -89,25 +89,31 @@
 </nz-drawer>
 
 <ng-template #menuContent let-inDrawer="inDrawer">
-  <ul class="nz-menu" nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed && !inDrawer">
+  <ul
+    class="nz-menu"
+    nz-menu
+    nzTheme="dark"
+    nzMode="inline"
+    [nzInlineCollapsed]="isCollapsed && !inDrawer"
+  >
     <ng-container *ngIf="currentUser$ | async as user">
       <li nz-menu-item routerLink="/dashboard" (click)="inDrawer && closeDrawer()">
         <i nz-icon nzType="dashboard"></i>
         <span>Dashboard</span>
       </li>
     </ng-container>
-    
+
     <li nz-menu-item routerLink="/vacancies" (click)="inDrawer && closeDrawer()">
       <i nz-icon nzType="search"></i>
       <span>Browse Jobs</span>
     </li>
-    
+
     <li nz-submenu nzTitle="Organizations" nzIcon="bank">
       <ul>
         <li nz-menu-item routerLink="/organizations" (click)="inDrawer && closeDrawer()">List</li>
       </ul>
     </li>
-    
+
     <ng-container *ngIf="currentUser$ | async as user">
       <li
         nz-menu-item
@@ -143,17 +149,15 @@
           </li>
         </ul>
       </li>
-      
+
       <li
-        nz-submenu
-        nzTitle="Tests"
-        nzIcon="form"
+        nz-menu-item
+        routerLink="/tests"
         *ngIf="user.role === 'ORGANIZATION_ADMIN' || user.role === 'HR_MANAGER'"
+        (click)="inDrawer && closeDrawer()"
       >
-        <ul>
-          <li nz-menu-item routerLink="/tests" (click)="inDrawer && closeDrawer()">All Tests</li>
-          <li nz-menu-item routerLink="/tests/new" (click)="inDrawer && closeDrawer()">Create Test</li>
-        </ul>
+        <i nz-icon nzType="form"></i>
+        <span>Tests</span>
       </li>
     </ng-container>
 

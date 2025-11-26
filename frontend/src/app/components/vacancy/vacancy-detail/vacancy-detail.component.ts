@@ -11,11 +11,25 @@ import { User } from '../../../models/auth/user';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { ApplyModalComponent } from '../apply-modal/apply-modal.component';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-vacancy-detail',
   standalone: true,
-  imports: [CommonModule, NzCardModule, NzButtonModule, NzModalModule],
+  imports: [
+    CommonModule,
+    NzCardModule,
+    NzButtonModule,
+    NzModalModule,
+    NzAvatarModule,
+    NzTagModule,
+    NzIconModule,
+    NzSpinModule,
+  ],
   templateUrl: './vacancy-detail.component.html',
   styleUrls: ['./vacancy-detail.component.scss'],
 })
@@ -23,7 +37,7 @@ export class VacancyDetailComponent implements OnInit {
   vacancy: VacancyDetails | undefined;
   currentUser: User | null = null;
   hasApplied = false;
-  isApplying = false; 
+  isApplying = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -62,7 +76,9 @@ export class VacancyDetailComponent implements OnInit {
   }
 
   canApply(): boolean {
-    return !!this.currentUser && this.currentUser.role === 'USER' && !this.hasApplied && !this.isApplying;
+    return (
+      !!this.currentUser && this.currentUser.role === 'USER' && !this.hasApplied && !this.isApplying
+    );
   }
 
   apply(): void {
@@ -74,23 +90,34 @@ export class VacancyDetailComponent implements OnInit {
     if (!this.canApply()) {
       return;
     }
-    
-    this.isApplying = true; 
+
+    this.isApplying = true;
 
     if (this.vacancy) {
       this.vacancyService.applyToVacancy(this.vacancy.id).subscribe({
         next: () => {
           this.notification.success('Success', 'You have successfully applied for this vacancy.');
           this.hasApplied = true;
-          this.isApplying = false; 
+          this.isApplying = false;
         },
         error: (err) => {
           this.notification.error('Error', err.message);
-          this.isApplying = false; 
+          this.isApplying = false;
         },
       });
     } else {
-      this.isApplying = false; 
+      this.isApplying = false;
     }
+  }
+
+  getLogoUrl(logoUrl: string | null | undefined): string | undefined {
+    if (!logoUrl) return undefined;
+    const baseUrl = environment.apiUrl.replace('/api', '');
+    return `${baseUrl}${logoUrl}`;
+  }
+
+  formatContent(content: string | null | undefined): string {
+    if (!content) return '';
+    return content.replace(/\n/g, '<br>');
   }
 }

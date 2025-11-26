@@ -355,5 +355,69 @@ public class TestService : ITestService
             _ => QUESTION_TYPE.MultipleChoice
         };
     }
-    
+
+    public async Task<ServiceResult<PaginatedResult<TestListResponse>>> GetAssignedTestsForUserAsync(int userId)
+    {
+        var assignments = await _context.TestAssignments
+            .Include(ta => ta.Test)
+            .Include(ta => ta.Application)
+            .Where(ta => ta.Application.UserId == userId)
+            .OrderByDescending(ta => ta.AssignedAt)
+            .ToListAsync();
+
+        var tests = assignments.Select(ta => new TestListResponse
+        {
+            Id = ta.Test.Id,
+            Title = ta.Test.Title,
+            Description = ta.Test.Description,
+            DurationMinutes = ta.Test.DurationMinutes,
+            PassingScore = ta.Test.PassingScore,
+            Difficulty = ta.Test.Difficulty,
+            QuestionCount = ta.Test.Questions?.Count ?? 0,
+        }).ToList();
+
+        var result = new PaginatedResult<TestListResponse>
+        {
+            Items = tests,
+            TotalItems = tests.Count,
+            Page = 1,
+            PageSize = tests.Count
+        };
+
+        return ServiceResult<PaginatedResult<TestListResponse>>.SuccessResult(result);
+    }
+
+    public async Task<ServiceResult<PaginatedResult<TestListResponse>>> GetTestsCreatedByUserAsync(int userId)
+    {
+        var hrManagerIds = await _context.HrManagers
+            .Where(hr => hr.UserId == userId)
+            .Select(hr => hr.OrganizationId)
+            .ToListAsync();
+
+        var tests = await _context.Tests
+            .Include(t => t.Questions)
+            .Where(t => hrManagerIds.Contains(t.OrganizationId))
+            .OrderByDescending(t => t.CreatedAt)
+            .Select(t => new TestListResponse
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Description = t.Description,
+                DurationMinutes = t.DurationMinutes,
+                PassingScore = t.PassingScore,
+                Difficulty = t.Difficulty,
+                QuestionCount = t.Questions.Count,
+            })
+            .ToListAsync();
+
+        var result = new PaginatedResult<TestListResponse>
+        {
+            Items = tests,
+            TotalItems = tests.Count,
+            Page = 1,
+            PageSize = tests.Count
+        };
+
+        return ServiceResult<PaginatedResult<TestListResponse>>.SuccessResult(result);
+    }
 }

@@ -24,6 +24,7 @@ export interface Vacancy {
   viewCount: number;
   applicationCount: number;
   createdAt: string;
+  testId?: number | null;
 }
 
 export interface VacancyDetails extends Vacancy {

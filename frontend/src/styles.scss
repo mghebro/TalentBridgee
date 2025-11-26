@@ -411,7 +411,7 @@ cdk-virtual-scroll-viewport {
     font-size: 20px;
   }
 }
-[nz-col]{
+[nz-col] {
   padding-bottom: 12px !important;
 }
 @media (max-width: 576px) {
@@ -419,9 +419,106 @@ cdk-virtual-scroll-viewport {
     margin-left: -8px !important;
     margin-right: -8px !important;
   }
-  
+
   [nz-col] {
     padding-left: 8px !important;
     padding-right: 8px !important;
   }
+}
+
+.ant-modal {
+  .ant-modal-content {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .ant-modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+
+    .ant-modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #0f172a;
+    }
+  }
+
+  .ant-modal-body {
+    padding: 24px;
+  }
+
+  .ant-modal-close {
+    top: 16px;
+    right: 16px;
+
+    .ant-modal-close-x {
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      border-radius: 8px;
+      transition: background 0.2s;
+
+      &:hover {
+        background: #f1f5f9;
+      }
+    }
+  }
+}
+
+.ant-select-dropdown {
+  min-width: 200px !important;
+  max-width: 400px !important;
+
+  .ant-select-item-option-content {
+    white-space: normal !important;
+    word-break: break-word;
+  }
+}
+
+.ant-select:not(.ant-select-customize-input) {
+  .ant-select-selector {
+    min-height: 38px;
+  }
+}
+
+.ant-select-dropdown.ant-select-dropdown-placement-bottomLeft,
+.ant-select-dropdown.ant-select-dropdown-placement-topLeft {
+  min-width: fit-content !important;
+}
+
+.ant-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s;
+
+  &.ant-btn-primary {
+    background: #3b82f6;
+    border-color: #3b82f6;
+
+    &:hover,
+    &:focus {
+      background: #2563eb;
+      border-color: #2563eb;
+    }
+  }
+
+  &.ant-btn-lg {
+    height: 44px;
+    padding: 0 20px;
+    font-size: 15px;
+  }
+}
+
+.ant-tag {
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-size: 13px;
+  border: none;
+}
+
+.ant-card {
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: none;
 }

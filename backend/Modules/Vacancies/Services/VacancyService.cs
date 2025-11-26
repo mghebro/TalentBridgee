@@ -273,4 +273,25 @@ public class VacancyService : IVacancyService
         var vacancyDetails = _mapper.Map<VacancyDetails>(vacancy);
         return ServiceResult<VacancyDetails>.SuccessResult(vacancyDetails, "Test assigned successfully.");
     }
+
+    public async Task<ServiceResult<List<VacancyList>>> GetVacanciesForCurrentUserAsync(int userId)
+    {
+        var hrManagers = await _context.HrManagers
+            .Where(hr => hr.UserId == userId)
+            .Select(hr => hr.OrganizationId)
+            .ToListAsync();
+
+        if (!hrManagers.Any())
+            return ServiceResult<List<VacancyList>>.SuccessResult(new List<VacancyList>());
+
+        var vacancies = await _context.Vacancies
+            .Include(v => v.Organization)
+            .Include(v => v.Applications)
+            .Where(v => hrManagers.Contains(v.OrganizationId) && !v.IsDeleted)
+            .OrderByDescending(v => v.CreatedAt)
+            .ToListAsync();
+
+        var vacancyList = _mapper.Map<List<VacancyList>>(vacancies);
+        return ServiceResult<List<VacancyList>>.SuccessResult(vacancyList);
+    }
 }

@@ -1,36 +1,57 @@
-<div class="vacancy-management-container">
-  <h1>Vacancy Management</h1>
-  <button nz-button nzType="primary" (click)="openVacancyModal()">Create Vacancy</button>
+<div class="vacancy-management-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Vacancy Management</h1>
+      <p class="subtitle">Create and manage job postings for your organization</p>
+    </div>
+    <button nz-button nzType="primary" nzSize="large" (click)="openVacancyModal()">
+      <span nz-icon nzType="plus" nzTheme="outline"></span>
+      Create Vacancy
+    </button>
+  </div>
 
-  <nz-table #vacancyTable [nzData]="vacancies">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Location</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let vacancy of vacancyTable.data">
-        <td>{{ vacancy.title }}</td>
-        <td>{{ vacancy.location }}</td>
-        <td>{{ vacancy.statusName || vacancy.status }}</td>
-        <td>
-          <button nz-button nzType="primary" (click)="openVacancyModal(vacancy.id)">Edit</button>
-          <button nz-button nzType="default" (click)="openAssignTestModal(vacancy)">Assign Test</button>
-          <button
-            nz-button
-            nzType="default"
-            [routerLink]="['/vacancies', vacancy.id, 'applications']"
-          >
+  <div class="content-section">
+    <nz-empty *ngIf="vacancies.length === 0" nzNotFoundContent="No vacancies yet. Create your first vacancy to get started!"></nz-empty>
+
+    <div class="vacancies-grid" *ngIf="vacancies.length > 0">
+      <div class="vacancy-card" *ngFor="let vacancy of vacancies">
+        <div class="card-header">
+          <h3 class="vacancy-title">{{ vacancy.title }}</h3>
+          <nz-tag [nzColor]="getStatusColor(vacancy.status)">{{ vacancy.statusName || vacancy.status }}</nz-tag>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <span nz-icon nzType="environment" nzTheme="outline"></span>
+            <span>{{ vacancy.location }}</span>
+            <nz-tag *ngIf="vacancy.isRemote" nzColor="green" class="remote-tag">Remote</nz-tag>
+          </div>
+          <div class="info-row">
+            <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+            <span>{{ vacancy.employmentTypeName || vacancy.employmentType }}</span>
+          </div>
+          <div class="info-row" *ngIf="vacancy.applicationDeadline">
+            <span nz-icon nzType="calendar" nzTheme="outline"></span>
+            <span>Deadline: {{ vacancy.applicationDeadline | date:'MMM d, yyyy' }}</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button nz-button nzType="default" (click)="openVacancyModal(vacancy.id)">
+            <span nz-icon nzType="edit" nzTheme="outline"></span>
+            Edit
+          </button>
+          <button nz-button nzType="default" (click)="openAssignTestModal(vacancy)">
+            <span nz-icon nzType="file-done" nzTheme="outline"></span>
+            Assign Test
+          </button>
+          <button nz-button nzType="default" [routerLink]="['/vacancies', vacancy.id, 'applications']">
+            <span nz-icon nzType="team" nzTheme="outline"></span>
             Applications
           </button>
-          <button nz-button nzType="default" nzDanger (click)="deleteVacancy(vacancy.id)">
-            Delete
+          <button nz-button nzType="default" nzDanger nz-popconfirm nzPopconfirmTitle="Are you sure you want to delete this vacancy?" (nzOnConfirm)="deleteVacancy(vacancy.id)">
+            <span nz-icon nzType="delete" nzTheme="outline"></span>
           </button>
-        </td>
-      </tr>
-    </tbody>
-  </nz-table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

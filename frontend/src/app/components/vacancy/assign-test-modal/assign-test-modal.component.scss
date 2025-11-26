@@ -1,117 +1,366 @@
 $primary-blue: #1e3a8a;
 $secondary-blue: #3b82f6;
 $grey-50: #f8fafc;
+$grey-100: #f1f5f9;
 $grey-200: #e2e8f0;
+$grey-400: #94a3b8;
 $grey-600: #475569;
 $grey-900: #0f172a;
 
-.assign-test-modal-container {
-  padding: 24px;
+.assign-test-modal-container,
+.test-view-container {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  max-height: calc(100vh - 250px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding: 40px;
+}
+
+.test-view-container {
+  padding: 0;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $grey-100;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $grey-400;
+    border-radius: 3px;
+
+    &:hover {
+      background: $grey-600;
+    }
+  }
+
+  .test-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid $grey-200;
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      h3 {
+        font-size: 20px;
+        font-weight: 600;
+        color: $grey-900;
+        margin: 0;
+      }
+    }
+
+    button {
+      height: 36px;
+    }
+  }
+
+  .questions-section {
+    margin-top: 24px;
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: $grey-900;
+      margin: 0 0 16px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid $grey-100;
+    }
+
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+
+      .question-card {
+        border-radius: 12px;
+        border: 1px solid $grey-200;
+
+        .question-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 12px;
+
+          h5 {
+            font-size: 15px;
+            font-weight: 600;
+            color: $grey-900;
+            margin: 0;
+          }
+
+          .question-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            .points {
+              font-size: 13px;
+              color: $grey-600;
+              font-weight: 500;
+            }
+
+            .time-limit {
+              display: flex;
+              align-items: center;
+              gap: 4px;
+              font-size: 13px;
+              color: $grey-600;
+
+              span[nz-icon] {
+                font-size: 14px;
+              }
+            }
+          }
+        }
+
+        .question-text {
+          font-size: 14px;
+          color: $grey-900;
+          margin: 0 0 12px 0;
+          line-height: 1.6;
+        }
+
+        .options-list {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          padding-top: 12px;
+          border-top: 1px solid $grey-100;
+
+          .option-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: $grey-50;
+            border-radius: 6px;
+            font-size: 14px;
+            color: $grey-900;
+
+            &.correct {
+              background: rgba(82, 196, 26, 0.1);
+              border: 1px solid rgba(82, 196, 26, 0.3);
+            }
+
+            span[nz-icon] {
+              font-size: 16px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .view-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid $grey-200;
+
+    button {
+      height: 40px;
+      padding: 0 20px;
+    }
+  }
+}
   
-  @media (max-width: 576px) {
-    padding: 16px;
+.assign-test-modal-container {
+  form.test-form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .form-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+    margin-right: -4px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: $grey-100;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: $grey-400;
+      border-radius: 3px;
+
+      &:hover {
+        background: $grey-600;
+      }
+    }
   }
 }
 
-.modal-header {
+.form-section {
   margin-bottom: 24px;
-  
-  h3 {
-    font-size: 18px;
+
+  .section-title {
+    font-size: 16px;
     font-weight: 600;
     color: $grey-900;
-    
-    @media (max-width: 576px) {
-      font-size: 16px;
-    }
-  }
-  
-  @media (max-width: 576px) {
-    margin-bottom: 16px;
-  }
-}
-
-.modal-content {
-  margin-bottom: 24px;
-  
-  @media (max-width: 576px) {
-    margin-bottom: 16px;
-  }
-}
-
-.modal-footer {
-  text-align: right;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  
-  @media (max-width: 576px) {
-    flex-direction: column-reverse;
-    gap: 8px;
-    
-    button {
-      width: 100%;
-      height: 44px;
-    }
+    margin: 0 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid $grey-100;
   }
 }
 
 ::ng-deep {
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+  .ant-form-item-label > label {
+    font-size: 13px;
+    font-weight: 500;
+    color: $grey-600;
+  }
+
+  .ant-input,
+  .ant-select-selector,
+  .ant-input-number {
+    border-radius: 8px !important;
+  }
+
+  .ant-input-number {
+    width: 100%;
+  }
+
+  .ant-divider {
+    margin: 28px 0 20px;
+
+    .ant-divider-inner-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: $grey-900;
+    }
+  }
+
   .ant-card {
     margin-bottom: 16px;
     border-radius: 12px;
-    transition: all 0.2s ease;
-    
-    &:hover {
-      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.08);
-    }
-    
-    @media (max-width: 576px) {
-      margin-bottom: 12px;
-      border-radius: 10px;
-    }
-    
+    border: 1px solid $grey-200;
+
     .ant-card-body {
-      padding: 16px;
-      
-      @media (max-width: 576px) {
-        padding: 12px;
-      }
-    }
-    
-    .ant-card-head-title {
-      font-size: 16px;
-      
-      @media (max-width: 576px) {
-        font-size: 15px;
-      }
+      padding: 20px;
     }
   }
-  
-  .ant-select {
-    width: 100%;
-    
-    .ant-select-selector {
-      border-radius: 8px !important;
-      height: 40px !important;
-      
-      @media (max-width: 576px) {
-        height: 44px !important;
-      }
+
+  .ant-descriptions {
+    margin-bottom: 24px;
+
+    .ant-descriptions-item-label {
+      font-weight: 500;
+      color: $grey-600;
     }
   }
 }
 
-.test-actions {
-  margin-top: 16px;
+.question-header {
   display: flex;
-  gap: 8px;
-  
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: $grey-900;
+    margin: 0;
+  }
+}
+
+.options-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid $grey-100;
+
+  h5 {
+    font-size: 13px;
+    font-weight: 600;
+    color: $grey-600;
+    margin: 0 0 12px 0;
+  }
+
+  .option-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+
+    .option-input {
+      flex: 1;
+    }
+
+    label {
+      white-space: nowrap;
+    }
+  }
+
+  button[nz-button][nzType='dashed'] {
+    margin-top: 8px;
+  }
+}
+
+button[nz-button][nzType='dashed'][nzBlock] {
+  height: 44px;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid $grey-200;
+  flex-shrink: 0;
+
+  button[nz-button] {
+    height: 44px;
+    padding: 0 24px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
   @media (max-width: 576px) {
-    flex-direction: column;
-    margin-top: 12px;
-    
-    button {
+    flex-direction: column-reverse;
+
+    button[nz-button] {
       width: 100%;
     }
   }

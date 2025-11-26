@@ -222,6 +222,34 @@ public class TestsController : BaseApiController
         return Ok(result);
     }
 
+    [HttpGet("my-assignments")]
+    [Authorize(Roles = nameof(ROLES.USER))]
+    public async Task<IActionResult> GetMyAssignedTests()
+    {
+        var currentUserResponse = await GetCurrentUserIdAsync();
+        if (currentUserResponse.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(currentUserResponse.Status, currentUserResponse);
+        }
+
+        var result = await _testService.GetAssignedTestsForUserAsync(currentUserResponse.Data);
+        return Ok(result);
+    }
+
+    [HttpGet("my-tests")]
+    [Authorize(Roles = $"{nameof(ROLES.ORGANIZATION_ADMIN)},{nameof(ROLES.HR_MANAGER)}")]
+    public async Task<IActionResult> GetMyCreatedTests()
+    {
+        var currentUserResponse = await GetCurrentUserIdAsync();
+        if (currentUserResponse.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(currentUserResponse.Status, currentUserResponse);
+        }
+
+        var result = await _testService.GetTestsCreatedByUserAsync(currentUserResponse.Data);
+        return Ok(result);
+    }
+
     [HttpGet("submissions/{testSubmissionId}/result")]
     [Authorize] 
     public async Task<IActionResult> GetTestSubmissionResult(int testSubmissionId)

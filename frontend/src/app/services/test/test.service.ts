@@ -19,7 +19,6 @@ export class TestService {
 
   constructor(private http: HttpClient) {}
 
-  
   submitAnswer(
     assignmentId: number,
     questionId: number,
@@ -29,7 +28,6 @@ export class TestService {
     return this.http.post<ServiceResult<SubmissionAnswer>>(url, request);
   }
 
- 
   handleQuestionTimeout(
     assignmentId: number,
     questionId: number
@@ -38,22 +36,41 @@ export class TestService {
     return this.http.post<ServiceResult<SubmissionAnswer>>(url, {});
   }
 
- 
-
   getMyAssignedTests(): Observable<Test[]> {
-    return this.http.get<ServiceResult<PaginatedResult<Test>>>(`${this.apiUrl}/my-assignments`).pipe(map((response) => response.data?.items ?? []));
+    return this.http
+      .get<ServiceResult<PaginatedResult<Test>>>(`${this.apiUrl}/my-assignments`)
+      .pipe(map((response) => response.data?.items ?? []));
+  }
+
+  getMyCreatedTests(): Observable<Test[]> {
+    return this.http
+      .get<ServiceResult<PaginatedResult<Test>>>(`${this.apiUrl}/my-tests`)
+      .pipe(map((response) => response.data?.items ?? []));
   }
 
   getTestById(id: string): Observable<Test> {
-    return this.http.get<Test>(`${this.apiUrl}/${id}`);
+    return this.http
+      .get<ServiceResult<Test>>(`${this.apiUrl}/${id}`)
+      .pipe(map((response) => this.unwrapResult(response, 'Failed to load test')));
   }
 
   createTest(test: CreateTestRequest): Observable<Test> {
-    return this.http.post<Test>(this.apiUrl, test);
+    return this.http
+      .post<ServiceResult<Test>>(this.apiUrl, test)
+      .pipe(map((response) => this.unwrapResult(response, 'Failed to create test')));
+  }
+
+  private unwrapResult<T>(response: ServiceResult<T>, fallbackMessage: string): T {
+    if (!response.data) {
+      throw new Error(response.message ?? response.errors?.[0] ?? fallbackMessage);
+    }
+    return response.data;
   }
 
   updateTest(id: string, test: CreateTestRequest): Observable<Test> {
-    return this.http.put<Test>(`${this.apiUrl}/${id}`, test);
+    return this.http
+      .put<ServiceResult<Test>>(`${this.apiUrl}/${id}`, test)
+      .pipe(map((response) => this.unwrapResult(response, 'Failed to update test')));
   }
 
   startTest(assignmentId: number): Observable<any> {

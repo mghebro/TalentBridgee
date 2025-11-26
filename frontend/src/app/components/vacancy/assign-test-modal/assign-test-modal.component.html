@@ -1,24 +1,309 @@
-<div class="assign-test-modal-container">
-  <div class="modal-header">
-    <h3>Assign Test to {{ vacancy?.title }}</h3>
+
+<div class="loading-container" *ngIf="isLoading && !existingTest">
+  <nz-spin nzSize="large"></nz-spin>
+</div>
+
+<div class="test-view-container" *ngIf="!isEditMode && existingTest && !isLoading">
+  <div class="test-header">
+    <div class="header-content">
+      <h3>{{ existingTest.title }}</h3>
+      <nz-tag [nzColor]="getDifficultyColor(existingTest.difficulty)">{{
+        existingTest.difficulty
+      }}</nz-tag>
+    </div>
+    <button nz-button nzType="primary" (click)="enableEditMode()">
+      <span nz-icon nzType="edit" nzTheme="outline"></span>
+      Edit Test
+    </button>
   </div>
-  <div class="modal-content">
-    <nz-list [nzDataSource]="tests" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 1, sm: 1, md: 1, lg: 1, xl: 1, xxl: 1 }">
-      <ng-template #item let-test>
-        <nz-list-item>
-          <nz-card [nzTitle]="test.title">
-            <p><strong>Description:</strong> {{ test.description }}</p>
-            <p><strong>Difficulty:</strong> {{ test.difficulty }}</p>
-            <p><strong>Duration:</strong> {{ test.durationMinutes }} minutes</p>
-            <div class="test-actions">
-              <button nz-button nzType="primary" (click)="assignTest(test.id)">Assign</button>
+
+  <nz-descriptions nzBordered [nzColumn]="2">
+    <nz-descriptions-item nzTitle="Description">{{
+      existingTest.description
+    }}</nz-descriptions-item>
+    <nz-descriptions-item nzTitle="Profession">{{ existingTest.profession }}</nz-descriptions-item>
+    <nz-descriptions-item nzTitle="Duration"
+      >{{ existingTest.durationMinutes }} minutes</nz-descriptions-item
+    >
+    <nz-descriptions-item nzTitle="Passing Score"
+      >{{ existingTest.passingScore }}%</nz-descriptions-item
+    >
+    <nz-descriptions-item nzTitle="Total Questions">{{
+      existingTest.questions?.length || 0
+    }}</nz-descriptions-item>
+    <nz-descriptions-item nzTitle="Total Points">{{ getTotalPoints() }}</nz-descriptions-item>
+  </nz-descriptions>
+
+  <div
+    class="questions-section"
+    *ngIf="existingTest.questions && existingTest.questions.length > 0"
+  >
+    <h4 class="section-title">
+      <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+      Questions ({{ existingTest.questions.length }})
+    </h4>
+    <div class="questions-list">
+      <nz-card *ngFor="let question of existingTest.questions; let i = index" class="question-card">
+        <div class="question-header">
+          <h5>Question {{ i + 1 }}</h5>
+          <div class="question-meta">
+            <nz-tag>{{ question.type }}</nz-tag>
+            <span class="points">{{ question.points }} points</span>
+            <span class="time-limit" *ngIf="question.timeLimitSeconds">
+              <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
+              {{ question.timeLimitSeconds }}s
+            </span>
+          </div>
+        </div>
+        <p class="question-text">{{ question.text }}</p>
+        <div class="options-list" *ngIf="question.options && question.options.length > 0">
+          <div
+            class="option-item"
+            *ngFor="let option of question.options"
+            [class.correct]="option.isCorrect"
+          >
+            <span
+              nz-icon
+              [nzType]="option.isCorrect ? 'check-circle' : 'close-circle'"
+              [nzTheme]="option.isCorrect ? 'fill' : 'outline'"
+              [style.color]="option.isCorrect ? '#52c41a' : '#ff4d4f'"
+            ></span>
+            <span>{{ option.text }}</span>
+          </div>
+        </div>
+      </nz-card>
+    </div>
+  </div>
+
+  <div class="view-actions">
+    <button nz-button type="button" (click)="close()">Close</button>
+  </div>
+</div>
+
+<div class="assign-test-modal-container" *ngIf="(isEditMode || !hasTest) && !isLoading">
+  <form nz-form [formGroup]="form" (ngSubmit)="submitForm()" nzLayout="vertical" class="test-form">
+    <div class="form-content">
+      <input type="hidden" formControlName="organizationId" />
+      <input type="hidden" formControlName="vacancyId" />
+
+      <div class="form-section">
+        <h3 class="section-title">
+          {{ isEditMode ? 'Edit Test' : 'Create Test' }} for {{ data.vacancy.title }}
+        </h3>
+        <div nz-row [nzGutter]="16">
+          <div nz-col [nzSpan]="12" [nzXs]="24">
+            <nz-form-item>
+              <nz-form-label nzFor="title" nzRequired>Test Title</nz-form-label>
+              <nz-form-control nzErrorTip="Please input the test title!">
+                <input nz-input id="title" formControlName="title" placeholder="Enter test title" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col [nzSpan]="12" [nzXs]="24">
+            <nz-form-item>
+              <nz-form-label nzFor="profession" nzRequired>Profession</nz-form-label>
+              <nz-form-control nzErrorTip="Please input the profession!">
+                <input
+                  nz-input
+                  id="profession"
+                  formControlName="profession"
+                  placeholder="e.g. Software Development"
+                />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <nz-form-item>
+          <nz-form-label nzFor="description" nzRequired>Description</nz-form-label>
+          <nz-form-control nzErrorTip="Please input the description!">
+            <textarea
+              nz-input
+              id="description"
+              formControlName="description"
+              [nzAutosize]="{ minRows: 2, maxRows: 4 }"
+              placeholder="Describe the test"
+            ></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div class="form-section">
+        <h3 class="section-title">Test Settings</h3>
+        <div nz-row [nzGutter]="16">
+          <div nz-col [nzSpan]="8" [nzXs]="24">
+            <nz-form-item>
+              <nz-form-label nzFor="durationMinutes" nzRequired>Duration (min)</nz-form-label>
+              <nz-form-control nzErrorTip="Please input the duration!">
+                <nz-input-number
+                  id="durationMinutes"
+                  formControlName="durationMinutes"
+                  [nzMin]="1"
+                  nzPlaceHolder="Minutes"
+                ></nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col [nzSpan]="8" [nzXs]="24">
+            <nz-form-item>
+              <nz-form-label nzFor="passingScore" nzRequired>Passing Score (%)</nz-form-label>
+              <nz-form-control nzErrorTip="Please input the passing score!">
+                <nz-input-number
+                  id="passingScore"
+                  formControlName="passingScore"
+                  [nzMin]="0"
+                  [nzMax]="100"
+                  nzPlaceHolder="Score"
+                ></nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col [nzSpan]="8" [nzXs]="24">
+            <nz-form-item>
+              <nz-form-label nzFor="difficulty" nzRequired>Difficulty</nz-form-label>
+              <nz-form-control nzErrorTip="Please select the difficulty!">
+                <nz-select
+                  id="difficulty"
+                  formControlName="difficulty"
+                  nzPlaceHolder="Select"
+                  [nzDropdownMatchSelectWidth]="false"
+                >
+                  <nz-option nzValue="Easy" nzLabel="Easy"></nz-option>
+                  <nz-option nzValue="Medium" nzLabel="Medium"></nz-option>
+                  <nz-option nzValue="Hard" nzLabel="Hard"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </div>
+
+      <nz-divider nzText="Questions"></nz-divider>
+
+      <div formArrayName="questions">
+        <div *ngFor="let question of questions.controls; let i = index" [formGroupName]="i">
+          <nz-card>
+            <div class="question-header">
+              <h4>Question {{ i + 1 }}</h4>
+              <button
+                nz-button
+                nzType="text"
+                nzDanger
+                nzSize="small"
+                (click)="removeQuestion(i)"
+                type="button"
+              >
+                <span nz-icon nzType="delete" nzTheme="outline"></span>
+                Remove
+              </button>
+            </div>
+            <div nz-row [nzGutter]="16">
+              <div nz-col [nzSpan]="16" [nzXs]="24">
+                <nz-form-item>
+                  <nz-form-label nzRequired>Question Text</nz-form-label>
+                  <nz-form-control nzErrorTip="Please input the question text!">
+                    <input nz-input formControlName="text" placeholder="Enter your question" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col [nzSpan]="8" [nzXs]="24">
+                <nz-form-item>
+                  <nz-form-label nzRequired>Type</nz-form-label>
+                  <nz-form-control>
+                    <nz-select formControlName="type" [nzDropdownMatchSelectWidth]="false">
+                      <nz-option nzValue="SINGLE_CHOICE" nzLabel="Single Choice"></nz-option>
+                      <nz-option nzValue="MULTIPLE_CHOICE" nzLabel="Multiple Choice"></nz-option>
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+            <div nz-row [nzGutter]="16">
+              <div nz-col [nzSpan]="12" [nzXs]="24">
+                <nz-form-item>
+                  <nz-form-label nzRequired>Points</nz-form-label>
+                  <nz-form-control>
+                    <nz-input-number
+                      formControlName="points"
+                      [nzMin]="0"
+                      [nzStep]="0.5"
+                    ></nz-input-number>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <div nz-col [nzSpan]="12" [nzXs]="24">
+                <nz-form-item>
+                  <nz-form-label>Time Limit (sec)</nz-form-label>
+                  <nz-form-control>
+                    <nz-input-number
+                      formControlName="timeLimitSeconds"
+                      [nzMin]="1"
+                      nzPlaceHolder="Optional"
+                    ></nz-input-number>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+
+            <div
+              *ngIf="
+                question.get('type')?.value === 'SINGLE_CHOICE' ||
+                question.get('type')?.value === 'MULTIPLE_CHOICE'
+              "
+              class="options-section"
+            >
+              <h5>Answer Options</h5>
+              <div formArrayName="options">
+                <div
+                  *ngFor="let option of getOptions(i).controls; let j = index"
+                  [formGroupName]="j"
+                  class="option-row"
+                >
+                  <input
+                    nz-input
+                    formControlName="text"
+                    placeholder="Option text"
+                    class="option-input"
+                  />
+                  <label nz-checkbox formControlName="isCorrect">Correct</label>
+                  <button
+                    nz-button
+                    nzType="text"
+                    nzDanger
+                    nzSize="small"
+                    (click)="removeOption(i, j)"
+                    type="button"
+                  >
+                    <span nz-icon nzType="close" nzTheme="outline"></span>
+                  </button>
+                </div>
+              </div>
+              <button nz-button nzType="dashed" nzSize="small" (click)="addOption(i)" type="button">
+                <span nz-icon nzType="plus" nzTheme="outline"></span>
+                Add Option
+              </button>
             </div>
           </nz-card>
-        </nz-list-item>
-      </ng-template>
-    </nz-list>
-  </div>
-  <div class="modal-footer">
-    <button nz-button nzType="default" (click)="close()">Cancel</button>
-  </div>
+        </div>
+      </div>
+
+      <button nz-button nzType="dashed" nzBlock (click)="addQuestion()" type="button">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Add Question
+      </button>
+    </div>
+
+    <div class="form-actions">
+      <button nz-button type="button" (click)="isEditMode ? cancelEdit() : close()">
+        {{ isEditMode ? 'Cancel' : 'Close' }}
+      </button>
+      <button
+        nz-button
+        nzType="primary"
+        [disabled]="!form.valid || isLoading"
+        [nzLoading]="isLoading"
+      >
+        {{ isEditMode ? 'Update Test' : 'Create & Assign Test' }}
+      </button>
+    </div>
+  </form>
 </div>

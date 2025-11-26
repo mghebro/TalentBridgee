@@ -26,4 +26,5 @@ public interface IVacancyService
 
     Task<ServiceResult<ApplicationResponse>> ApplyAsync(int vacancyId, int userId);
     Task<ServiceResult<VacancyDetails>> AssignTestToVacancyAsync(int vacancyId, int testId, int userId);
+    Task<ServiceResult<List<VacancyList>>> GetVacanciesForCurrentUserAsync(int userId);
 }

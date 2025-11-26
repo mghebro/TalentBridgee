@@ -11,11 +11,25 @@ import { OrganizationService } from '../../../services/organization/organization
 import { Organization } from '../../../models/organization/organization';
 import { OrganizationList } from '../../../models/organization.model';
 import { AssignTestModalComponent } from '../assign-test-modal/assign-test-modal.component';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 
 @Component({
   selector: 'app-vacancy-management',
   standalone: true,
-  imports: [CommonModule, NzTableModule, NzButtonModule, NzModalModule, RouterLink],
+  imports: [
+    CommonModule,
+    NzTableModule,
+    NzButtonModule,
+    NzModalModule,
+    RouterLink,
+    NzTagModule,
+    NzIconModule,
+    NzEmptyModule,
+    NzPopconfirmModule,
+  ],
   templateUrl: './vacancy-management.component.html',
   styleUrls: ['./vacancy-management.component.scss'],
 })
@@ -57,7 +71,13 @@ export class VacancyManagementComponent implements OnInit {
         vacancyId: vacancyId,
       },
       nzFooter: null,
-      nzWidth: '80%',
+      nzWidth: 720,
+      nzBodyStyle: {
+        maxHeight: 'calc(100vh - 200px)',
+        overflowY: 'auto',
+        padding: '24px',
+      },
+      nzCentered: true,
     });
 
     modal.afterClose.subscribe((result) => {
@@ -71,13 +91,21 @@ export class VacancyManagementComponent implements OnInit {
 
   openAssignTestModal(vacancy: Vacancy): void {
     const modal = this.modalService.create({
-      nzTitle: `Assign Test to ${vacancy.title}`,
+      nzTitle: vacancy.testId ? `Test for ${vacancy.title}` : `Create Test for ${vacancy.title}`,
       nzContent: AssignTestModalComponent,
       nzData: {
         vacancy: vacancy,
       },
       nzFooter: null,
-      nzWidth: '80%',
+      nzWidth: 900,
+      nzBodyStyle: {
+        padding: '24px',
+        height: 'calc(100vh - 200px)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      },
+      nzCentered: true,
     });
 
     modal.afterClose.subscribe((result) => {
@@ -95,5 +123,15 @@ export class VacancyManagementComponent implements OnInit {
         this.loadVacancies(this.myOrganizations[0].id);
       }
     });
+  }
+
+  getStatusColor(status: string): string {
+    const colors: Record<string, string> = {
+      Active: 'green',
+      Draft: 'default',
+      Closed: 'red',
+      Paused: 'orange',
+    };
+    return colors[status] || 'default';
   }
 }
