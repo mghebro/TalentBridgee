@@ -60,13 +60,19 @@ export class VacancyListComponent implements OnInit {
     this.loadVacancies();
   }
 
+  clearFilters(): void {
+    this.filter = {};
+    this.loadVacancies();
+  }
+
   viewVacancy(vacancy: Vacancy): void {
     this.router.navigate(['/vacancies', vacancy.id]);
   }
 
-  getLogoUrl(relativePath: string | null | undefined): string {
-    if (!relativePath) return '';
+  getLogoUrl(relativePath: string | null | undefined): string | undefined {
+    if (!relativePath) return undefined;
     const baseUrl = environment.apiUrl.replace('/api', '');
-    return `${baseUrl}${relativePath}`;
+    const cleanPath = relativePath.startsWith('/') ? relativePath : `/${relativePath}`;
+    return `${baseUrl}${cleanPath}`;
   }
 }

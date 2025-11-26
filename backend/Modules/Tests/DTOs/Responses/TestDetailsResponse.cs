@@ -7,6 +7,7 @@ public class TestDetailsResponse
     public int Id { get; set; }
     public int OrganizationId { get; set; }
     public string OrganizationName { get; set; }
+    public int? VacancyId { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
     public string Profession { get; set; }
@@ -30,4 +31,6 @@ public class TestListResponse
     public decimal PassingScore { get; set; }
     public decimal TotalPoints { get; set; }
     public int QuestionCount { get; set; }
+    public int? ApplicationId { get; set; }
+    public string? Status { get; set; }
 }

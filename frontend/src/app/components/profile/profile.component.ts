@@ -1,6 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -21,6 +28,7 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzTimelineModule } from 'ng-zorro-antd/timeline';
 import { ProfileService } from '../../services/profile/profile.service';
+import { AuthService } from '../../services/auth/auth.service';
 import {
   Profile,
   Education,
@@ -64,18 +72,18 @@ export class ProfileComponent implements OnInit {
   isLoading = true;
   isEditing = false;
   isSaving = false;
+  isViewingOtherUser = false;
+  viewingUserId: number | null = null;
 
   profileForm!: FormGroup;
   educationForm!: FormGroup;
   experienceForm!: FormGroup;
 
-  // Modals
   isEducationModalVisible = false;
   isExperienceModalVisible = false;
   editingEducationId: number | null = null;
   editingExperienceId: number | null = null;
 
-  // File uploads
   isUploadingAvatar = false;
   isUploadingCV = false;
 
@@ -88,15 +96,26 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private profileService: ProfileService,
+    private authService: AuthService,
+    private route: ActivatedRoute,
     private fb: FormBuilder,
-    private notification: NzNotificationService,
-    private message: NzMessageService
+    private notification: NzNotificationService
   ) {
     this.initForms();
   }
 
   ngOnInit(): void {
-    this.loadProfile();
+    this.route.paramMap.subscribe((params) => {
+      const userId = params.get('userId');
+      if (userId) {
+        this.viewingUserId = parseInt(userId, 10);
+        this.isViewingOtherUser = true;
+        this.loadProfileByUserId(this.viewingUserId);
+      } else {
+        this.isViewingOtherUser = false;
+        this.loadProfile();
+      }
+    });
   }
 
   private initForms(): void {
@@ -133,6 +152,23 @@ export class ProfileComponent implements OnInit {
   loadProfile(): void {
     this.isLoading = true;
     this.profileService.getProfile().subscribe({
+      next: (response) => {
+        if (response.data) {
+          this.profile = response.data;
+          this.populateForm();
+        }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.notification.error('Error', 'Failed to load profile');
+        this.isLoading = false;
+      },
+    });
+  }
+
+  loadProfileByUserId(userId: number): void {
+    this.isLoading = true;
+    this.profileService.getProfileByUserId(userId).subscribe({
       next: (response) => {
         if (response.data) {
           this.profile = response.data;
@@ -192,7 +228,6 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  // Avatar upload
   onAvatarChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
@@ -239,7 +274,6 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  // CV upload
   onCVChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
@@ -290,7 +324,6 @@ export class ProfileComponent implements OnInit {
     return this.profileService.getFileUrl(path);
   }
 
-  // Education
   openAddEducationModal(): void {
     this.editingEducationId = null;
     this.educationForm.reset({ isCurrent: false });
@@ -356,7 +389,6 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  // Experience
   openAddExperienceModal(): void {
     this.editingExperienceId = null;
     this.experienceForm.reset({ isCurrent: false });
@@ -424,7 +456,9 @@ export class ProfileComponent implements OnInit {
 
   getSkillsArray(): string[] {
     if (!this.profile?.skills) return [];
-    return this.profile.skills.split(',').map((s) => s.trim()).filter((s) => s);
+    return this.profile.skills
+      .split(',')
+      .map((s) => s.trim())
+      .filter((s) => s);
   }
 }
-

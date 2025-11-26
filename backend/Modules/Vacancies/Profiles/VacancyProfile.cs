@@ -14,15 +14,15 @@ public class VacancyProfile : AutoMapper.Profile
         CreateMap<UpdateVacancyRequest, Vacancy>();
 
         CreateMap<Vacancy, VacancyDetails>()
-            .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.Name))
-            .ForMember(dest => dest.OrganizationLogo, opt => opt.MapFrom(src => src.Organization.LogoUrl))
-            .ForMember(dest => dest.OrganizationWebsite, opt => opt.MapFrom(src => src.Organization.Website))
-            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedByHRManager.UserId))
-            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedByHRManager.User.FirstName));
+            .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization != null ? src.Organization.Name : string.Empty))
+            .ForMember(dest => dest.OrganizationLogo, opt => opt.MapFrom(src => src.Organization != null ? src.Organization.LogoUrl : null))
+            .ForMember(dest => dest.OrganizationWebsite, opt => opt.MapFrom(src => src.Organization != null ? src.Organization.Website : null))
+            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedByHRManager != null ? src.CreatedByHRManager.UserId : 0))
+            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedByHRManager != null && src.CreatedByHRManager.User != null ? src.CreatedByHRManager.User.FirstName : null));
 
         CreateMap<Vacancy, VacancyList>()
-            .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.Name))
-            .ForMember(dest => dest.OrganizationLogo, opt => opt.MapFrom(src => src.Organization.LogoUrl))
-            .ForMember(dest => dest.ApplicationCount, opt => opt.MapFrom(src => src.Applications.Count));
+            .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization != null ? src.Organization.Name : string.Empty))
+            .ForMember(dest => dest.OrganizationLogo, opt => opt.MapFrom(src => src.Organization != null ? src.Organization.LogoUrl : null))
+            .ForMember(dest => dest.ApplicationCount, opt => opt.MapFrom(src => src.Applications != null ? src.Applications.Count : 0));
     }
 }

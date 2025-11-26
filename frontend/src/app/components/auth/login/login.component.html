@@ -11,9 +11,23 @@
       </nz-form-item>
       <nz-form-item>
         <nz-form-control nzErrorTip="Please input your password!">
-          <nz-input-group nzPrefixIcon="lock">
-            <input type="password" nz-input formControlName="password" placeholder="Password" />
+          <nz-input-group nzPrefixIcon="lock" [nzSuffix]="passwordSuffix">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              nz-input
+              formControlName="password"
+              placeholder="Password"
+            />
           </nz-input-group>
+          <ng-template #passwordSuffix>
+            <span
+              nz-icon
+              [nzType]="showPassword ? 'eye-invisible' : 'eye'"
+              nzTheme="outline"
+              (click)="togglePasswordVisibility()"
+              style="cursor: pointer; color: rgba(0, 0, 0, 0.45)"
+            ></span>
+          </ng-template>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>

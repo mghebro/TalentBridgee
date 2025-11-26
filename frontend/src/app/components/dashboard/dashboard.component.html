@@ -26,39 +26,31 @@
           <div class="stat-icon blue">
             <span nz-icon nzType="file-text" nzTheme="outline"></span>
           </div>
-          <nz-statistic 
-            [nzValue]="stats.totalApplications || 0" 
-            nzTitle="Total Applications">
+          <nz-statistic [nzValue]="stats.totalApplications || 0" nzTitle="Total Applications">
           </nz-statistic>
         </nz-card>
-        
+
         <nz-card class="stat-card">
           <div class="stat-icon orange">
             <span nz-icon nzType="clock-circle" nzTheme="outline"></span>
           </div>
-          <nz-statistic 
-            [nzValue]="stats.pendingApplications || 0" 
-            nzTitle="Pending Review">
+          <nz-statistic [nzValue]="stats.pendingApplications || 0" nzTitle="Pending Review">
           </nz-statistic>
         </nz-card>
-        
+
         <nz-card class="stat-card">
           <div class="stat-icon green">
             <span nz-icon nzType="check-circle" nzTheme="outline"></span>
           </div>
-          <nz-statistic 
-            [nzValue]="stats.acceptedApplications || 0" 
-            nzTitle="Accepted">
+          <nz-statistic [nzValue]="stats.acceptedApplications || 0" nzTitle="Accepted">
           </nz-statistic>
         </nz-card>
-        
+
         <nz-card class="stat-card">
           <div class="stat-icon purple">
             <span nz-icon nzType="form" nzTheme="outline"></span>
           </div>
-          <nz-statistic 
-            [nzValue]="stats.testsCompleted || 0" 
-            nzTitle="Tests Completed">
+          <nz-statistic [nzValue]="stats.testsCompleted || 0" nzTitle="Tests Completed">
           </nz-statistic>
         </nz-card>
       </div>
@@ -67,7 +59,7 @@
         <ng-template #extra>
           <a routerLink="/my-applications">View All</a>
         </ng-template>
-        
+
         <div *ngIf="recentActivities.length === 0" class="empty-state">
           <nz-empty nzNotFoundContent="No applications yet">
             <ng-template #nzNotFoundFooter>
@@ -75,7 +67,7 @@
             </ng-template>
           </nz-empty>
         </div>
-        
+
         <div class="activity-list" *ngIf="recentActivities.length > 0">
           <div class="activity-item" *ngFor="let activity of recentActivities">
             <div class="activity-icon">
@@ -84,7 +76,7 @@
             <div class="activity-content">
               <h4>{{ activity.title }}</h4>
               <p>{{ activity.description }}</p>
-              <span class="activity-date">{{ activity.date | date:'MMM d, yyyy' }}</span>
+              <span class="activity-date">{{ activity.date | date : 'MMM d, yyyy' }}</span>
             </div>
             <nz-tag [nzColor]="getStatusColor(activity.status || '')">{{ activity.status }}</nz-tag>
           </div>
@@ -98,77 +90,71 @@
           <div class="stat-icon blue">
             <span nz-icon nzType="solution" nzTheme="outline"></span>
           </div>
-          <nz-statistic 
-            [nzValue]="stats.totalVacancies || 0" 
-            nzTitle="Total Vacancies">
+          <nz-statistic [nzValue]="stats.totalVacancies || 0" nzTitle="Total Vacancies">
           </nz-statistic>
         </nz-card>
-        
+
         <nz-card class="stat-card">
           <div class="stat-icon green">
             <span nz-icon nzType="check-circle" nzTheme="outline"></span>
           </div>
-          <nz-statistic 
-            [nzValue]="stats.activeVacancies || 0" 
-            nzTitle="Active Vacancies">
+          <nz-statistic [nzValue]="stats.activeVacancies || 0" nzTitle="Active Vacancies">
           </nz-statistic>
         </nz-card>
-        
+
         <nz-card class="stat-card">
           <div class="stat-icon orange">
             <span nz-icon nzType="team" nzTheme="outline"></span>
           </div>
-          <nz-statistic 
-            [nzValue]="stats.totalReceived || 0" 
-            nzTitle="Applications Received">
+          <nz-statistic [nzValue]="stats.totalReceived || 0" nzTitle="Applications Received">
           </nz-statistic>
         </nz-card>
-        
+
         <nz-card class="stat-card">
           <div class="stat-icon purple">
             <span nz-icon nzType="user-add" nzTheme="outline"></span>
           </div>
-          <nz-statistic 
-            [nzValue]="stats.hired || 0" 
-            nzTitle="Candidates Hired">
-          </nz-statistic>
+          <nz-statistic [nzValue]="stats.hired || 0" nzTitle="Candidates Hired"> </nz-statistic>
         </nz-card>
       </div>
 
       <div class="stats-grid secondary">
         <nz-card class="stat-card mini">
-          <nz-statistic 
-            [nzValue]="stats.pendingReview || 0" 
+          <nz-statistic
+            [nzValue]="stats.pendingReview || 0"
             nzTitle="Pending Review"
-            [nzValueStyle]="{ color: '#f59e0b' }">
+            [nzValueStyle]="{ color: '#f59e0b' }"
+          >
           </nz-statistic>
         </nz-card>
-        
+
         <nz-card class="stat-card mini">
-          <nz-statistic 
-            [nzValue]="stats.shortlisted || 0" 
+          <nz-statistic
+            [nzValue]="stats.shortlisted || 0"
             nzTitle="Shortlisted"
-            [nzValueStyle]="{ color: '#06b6d4' }">
+            [nzValueStyle]="{ color: '#06b6d4' }"
+          >
           </nz-statistic>
         </nz-card>
       </div>
-      
+
       <div class="dashboard-grid">
         <nz-card class="section-card" nzTitle="Recent Applications">
           <ng-template #extra>
             <a routerLink="/applications">View All</a>
           </ng-template>
-          
+
           <div *ngIf="recentApplications.length === 0" class="empty-state">
             <nz-empty nzNotFoundContent="No applications yet"></nz-empty>
           </div>
-          
-          <nz-table 
+
+          <nz-table
             *ngIf="recentApplications.length > 0"
-            #applicationTable 
-            [nzData]="recentApplications" 
+            #applicationTable
+            [nzData]="recentApplications"
             [nzShowPagination]="false"
-            nzSize="small">
+            nzSize="small"
+          >
             <thead>
               <tr>
                 <th>Applicant</th>
@@ -178,7 +164,18 @@
             </thead>
             <tbody>
               <tr *ngFor="let app of applicationTable.data">
-                <td>{{ app.applicantName || 'Applicant' }}</td>
+                <td>
+                  <a
+                    *ngIf="app.userId"
+                    [routerLink]="['/profile', app.userId]"
+                    style="color: #1890ff; cursor: pointer"
+                  >
+                    {{ (app.userFirstName || '') + ' ' + (app.userLastName || '') || 'Applicant' }}
+                  </a>
+                  <span *ngIf="!app.userId">{{
+                    (app.userFirstName || '') + ' ' + (app.userLastName || '') || 'Applicant'
+                  }}</span>
+                </td>
                 <td>{{ app.vacancyTitle }}</td>
                 <td>
                   <nz-tag [nzColor]="getStatusColor(app.status)">{{ app.status }}</nz-tag>
@@ -192,7 +189,7 @@
           <ng-template #extra>
             <a routerLink="/vacancy-management">Manage</a>
           </ng-template>
-          
+
           <div *ngIf="topVacancies.length === 0" class="empty-state">
             <nz-empty nzNotFoundContent="No vacancies yet">
               <ng-template #nzNotFoundFooter>
@@ -200,7 +197,7 @@
               </ng-template>
             </nz-empty>
           </div>
-          
+
           <div class="vacancy-list" *ngIf="topVacancies.length > 0">
             <div class="vacancy-item" *ngFor="let vacancy of topVacancies">
               <div class="vacancy-info">
@@ -215,4 +212,3 @@
     </ng-container>
   </div>
 </div>
-

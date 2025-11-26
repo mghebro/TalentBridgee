@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TalentBridge.Common.Controllers;
 using TalentBridge.Common.DTOs.Responses;
 using TalentBridge.Data;
+using TalentBridge.Enums.Auth;
 using TalentBridge.Modules.UserProfile.DTOs.Requests;
 using TalentBridge.Modules.UserProfile.DTOs.Responses;
 using TalentBridge.Modules.UserProfile.Services;
@@ -32,6 +33,18 @@ public class ProfileController : BaseApiController
             return StatusCode(userIdResult.Status, ServiceResult<ProfileResponse>.FailureResult(userIdResult.Message));
 
         var result = await _profileService.GetProfileAsync(userIdResult.Data);
+        
+        if (!result.Success)
+            return NotFound(result);
+
+        return Ok(result);
+    }
+
+    [HttpGet("user/{userId}")]
+    [Authorize(Roles = $"{nameof(ROLES.ORGANIZATION_ADMIN)},{nameof(ROLES.HR_MANAGER)}")]
+    public async Task<IActionResult> GetProfileByUserId(int userId)
+    {
+        var result = await _profileService.GetProfileAsync(userId);
         
         if (!result.Success)
             return NotFound(result);

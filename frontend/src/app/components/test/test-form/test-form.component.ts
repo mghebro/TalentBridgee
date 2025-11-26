@@ -68,7 +68,11 @@ export class TestFormComponent implements OnInit {
         this.testId = id;
         this.isEditing = true;
         this.testService.getTestById(this.testId).subscribe((test) => {
-          this.form.patchValue(test);
+          this.form.patchValue({
+            ...test,
+            organizationId: test.organizationId.toString(),
+            vacancyId: test.vacancyId ? test.vacancyId.toString() : null,
+          });
           this.setQuestions(test.questions);
           if (test.organizationId) {
             this.loadVacancies(test.organizationId);
@@ -110,13 +114,22 @@ export class TestFormComponent implements OnInit {
   }
 
   setQuestions(questions: any[]): void {
-    const questionFGs = questions.map((q) =>
+    const questionFGs = questions.map((q: any) =>
       this.fb.group({
-        text: [q.text, Validators.required],
-        type: [q.type, Validators.required],
-        points: [q.points || 0, Validators.required],
-        timeLimitSeconds: [q.timeLimitSeconds || null],
-        options: this.fb.array(q.options.map((o: any) => this.newOption(o))),
+        text: [q.text || q.questionText || q.QuestionText, Validators.required],
+        type: [
+          this.mapQuestionType(q.type || q.questionType || q.QuestionType) || 'SINGLE_CHOICE',
+          Validators.required,
+        ],
+        points: [q.points || q.Points || 0, Validators.required],
+        timeLimitSeconds: [
+          q.timeLimitSeconds !== undefined
+            ? q.timeLimitSeconds
+            : q.TimeLimitSeconds !== undefined
+            ? q.TimeLimitSeconds
+            : null,
+        ],
+        options: this.fb.array((q.options || q.Options || []).map((o: any) => this.newOption(o))),
       })
     );
     this.form.setControl('questions', this.fb.array(questionFGs));
@@ -142,8 +155,8 @@ export class TestFormComponent implements OnInit {
 
   newOption(option?: any): FormGroup {
     return this.fb.group({
-      text: [option?.text || '', Validators.required],
-      isCorrect: [option?.isCorrect || false],
+      text: [option?.text || option?.optionText || option?.OptionText || '', Validators.required],
+      isCorrect: [option?.isCorrect !== undefined ? option.isCorrect : option?.IsCorrect || false],
     });
   }
 
@@ -170,10 +183,7 @@ export class TestFormComponent implements OnInit {
     this.vacancyService.getVacanciesByOrganization(organizationId).subscribe({
       next: (vacancies) => (this.vacancies = vacancies),
       error: (error) =>
-        this.notification.error(
-          'Error',
-          extractErrorMessage(error, 'Failed to load vacancies')
-        ),
+        this.notification.error('Error', extractErrorMessage(error, 'Failed to load vacancies')),
     });
   }
 
@@ -187,10 +197,7 @@ export class TestFormComponent implements OnInit {
             this.router.navigate(['/tests']);
           },
           error: (error) =>
-            this.notification.error(
-              'Error',
-              extractErrorMessage(error, 'Failed to update test')
-            ),
+            this.notification.error('Error', extractErrorMessage(error, 'Failed to update test')),
         });
       } else {
         this.testService.createTest(request).subscribe({
@@ -199,10 +206,7 @@ export class TestFormComponent implements OnInit {
             this.router.navigate(['/tests']);
           },
           error: (error) =>
-            this.notification.error(
-              'Error',
-              extractErrorMessage(error, 'Failed to create test')
-            ),
+            this.notification.error('Error', extractErrorMessage(error, 'Failed to create test')),
         });
       }
     } else {
@@ -217,5 +221,25 @@ export class TestFormComponent implements OnInit {
 
   cancel(): void {
     this.router.navigate(['/tests']);
+  }
+
+  private mapQuestionType(type: any): string {
+    if (!type) return 'SINGLE_CHOICE';
+
+    const typeStr = typeof type === 'string' ? type : String(type);
+
+    const typeMap: Record<string, string> = {
+      MultipleChoice: 'MULTIPLE_CHOICE',
+      MULTIPLE_CHOICE: 'MULTIPLE_CHOICE',
+      '0': 'MULTIPLE_CHOICE',
+      SingleChoice: 'SINGLE_CHOICE',
+      SINGLE_CHOICE: 'SINGLE_CHOICE',
+      TrueFalse: 'SINGLE_CHOICE',
+      ShortAnswer: 'SINGLE_CHOICE',
+      Essay: 'SINGLE_CHOICE',
+      Coding: 'SINGLE_CHOICE',
+    };
+
+    return typeMap[typeStr] || 'SINGLE_CHOICE';
   }
 }

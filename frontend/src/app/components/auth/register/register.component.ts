@@ -8,6 +8,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { OrganizationType } from '../../../models/organization.model';
 import { extractErrorMessage } from '../../../utils/api-error';
 
@@ -22,6 +23,7 @@ import { extractErrorMessage } from '../../../utils/api-error';
     NzButtonModule,
     RouterLink,
     NzSelectModule,
+    NzIconModule,
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
@@ -30,6 +32,8 @@ export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
   isLoading = false;
   organizationTypes = Object.values(OrganizationType);
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -92,7 +96,6 @@ export class RegisterComponent implements OnInit {
       });
     }
 
-    // Update validity for each control individually
     fields.forEach((field) => {
       orgDetails.get(field)?.updateValueAndValidity();
     });
@@ -114,7 +117,6 @@ export class RegisterComponent implements OnInit {
       this.isLoading = true;
       const { confirmPassword, ...registerData } = this.registerForm.value;
 
-      // Remove organizationDetails if not ORGANIZATION_ADMIN
       if (registerData.desiredRole !== 'ORGANIZATION_ADMIN') {
         delete registerData.organizationDetails;
       }
@@ -151,5 +153,13 @@ export class RegisterComponent implements OnInit {
         this.markFormGroupTouched(control);
       }
     });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 }

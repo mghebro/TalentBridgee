@@ -43,10 +43,12 @@
       </div>
     </div>
 
-    <!-- Stats Section -->
     <div class="stats-section">
       <nz-card class="stat-card">
-        <nz-statistic [nzValue]="vacancies.length" nzTitle="Total Jobs Posted"></nz-statistic>
+        <nz-statistic
+          [nzValue]="organization.statistics?.totalVacancies || vacancies.length"
+          nzTitle="Total Jobs Posted"
+        ></nz-statistic>
       </nz-card>
       <nz-card class="stat-card">
         <nz-statistic
@@ -68,10 +70,8 @@
       </nz-card>
     </div>
 
-    <!-- Main Content -->
     <div class="profile-main">
       <nz-tabset nzType="card">
-        <!-- About Tab -->
         <nz-tab nzTitle="About">
           <div class="tab-content">
             <nz-card [nzBordered]="false">
@@ -113,16 +113,15 @@
           </div>
         </nz-tab>
 
-        <!-- Jobs Tab -->
         <nz-tab nzTitle="Open Positions ({{ getActiveVacanciesCount() }})">
           <div class="tab-content">
             <div *ngIf="vacancies.length === 0" class="empty-section">
               <nz-empty nzNotFoundContent="No open positions at the moment"></nz-empty>
             </div>
 
-            <div class="vacancies-grid" *ngIf="vacancies.length > 0">
+            <div class="vacancies-grid" *ngIf="getActiveVacancies().length > 0">
               <nz-card
-                *ngFor="let vacancy of vacancies"
+                *ngFor="let vacancy of getActiveVacancies()"
                 class="vacancy-card"
                 [routerLink]="['/vacancies', vacancy.id]"
               >

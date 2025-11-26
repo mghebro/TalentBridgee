@@ -44,6 +44,11 @@ export const routes: Routes = [
         component: ProfileComponent,
       },
       {
+        path: 'profile/:userId',
+        canActivate: [AuthGuard],
+        component: ProfileComponent,
+      },
+      {
         path: 'my-applications',
         canActivate: [AuthGuard],
         component: MyApplicationsComponent,

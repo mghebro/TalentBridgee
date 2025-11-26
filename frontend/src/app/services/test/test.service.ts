@@ -49,9 +49,38 @@ export class TestService {
   }
 
   getTestById(id: string): Observable<Test> {
-    return this.http
-      .get<ServiceResult<Test>>(`${this.apiUrl}/${id}`)
-      .pipe(map((response) => this.unwrapResult(response, 'Failed to load test')));
+    return this.http.get<ServiceResult<any>>(`${this.apiUrl}/${id}`).pipe(
+      map((response) => {
+        const test = this.unwrapResult(response, 'Failed to load test');
+        if (test.questions || test.Questions) {
+          const questions = test.questions || test.Questions || [];
+          test.questions = questions.map((q: any) => ({
+            id: (q.id || q.Id)?.toString(),
+            text: q.text || q.questionText || q.QuestionText || '',
+            type:
+              this.mapQuestionType(q.type || q.questionType || q.QuestionType) || 'SINGLE_CHOICE',
+            points: q.points || q.Points || 0,
+            timeLimitSeconds:
+              q.timeLimitSeconds !== undefined
+                ? q.timeLimitSeconds
+                : q.TimeLimitSeconds !== undefined
+                ? q.TimeLimitSeconds
+                : null,
+            options: (q.options || q.Options || []).map((o: any) => ({
+              id: (o.id || o.Id)?.toString(),
+              text: o.text || o.optionText || o.OptionText || '',
+              isCorrect:
+                o.isCorrect !== undefined
+                  ? o.isCorrect
+                  : o.IsCorrect !== undefined
+                  ? o.IsCorrect
+                  : false,
+            })),
+          }));
+        }
+        return test as Test;
+      })
+    );
   }
 
   createTest(test: CreateTestRequest): Observable<Test> {
@@ -65,6 +94,26 @@ export class TestService {
       throw new Error(response.message ?? response.errors?.[0] ?? fallbackMessage);
     }
     return response.data;
+  }
+
+  private mapQuestionType(type: any): string {
+    if (!type) return 'SINGLE_CHOICE';
+
+    const typeStr = typeof type === 'string' ? type : String(type);
+
+    const typeMap: Record<string, string> = {
+      MultipleChoice: 'MULTIPLE_CHOICE',
+      MULTIPLE_CHOICE: 'MULTIPLE_CHOICE',
+      '0': 'MULTIPLE_CHOICE',
+      SingleChoice: 'SINGLE_CHOICE',
+      SINGLE_CHOICE: 'SINGLE_CHOICE',
+      TrueFalse: 'SINGLE_CHOICE',
+      ShortAnswer: 'SINGLE_CHOICE',
+      Essay: 'SINGLE_CHOICE',
+      Coding: 'SINGLE_CHOICE',
+    };
+
+    return typeMap[typeStr] || 'SINGLE_CHOICE';
   }
 
   updateTest(id: string, test: CreateTestRequest): Observable<Test> {

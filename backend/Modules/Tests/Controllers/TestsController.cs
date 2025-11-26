@@ -104,6 +104,31 @@ public class TestsController : BaseApiController
         );
     }
 
+    [HttpPut("{id}")]
+    [Authorize(Roles = $"{nameof(ROLES.ORGANIZATION_ADMIN)},{nameof(ROLES.HR_MANAGER)}")]
+    public async Task<IActionResult> UpdateTest(int id, [FromBody] CreateTestRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new { message = "Invalid request data" });
+        }
+
+        var currentUserResponse = await GetCurrentUserIdAsync();
+        if (currentUserResponse.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(currentUserResponse.Status, currentUserResponse);
+        }
+
+        var result = await _testService.UpdateTestAsync(id, request, currentUserResponse.Data);
+
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
     [HttpPost("{testId}/questions")]
     [Authorize(Roles = $"{nameof(ROLES.ORGANIZATION_ADMIN)},{nameof(ROLES.HR_MANAGER)}")]
     public async Task<IActionResult> AddQuestionToTest(int testId, [FromBody] CreateQuestionRequest request)

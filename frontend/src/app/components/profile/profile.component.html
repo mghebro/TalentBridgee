@@ -4,7 +4,6 @@
   </div>
 
   <div *ngIf="!isLoading && profile" class="profile-content">
-    <!-- Header Section -->
     <div class="profile-header">
       <div class="header-bg"></div>
       <div class="header-content">
@@ -16,21 +15,12 @@
               [nzText]="profile.firstName.charAt(0) + profile.lastName.charAt(0)"
               nzIcon="user"
             ></nz-avatar>
-            <div class="avatar-overlay" *ngIf="!isUploadingAvatar">
+            <div class="avatar-overlay" *ngIf="!isUploadingAvatar && !isViewingOtherUser">
               <label class="upload-btn">
                 <span nz-icon nzType="camera" nzTheme="outline"></span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  (change)="onAvatarChange($event)"
-                  hidden
-                />
+                <input type="file" accept="image/*" (change)="onAvatarChange($event)" hidden />
               </label>
-              <button
-                *ngIf="profile.profilePictureUrl"
-                class="delete-btn"
-                (click)="deleteAvatar()"
-              >
+              <button *ngIf="profile.profilePictureUrl" class="delete-btn" (click)="deleteAvatar()">
                 <span nz-icon nzType="delete" nzTheme="outline"></span>
               </button>
             </div>
@@ -46,12 +36,8 @@
           <nz-tag [nzColor]="'blue'">{{ profile.role }}</nz-tag>
         </div>
 
-        <div class="header-actions">
-          <button
-            nz-button
-            [nzType]="isEditing ? 'default' : 'primary'"
-            (click)="toggleEdit()"
-          >
+        <div class="header-actions" *ngIf="!isViewingOtherUser">
+          <button nz-button [nzType]="isEditing ? 'default' : 'primary'" (click)="toggleEdit()">
             <span nz-icon [nzType]="isEditing ? 'close' : 'edit'"></span>
             {{ isEditing ? 'Cancel' : 'Edit Profile' }}
           </button>
@@ -59,19 +45,12 @@
       </div>
     </div>
 
-    <!-- Main Content -->
     <div class="profile-main">
       <nz-tabset nzType="card">
-        <!-- About Tab -->
         <nz-tab nzTitle="About">
           <div class="tab-content">
             <nz-card [nzBordered]="false" class="info-card">
-              <form
-                nz-form
-                [formGroup]="profileForm"
-                (ngSubmit)="saveProfile()"
-                *ngIf="isEditing"
-              >
+              <form nz-form [formGroup]="profileForm" (ngSubmit)="saveProfile()" *ngIf="isEditing">
                 <div nz-row [nzGutter]="24">
                   <div nz-col [nzXs]="24" [nzSm]="12">
                     <nz-form-item>
@@ -139,13 +118,10 @@
                 </div>
 
                 <div class="form-actions">
-                  <button nz-button nzType="primary" [nzLoading]="isSaving">
-                    Save Changes
-                  </button>
+                  <button nz-button nzType="primary" [nzLoading]="isSaving">Save Changes</button>
                 </div>
               </form>
 
-              <!-- View Mode -->
               <div *ngIf="!isEditing" class="info-view">
                 <div class="info-section">
                   <h3 class="section-title">
@@ -163,7 +139,7 @@
                     </div>
                     <div class="info-item">
                       <span class="label">Member Since</span>
-                      <span class="value">{{ profile.createdAt | date: 'MMMM yyyy' }}</span>
+                      <span class="value">{{ profile.createdAt | date : 'MMMM yyyy' }}</span>
                     </div>
                   </div>
                 </div>
@@ -199,25 +175,40 @@
           </div>
         </nz-tab>
 
-        <!-- CV Tab -->
         <nz-tab nzTitle="CV / Resume">
           <div class="tab-content">
             <nz-card [nzBordered]="false" class="cv-card">
               <div class="cv-section">
                 <div class="cv-icon">
-                  <span nz-icon nzType="file-pdf" nzTheme="twotone" [nzTwotoneColor]="'#eb2f96'"></span>
+                  <span
+                    nz-icon
+                    nzType="file-pdf"
+                    nzTheme="twotone"
+                    [nzTwotoneColor]="'#eb2f96'"
+                  ></span>
                 </div>
                 <div class="cv-info" *ngIf="profile.cvPdfUrl">
                   <h4>Your CV is uploaded</h4>
                   <p>Last updated</p>
                   <div class="cv-actions">
-                    <a [href]="getFileUrl(profile.cvPdfUrl)" target="_blank" nz-button nzType="primary">
+                    <a
+                      [href]="getFileUrl(profile.cvPdfUrl)"
+                      target="_blank"
+                      nz-button
+                      nzType="primary"
+                    >
                       <span nz-icon nzType="eye"></span> View CV
                     </a>
                     <a [href]="getFileUrl(profile.cvPdfUrl)" download nz-button nzType="default">
                       <span nz-icon nzType="download"></span> Download
                     </a>
-                    <button nz-button nzType="default" nzDanger (click)="deleteCV()">
+                    <button
+                      *ngIf="!isViewingOtherUser"
+                      nz-button
+                      nzType="default"
+                      nzDanger
+                      (click)="deleteCV()"
+                    >
                       <span nz-icon nzType="delete"></span> Remove
                     </button>
                   </div>
@@ -230,7 +221,7 @@
 
               <nz-divider></nz-divider>
 
-              <div class="upload-section">
+              <div class="upload-section" *ngIf="!isViewingOtherUser">
                 <label class="upload-area" [class.uploading]="isUploadingCV">
                   <input
                     type="file"
@@ -251,12 +242,16 @@
           </div>
         </nz-tab>
 
-        <!-- Education Tab -->
         <nz-tab nzTitle="Education">
           <div class="tab-content">
             <div class="section-header">
               <h3>Education</h3>
-              <button nz-button nzType="primary" (click)="openAddEducationModal()">
+              <button
+                *ngIf="!isViewingOtherUser"
+                nz-button
+                nzType="primary"
+                (click)="openAddEducationModal()"
+              >
                 <span nz-icon nzType="plus"></span> Add Education
               </button>
             </div>
@@ -276,11 +271,11 @@
                       <h4>{{ edu.degree }} in {{ edu.fieldOfStudy }}</h4>
                       <p class="institution">{{ edu.institution }}</p>
                       <p class="dates">
-                        {{ edu.startDate | date: 'MMM yyyy' }} -
-                        {{ edu.isCurrent ? 'Present' : (edu.endDate | date: 'MMM yyyy') }}
+                        {{ edu.startDate | date : 'MMM yyyy' }} -
+                        {{ edu.isCurrent ? 'Present' : (edu.endDate | date : 'MMM yyyy') }}
                       </p>
                     </div>
-                    <div class="card-actions">
+                    <div class="card-actions" *ngIf="!isViewingOtherUser">
                       <button nz-button nzType="text" (click)="openEditEducationModal(edu)">
                         <span nz-icon nzType="edit"></span>
                       </button>
@@ -296,12 +291,16 @@
           </div>
         </nz-tab>
 
-        <!-- Experience Tab -->
         <nz-tab nzTitle="Experience">
           <div class="tab-content">
             <div class="section-header">
               <h3>Work Experience</h3>
-              <button nz-button nzType="primary" (click)="openAddExperienceModal()">
+              <button
+                *ngIf="!isViewingOtherUser"
+                nz-button
+                nzType="primary"
+                (click)="openAddExperienceModal()"
+              >
                 <span nz-icon nzType="plus"></span> Add Experience
               </button>
             </div>
@@ -324,11 +323,11 @@
                         <span nz-icon nzType="environment"></span> {{ exp.location }}
                       </p>
                       <p class="dates">
-                        {{ exp.startDate | date: 'MMM yyyy' }} -
-                        {{ exp.isCurrent ? 'Present' : (exp.endDate | date: 'MMM yyyy') }}
+                        {{ exp.startDate | date : 'MMM yyyy' }} -
+                        {{ exp.isCurrent ? 'Present' : (exp.endDate | date : 'MMM yyyy') }}
                       </p>
                     </div>
-                    <div class="card-actions">
+                    <div class="card-actions" *ngIf="!isViewingOtherUser">
                       <button nz-button nzType="text" (click)="openEditExperienceModal(exp)">
                         <span nz-icon nzType="edit"></span>
                       </button>
@@ -348,7 +347,6 @@
   </div>
 </div>
 
-<!-- Education Modal -->
 <nz-modal
   [(nzVisible)]="isEducationModalVisible"
   [nzTitle]="editingEducationId ? 'Edit Education' : 'Add Education'"
@@ -418,7 +416,6 @@
   </ng-container>
 </nz-modal>
 
-<!-- Experience Modal -->
 <nz-modal
   [(nzVisible)]="isExperienceModalVisible"
   [nzTitle]="editingExperienceId ? 'Edit Experience' : 'Add Experience'"
@@ -487,4 +484,3 @@
     </form>
   </ng-container>
 </nz-modal>
-

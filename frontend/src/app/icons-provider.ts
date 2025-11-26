@@ -52,6 +52,16 @@ import {
   AimOutline,
   LockOutline,
   GlobalOutline,
+  FilePdfTwoTone,
+  LogoutOutline,
+  PlusOutline,
+  CameraOutline,
+  ToolOutline,
+  DownloadOutline,
+  CloudUploadOutline,
+  AppstoreOutline,
+  UnorderedListOutline,
+  ContactsOutline,
 } from '@ant-design/icons-angular/icons';
 
 export const icons = [
@@ -104,4 +114,14 @@ export const icons = [
   AimOutline,
   LockOutline,
   GlobalOutline,
+  LogoutOutline,
+  FilePdfTwoTone,
+  PlusOutline,
+  CameraOutline,
+  ToolOutline,
+  DownloadOutline,
+  CloudUploadOutline,
+  AppstoreOutline,
+  UnorderedListOutline,
+  ContactsOutline,
 ];

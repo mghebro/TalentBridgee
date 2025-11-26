@@ -7,7 +7,7 @@ public class VacancyList
     public int Id { get; set; }
     public int OrganizationId { get; set; }
     public string OrganizationName { get; set; }
-    public string OrganizationLogo { get; set; }
+    public string? OrganizationLogo { get; set; }
     
     public string Title { get; set; }
     public string Description { get; set; }
@@ -34,6 +34,8 @@ public class VacancyList
     
     public int ViewCount { get; set; }
     public int ApplicationCount { get; set; }
+    
+    public int? TestId { get; set; }
     
     public DateTime CreatedAt { get; set; }
     

@@ -36,6 +36,7 @@ export interface VacancyDetails extends Vacancy {
   updatedAt?: string | null;
   statistics?: VacancyStatistics;
   tests: VacancyTest[];
+  hasApplied?: boolean;
 }
 
 export interface VacancyStatistics {

@@ -307,7 +307,7 @@ public class OrganizationServices : BaseService, IOrganizationServices
         return null;
 
     var vacancies = await _context.Vacancies
-        .Where(v => v.OrganizationId == organizationId)
+        .Where(v => v.OrganizationId == organizationId && !v.IsDeleted)
         .ToListAsync();
 
     var applications = await _context.Applications

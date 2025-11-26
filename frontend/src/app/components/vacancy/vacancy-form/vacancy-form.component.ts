@@ -1,5 +1,13 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { VacancyService } from '../../../services/vacancy/vacancy.service';
 import {
   CreateVacancyRequest,
@@ -116,14 +124,61 @@ export class VacancyFormComponent implements OnInit {
       industry: [null, [Validators.required]],
       employmentType: [null, [Validators.required]],
       experienceLevel: [null, [Validators.required]],
-      salaryMin: [null],
-      salaryMax: [null],
+      salaryMin: [null, [this.salaryMinValidator()]],
+      salaryMax: [null, [this.salaryMaxValidator()]],
       salaryCurrency: ['GEL'],
       location: [null, [Validators.required]],
       isRemote: [false],
-      status: [VacancyStatus.Draft, [Validators.required]],
+      status: [this.vacancyId ? null : VacancyStatus.Active],
       applicationDeadline: [null, [Validators.required]],
     });
+  }
+
+  salaryMinValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null;
+      }
+      const salaryMax = this.form?.get('salaryMax')?.value;
+      if (salaryMax != null && control.value > salaryMax) {
+        return { minGreaterThanMax: true };
+      }
+      return null;
+    };
+  }
+
+  salaryMaxValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null;
+      }
+      const salaryMin = this.form?.get('salaryMin')?.value;
+      if (salaryMin != null && control.value < salaryMin) {
+        return { maxLowerThanMin: true };
+      }
+      return null;
+    };
+  }
+
+  onSalaryMinChange(): void {
+    this.form.get('salaryMax')?.updateValueAndValidity();
+  }
+
+  onSalaryMaxChange(): void {
+    this.form.get('salaryMin')?.updateValueAndValidity();
+  }
+
+  getSalaryErrorTip(): string {
+    const salaryMinControl = this.form.get('salaryMin');
+    const salaryMaxControl = this.form.get('salaryMax');
+
+    if (salaryMinControl?.hasError('minGreaterThanMax')) {
+      return 'Minimum salary cannot be greater than maximum salary';
+    }
+    if (salaryMaxControl?.hasError('maxLowerThanMin')) {
+      return 'Maximum salary cannot be lower than minimum salary';
+    }
+    return '';
   }
 
   loadOrganizations(): void {
@@ -133,6 +188,15 @@ export class VacancyFormComponent implements OnInit {
   }
 
   submitForm(): void {
+    const salaryMin = this.form.value.salaryMin;
+    const salaryMax = this.form.value.salaryMax;
+    if (salaryMin != null && salaryMax != null && salaryMax < salaryMin) {
+      this.notification.error('Error', 'Maximum salary cannot be lower than minimum salary');
+      this.form.get('salaryMax')?.setErrors({ maxLowerThanMin: true });
+      this.form.get('salaryMax')?.markAsTouched();
+      return;
+    }
+
     if (this.form.valid) {
       this.isLoading = true;
       const formValue = {
@@ -162,7 +226,10 @@ export class VacancyFormComponent implements OnInit {
           },
         });
       } else {
-        const createRequest: CreateVacancyRequest = formValue;
+        const createRequest: CreateVacancyRequest = {
+          ...formValue,
+          status: VacancyStatus.Active,
+        };
         this.vacancyService.createVacancy(createRequest).subscribe({
           next: () => {
             this.notification.success('Success', 'Vacancy created successfully');

@@ -88,6 +88,26 @@ public class ApplicationsController : BaseApiController
         return StatusCode(result.Status, result);
     }
 
+    [HttpGet("my-organization-applications")]
+    [Authorize(Roles = $"{nameof(ROLES.HR_MANAGER)},{nameof(ROLES.ORGANIZATION_ADMIN)}")]
+    public async Task<IActionResult> GetAllApplicationsForOrganization()
+    {
+        var currentUserResponse = await GetCurrentUserIdAsync();
+        if (currentUserResponse.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(currentUserResponse.Status, currentUserResponse);
+        }
+
+        var result = await _applicationService.GetAllApplicationsForOrganizationAsync(currentUserResponse.Data);
+
+        if (result.Status != StatusCodes.Status200OK)
+        {
+            return StatusCode(result.Status, result);
+        }
+
+        return StatusCode(result.Status, result);
+    }
+
     [HttpPut("{id}/status")]
     [Authorize(Roles = $"{nameof(ROLES.HR_MANAGER)},{nameof(ROLES.ORGANIZATION_ADMIN)}")]
     public async Task<IActionResult> UpdateApplicationStatus(int id, [FromBody] UpdateApplicationStatusRequest request)

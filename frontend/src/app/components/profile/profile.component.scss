@@ -22,7 +22,6 @@ $grey-900: #0f172a;
   min-height: 400px;
 }
 
-// Header Section
 .profile-header {
   position: relative;
   margin-bottom: 24px;
@@ -174,7 +173,6 @@ $grey-900: #0f172a;
   }
 }
 
-// Main Content
 .profile-main {
   max-width: 1000px;
   margin: 0 auto;
@@ -240,7 +238,6 @@ $grey-900: #0f172a;
   }
 }
 
-// View Mode
 .info-view {
   .info-section {
     margin-bottom: 0;
@@ -323,7 +320,6 @@ $grey-900: #0f172a;
   }
 }
 
-// CV Section
 .cv-card {
   ::ng-deep .ant-card-body {
     padding: 24px;
@@ -422,7 +418,6 @@ $grey-900: #0f172a;
   }
 }
 
-// Education & Experience Sections
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -537,7 +532,6 @@ $grey-900: #0f172a;
     margin-left: 24px;
   }
 
-  // Modal styles
   .ant-modal-content {
     border-radius: 12px;
   }

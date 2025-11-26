@@ -28,17 +28,45 @@
       
       <nz-form-item>
         <nz-form-control nzErrorTip="Password must be at least 6 characters long.">
-          <nz-input-group nzPrefixIcon="lock">
-            <input type="password" nz-input formControlName="password" placeholder="Password" />
+          <nz-input-group nzPrefixIcon="lock" [nzSuffix]="passwordSuffix">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              nz-input
+              formControlName="password"
+              placeholder="Password"
+            />
           </nz-input-group>
+          <ng-template #passwordSuffix>
+            <span
+              nz-icon
+              [nzType]="showPassword ? 'eye-invisible' : 'eye'"
+              nzTheme="outline"
+              (click)="togglePasswordVisibility()"
+              style="cursor: pointer; color: rgba(0, 0, 0, 0.45);"
+            ></span>
+          </ng-template>
         </nz-form-control>
       </nz-form-item>
       
       <nz-form-item>
         <nz-form-control nzErrorTip="Please confirm your password!">
-          <nz-input-group nzPrefixIcon="lock">
-            <input type="password" nz-input formControlName="confirmPassword" placeholder="Confirm Password" />
+          <nz-input-group nzPrefixIcon="lock" [nzSuffix]="confirmPasswordSuffix">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              nz-input
+              formControlName="confirmPassword"
+              placeholder="Confirm Password"
+            />
           </nz-input-group>
+          <ng-template #confirmPasswordSuffix>
+            <span
+              nz-icon
+              [nzType]="showConfirmPassword ? 'eye-invisible' : 'eye'"
+              nzTheme="outline"
+              (click)="toggleConfirmPasswordVisibility()"
+              style="cursor: pointer; color: rgba(0, 0, 0, 0.45);"
+            ></span>
+          </ng-template>
           <div *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.dirty" 
                class="ant-form-item-explain-error" style="color: red;">
             Passwords do not match.

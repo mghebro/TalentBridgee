@@ -43,4 +43,6 @@ public class VacancyDetails
     public VacancyStatistics Statistics { get; set; }
     
     public List<VacancyTestDto> Tests { get; set; } = new List<VacancyTestDto>();
+    
+    public bool HasApplied { get; set; }
 }

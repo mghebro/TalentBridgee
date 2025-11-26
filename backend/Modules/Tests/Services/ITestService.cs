@@ -8,6 +8,7 @@ namespace TalentBridge.Modules.Tests.Services;
 public interface ITestService
 {
     Task<ServiceResult<TestDetailsResponse>> CreateTestAsync(CreateTestRequest request, int userId);
+    Task<ServiceResult<TestDetailsResponse>> UpdateTestAsync(int testId, CreateTestRequest request, int userId);
     Task<ServiceResult<QuestionResponse>> AddQuestionToTestAsync(int testId, CreateQuestionRequest request, int userId);
     Task<ServiceResult<TestSubmissionResponse>> StartTestSubmissionAsync(int testAssignmentId, int userId);
     Task<ServiceResult<TestSubmissionResponse>> SubmitTestSubmissionAsync(int testSubmissionId, SubmitTestRequest request, int userId);

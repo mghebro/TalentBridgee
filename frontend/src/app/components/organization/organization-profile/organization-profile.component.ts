@@ -93,6 +93,10 @@ export class OrganizationProfileComponent implements OnInit {
   }
 
   getActiveVacanciesCount(): number {
-    return this.vacancies.filter((v) => v.status === 'Active').length;
+    return this.vacancies.length;
+  }
+
+  getActiveVacancies(): Vacancy[] {
+    return this.vacancies;
   }
 }

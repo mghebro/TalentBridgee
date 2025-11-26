@@ -118,17 +118,26 @@ export class AssignTestModalComponent implements OnInit {
     });
 
     if (test.questions && test.questions.length > 0) {
-      const questionFGs = test.questions.map((q) =>
+      const questionFGs = test.questions.map((q: any) =>
         this.fb.group({
-          text: [q.text, Validators.required],
-          type: [q.type, Validators.required],
-          points: [q.points || 0, Validators.required],
-          timeLimitSeconds: [q.timeLimitSeconds || null],
+          text: [q.text || q.questionText || q.QuestionText, Validators.required],
+          type: [
+            this.mapQuestionType(q.type || q.questionType || q.QuestionType) || 'SINGLE_CHOICE',
+            Validators.required,
+          ],
+          points: [q.points || q.Points || 0, Validators.required],
+          timeLimitSeconds: [
+            q.timeLimitSeconds !== undefined
+              ? q.timeLimitSeconds
+              : q.TimeLimitSeconds !== undefined
+              ? q.TimeLimitSeconds
+              : null,
+          ],
           options: this.fb.array(
-            (q.options || []).map((o: any) =>
+            (q.options || q.Options || []).map((o: any) =>
               this.fb.group({
-                text: [o.text, Validators.required],
-                isCorrect: [o.isCorrect || false],
+                text: [o.text || o.optionText || o.OptionText, Validators.required],
+                isCorrect: [o.isCorrect !== undefined ? o.isCorrect : o.IsCorrect || false],
               })
             )
           ),
@@ -256,6 +265,26 @@ export class AssignTestModalComponent implements OnInit {
   getTotalPoints(): number {
     if (!this.existingTest?.questions) return 0;
     return this.existingTest.questions.reduce((sum, q) => sum + (q.points || 0), 0);
+  }
+
+  private mapQuestionType(type: any): string {
+    if (!type) return 'SINGLE_CHOICE';
+
+    const typeStr = typeof type === 'string' ? type : String(type);
+
+    const typeMap: Record<string, string> = {
+      MultipleChoice: 'MULTIPLE_CHOICE',
+      MULTIPLE_CHOICE: 'MULTIPLE_CHOICE',
+      '0': 'MULTIPLE_CHOICE',
+      SingleChoice: 'SINGLE_CHOICE',
+      SINGLE_CHOICE: 'SINGLE_CHOICE',
+      TrueFalse: 'SINGLE_CHOICE',
+      ShortAnswer: 'SINGLE_CHOICE',
+      Essay: 'SINGLE_CHOICE',
+      Coding: 'SINGLE_CHOICE',
+    };
+
+    return typeMap[typeStr] || 'SINGLE_CHOICE';
   }
 
   close(): void {

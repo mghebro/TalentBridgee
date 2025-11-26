@@ -11,7 +11,12 @@
   <tbody>
     <tr *ngFor="let data of applicationTable.data">
       <td>{{ data.vacancyTitle }}</td>
-      <td>{{ data.userFirstName }} {{ data.userLastName }}</td>
+      <td>
+        <a *ngIf="data.userId" [routerLink]="['/profile', data.userId]" style="color: #1890ff; cursor: pointer;">
+          {{ data.userFirstName }} {{ data.userLastName }}
+        </a>
+        <span *ngIf="!data.userId">{{ data.userFirstName }} {{ data.userLastName }}</span>
+      </td>
       <td>{{ data.appliedAt | date }}</td>
       <td>
         <nz-tag [nzColor]="getStatusColor(data.status)">{{ data.status }}</nz-tag>

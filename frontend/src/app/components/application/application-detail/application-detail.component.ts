@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApplicationService } from '../../../services/application/application.service';
 import { AddReviewNoteRequest, Application } from '../../../models/application/application';
 import { ApplicationStatus } from '../../../models/enums';
 import { NzSpinComponent } from 'ng-zorro-antd/spin';
-import { NzPageHeaderComponent, NzPageHeaderModule, NzPageHeaderSubtitleDirective } from 'ng-zorro-antd/page-header';
+import {
+  NzPageHeaderComponent,
+  NzPageHeaderModule,
+  NzPageHeaderSubtitleDirective,
+} from 'ng-zorro-antd/page-header';
 import { CommonModule } from '@angular/common';
 import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzTagModule } from 'ng-zorro-antd/tag';
@@ -27,10 +31,11 @@ import { extractErrorMessage } from '../../../utils/api-error';
     ReactiveFormsModule,
     NzInputModule,
     NzButtonModule,
-    NzFormModule
+    NzFormModule,
+    RouterLink,
   ],
   templateUrl: './application-detail.component.html',
-  styleUrls: ['./application-detail.component.scss']
+  styleUrls: ['./application-detail.component.scss'],
 })
 export class ApplicationDetailComponent implements OnInit {
   application?: Application;
@@ -43,24 +48,27 @@ export class ApplicationDetailComponent implements OnInit {
     private applicationService: ApplicationService,
     private fb: FormBuilder,
     private notification: NzNotificationService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.reviewNoteForm = this.fb.group({
-      note: ['', Validators.required]
+      note: ['', Validators.required],
     });
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.applicationService.getApplicationById(Number(id)).subscribe({
-        next: data => {
+        next: (data) => {
           this.application = data;
           this.loading = false;
         },
-        error: error => {
-          this.notification.error('Error', extractErrorMessage(error, 'Failed to load application details'));
+        error: (error) => {
+          this.notification.error(
+            'Error',
+            extractErrorMessage(error, 'Failed to load application details')
+          );
           this.loading = false;
-        }
+        },
       });
     }
   }
@@ -72,12 +80,11 @@ export class ApplicationDetailComponent implements OnInit {
         next: () => {
           this.notification.success('Success', 'Review note added successfully');
           this.reviewNoteForm.reset();
-          // Refresh application details to show the new note
           this.ngOnInit();
         },
-        error: error => {
+        error: (error) => {
           this.notification.error('Error', extractErrorMessage(error, 'Failed to add review note'));
-        }
+        },
       });
     }
   }

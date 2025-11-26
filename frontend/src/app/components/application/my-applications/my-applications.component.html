@@ -1,27 +1,52 @@
 <div class="my-applications-container">
-  <h1>My Applications</h1>
-  <nz-list [nzDataSource]="applications" [nzRenderItem]="item" [nzGrid]="{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 2, xl: 3, xxl: 3 }">
-    <ng-template #item let-application>
-      <nz-list-item>
-        <nz-card>
-          <nz-card-meta
-            [nzTitle]="titleTemplate"
-            [nzDescription]="descriptionTemplate"
-          ></nz-card-meta>
-          <ng-template #titleTemplate>
-            <a [routerLink]="['/vacancies', application.vacancyId]">{{ application.vacancyTitle }}</a>
-          </ng-template>
-          <ng-template #descriptionTemplate>
-            <p><strong>Status:</strong> {{ getStatusText(application.status) }}</p>
-            <p><strong>Applied on:</strong> {{ application.appliedAt | date }}</p>
-          </ng-template>
-          <div class="application-actions" *ngIf="application.testAssignmentId && (application.testAssignmentStatus === 'Assigned' || application.testAssignmentStatus === 'InProgress')">
-            <button nz-button nzType="primary" (click)="startTest(application)">
-              {{ application.testAssignmentStatus === 'InProgress' ? 'Resume Test' : 'Start Test' }}
-            </button>
+  <div class="page-header">
+    <h1>My Applications</h1>
+  </div>
+
+  <div class="content-section">
+    <nz-empty
+      *ngIf="!isLoading && applications.length === 0"
+      nzNotFoundContent="You haven't applied to any vacancies yet."
+    ></nz-empty>
+
+    <div class="applications-grid" *ngIf="!isLoading && applications.length > 0">
+      <nz-card
+        *ngFor="let application of applications"
+        class="application-card"
+        [routerLink]="['/vacancies', application.vacancyId]"
+      >
+        <div class="card-header">
+          <h3 class="vacancy-title">{{ application.vacancyTitle }}</h3>
+          <nz-tag [nzColor]="getStatusColor(application.status)">
+            {{ getStatusText(application.status) }}
+          </nz-tag>
+        </div>
+
+        <div class="card-body">
+          <div class="info-row">
+            <span nz-icon nzType="calendar" nzTheme="outline"></span>
+            <span>Applied: {{ application.appliedAt | date : 'MMM d, yyyy' }}</span>
           </div>
-        </nz-card>
-      </nz-list-item>
-    </ng-template>
-  </nz-list>
+          <div class="info-row" *ngIf="application.testAssignmentId">
+            <span nz-icon nzType="file-text" nzTheme="outline"></span>
+            <span>Test Status:</span>
+            <nz-tag [nzColor]="getTestStatusColor(application.testAssignmentStatus)">
+              {{ getTestStatusText(application.testAssignmentStatus) }}
+            </nz-tag>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <span class="view-link">
+            View Vacancy
+            <span nz-icon nzType="arrow-right" nzTheme="outline"></span>
+          </span>
+        </div>
+      </nz-card>
+    </div>
+
+    <div class="loading-container" *ngIf="isLoading">
+      <nz-spin nzSize="large"></nz-spin>
+    </div>
+  </div>
 </div>

@@ -73,7 +73,7 @@ public class ApplicationService : IApplicationService
         if (vacancy.TestId.HasValue)
         {
             var test = await _context.Tests.FindAsync(vacancy.TestId.Value);
-            if (test != null)
+            if (test != null && !test.IsDeleted)
             {
                 var existingAssignment = await _context.TestAssignments
                     .AnyAsync(ta => ta.ApplicationId == application.Id && ta.TestId == test.Id);
@@ -168,6 +168,44 @@ public class ApplicationService : IApplicationService
         {
             Status = StatusCodes.Status200OK,
             Message = "Applications for vacancy retrieved successfully.",
+            Data = response
+        };
+    }
+
+    public async Task<ApiResponse<List<ApplicationResponse>>> GetAllApplicationsForOrganizationAsync(int hrManagerUserId)
+    {
+        var hrManager = await _context.HrManagers
+            .Include(hrm => hrm.Organization)
+            .FirstOrDefaultAsync(hrm => hrm.UserId == hrManagerUserId);
+
+        if (hrManager == null)
+        {
+            return new ApiResponse<List<ApplicationResponse>>
+            {
+                Status = StatusCodes.Status403Forbidden,
+                Message = "HR Manager not found or unauthorized."
+            };
+        }
+
+        var vacancyIds = await _context.Vacancies
+            .Where(v => v.OrganizationId == hrManager.OrganizationId && !v.IsDeleted)
+            .Select(v => v.Id)
+            .ToListAsync();
+
+        var applications = await _context.Applications
+            .Where(a => vacancyIds.Contains(a.VacancyId))
+            .Include(a => a.User)
+            .Include(a => a.Vacancy)
+            .Include(a => a.TestAssignment)
+            .OrderByDescending(a => a.AppliedAt)
+            .ToListAsync();
+
+        var response = applications.Select(a => _mapper.Map<ApplicationResponse>(a)).ToList();
+
+        return new ApiResponse<List<ApplicationResponse>>
+        {
+            Status = StatusCodes.Status200OK,
+            Message = "Applications for organization retrieved successfully.",
             Data = response
         };
     }

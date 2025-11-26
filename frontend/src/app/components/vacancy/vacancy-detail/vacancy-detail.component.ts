@@ -57,6 +57,9 @@ export class VacancyDetailComponent implements OnInit {
     if (id) {
       this.vacancyService.getVacancyById(id).subscribe((vacancy) => {
         this.vacancy = vacancy;
+        if (vacancy.hasApplied !== undefined) {
+          this.hasApplied = vacancy.hasApplied;
+        }
       });
     }
   }

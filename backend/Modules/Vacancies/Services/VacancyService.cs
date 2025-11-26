@@ -32,9 +32,14 @@ public class VacancyService : IVacancyService
         if (hrManager == null)
             return ServiceResult<VacancyDetails>.FailureResult("User is not authorized to create a vacancy for this organization.");
 
+        if (dto.SalaryMin.HasValue && dto.SalaryMax.HasValue && dto.SalaryMax.Value < dto.SalaryMin.Value)
+        {
+            return ServiceResult<VacancyDetails>.FailureResult("Maximum salary cannot be lower than minimum salary.");
+        }
+
         var vacancy = _mapper.Map<Vacancy>(dto);
         vacancy.CreatedByHRManagerId = hrManager.Id;
-
+        
         if (vacancy.Status == VACANCY_STATUS.Active)
             vacancy.PublishedAt = DateTime.UtcNow;
 
@@ -53,7 +58,17 @@ public class VacancyService : IVacancyService
             .AsQueryable();
 
         if (!string.IsNullOrEmpty(request.Search))
-            query = query.Where(v => v.Title.Contains(request.Search) || v.Description.Contains(request.Search));
+        {
+            var searchLower = request.Search.ToLower();
+            query = query.Where(v => 
+                (v.Title != null && v.Title.ToLower().Contains(searchLower)) || 
+                (v.Description != null && v.Description.ToLower().Contains(searchLower)));
+        }
+        if (!string.IsNullOrEmpty(request.Location))
+        {
+            var locationLower = request.Location.ToLower();
+            query = query.Where(v => v.Location != null && v.Location.ToLower().Contains(locationLower));
+        }
         if (request.OrganizationId.HasValue)
             query = query.Where(v => v.OrganizationId == request.OrganizationId.Value);
         if (!string.IsNullOrEmpty(request.Profession))
@@ -69,15 +84,51 @@ public class VacancyService : IVacancyService
         if (request.SalaryMax.HasValue)
             query = query.Where(v => v.SalaryMax <= request.SalaryMax.Value);
 
-        var totalCount = await query.CountAsync();
+        var countQuery = query.Where(v => v.IsDeleted == false);
+        var totalCount = await countQuery.CountAsync();
         
         var vacancies = await query
             .Where(v => v.IsDeleted == false)
+            .Include(v => v.Organization)
+            .Include(v => v.Applications)
+            .AsNoTracking()
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
             .ToListAsync();
         
+        var organizationIds = vacancies.Select(v => v.OrganizationId).Distinct().ToList();
+        var organizationLogos = new Dictionary<int, string?>();
+        
+        if (organizationIds.Any())
+        {
+            var organizations = await _context.Organizations
+                .Where(o => organizationIds.Contains(o.Id))
+                .Select(o => new { o.Id, o.LogoUrl, o.Name, o.Website })
+                .ToListAsync();
+            
+            foreach (var org in organizations)
+            {
+                organizationLogos[org.Id] = org.LogoUrl;
+                
+                var vacancy = vacancies.FirstOrDefault(v => v.OrganizationId == org.Id);
+                if (vacancy != null && vacancy.Organization != null)
+                {
+                    vacancy.Organization.LogoUrl = org.LogoUrl;
+                    vacancy.Organization.Name = org.Name;
+                    vacancy.Organization.Website = org.Website;
+                }
+            }
+        }
+        
         var vacancyList = _mapper.Map<List<VacancyList>>(vacancies);
+        
+        foreach (var item in vacancyList)
+        {
+            if (string.IsNullOrEmpty(item.OrganizationLogo) && organizationLogos.ContainsKey(item.OrganizationId))
+            {
+                item.OrganizationLogo = organizationLogos[item.OrganizationId];
+            }
+        }
 
         var paginatedResult = new PaginatedResult<VacancyList>
         {
@@ -100,7 +151,28 @@ public class VacancyService : IVacancyService
         if (vacancy == null)
             return ServiceResult<VacancyDetails>.FailureResult("Vacancy not found.");
 
+        var org = await _context.Organizations
+            .FirstOrDefaultAsync(o => o.Id == vacancy.OrganizationId);
+        if (org != null && vacancy.Organization != null)
+        {
+            vacancy.Organization.LogoUrl = org.LogoUrl;
+            vacancy.Organization.Name = org.Name;
+            vacancy.Organization.Website = org.Website;
+        }
+
         var vacancyDetails = _mapper.Map<VacancyDetails>(vacancy);
+        
+        if (string.IsNullOrEmpty(vacancyDetails.OrganizationLogo) && org != null)
+        {
+            vacancyDetails.OrganizationLogo = org.LogoUrl;
+        }
+        
+        if (userId.HasValue)
+        {
+            vacancyDetails.HasApplied = await _context.Applications
+                .AnyAsync(a => a.VacancyId == id && a.UserId == userId.Value);
+        }
+        
         return ServiceResult<VacancyDetails>.SuccessResult(vacancyDetails);
     }
 
@@ -114,7 +186,16 @@ public class VacancyService : IVacancyService
         if (hrManager == null)
             return ServiceResult<VacancyDetails>.FailureResult("User is not authorized to update this vacancy.");
 
+        if (dto.SalaryMin.HasValue && dto.SalaryMax.HasValue && dto.SalaryMax.Value < dto.SalaryMin.Value)
+        {
+            return ServiceResult<VacancyDetails>.FailureResult("Maximum salary cannot be lower than minimum salary.");
+        }
+
         _mapper.Map(dto, vacancy);
+        
+        if (vacancy.Status == VACANCY_STATUS.Active && vacancy.PublishedAt == null)
+            vacancy.PublishedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync();
 
         var vacancyDetails = _mapper.Map<VacancyDetails>(vacancy);
@@ -123,13 +204,47 @@ public class VacancyService : IVacancyService
 
     public async Task<ServiceResult<string>> DeleteVacancyAsync(int id, int userId)
     {
-        var vacancy = await _context.Vacancies.FindAsync(id);
+        var vacancy = await _context.Vacancies
+            .Include(v => v.Test)
+            .FirstOrDefaultAsync(v => v.Id == id);
+            
         if (vacancy == null || vacancy.IsDeleted)
             return ServiceResult<string>.FailureResult("Vacancy not found.");
 
         var hrManager = await _context.HrManagers.FirstOrDefaultAsync(hr => hr.UserId == userId && hr.OrganizationId == vacancy.OrganizationId);
         if (hrManager == null)
             return ServiceResult<string>.FailureResult("User is not authorized to delete this vacancy.");
+
+        if (vacancy.TestId.HasValue)
+        {
+            var test = await _context.Tests
+                .FirstOrDefaultAsync(t => t.Id == vacancy.TestId.Value && !t.IsDeleted);
+
+            if (test != null)
+            {
+                var testAssignments = await _context.TestAssignments
+                    .Where(ta => ta.TestId == test.Id)
+                    .ToListAsync();
+
+                var applicationIds = testAssignments.Select(ta => ta.ApplicationId).ToList();
+                var applications = await _context.Applications
+                    .Where(a => applicationIds.Contains(a.Id))
+                    .ToListAsync();
+
+                foreach (var application in applications)
+                {
+                    if (application.Status == APPLICATION_STATUS.TestAssigned || 
+                        application.Status == APPLICATION_STATUS.TestInProgress)
+                    {
+                        application.Status = APPLICATION_STATUS.UnderReview;
+                    }
+                }
+
+                test.IsDeleted = true;
+                test.DeletedAt = DateTime.UtcNow;
+                test.IsActive = false; 
+            }
+        }
 
         vacancy.IsDeleted = true;
         vacancy.Status = VACANCY_STATUS.Closed;
@@ -167,11 +282,15 @@ public class VacancyService : IVacancyService
 
         return ServiceResult<VacancyAnalytics>.SuccessResult(analytics);
     }
-    public async Task <List<VacancyLookUp>> GetVacanciesByOrganizationAsync(int OrganizationId){
-        return await _context.Vacancies.Where(v=> v.OrganizationId == OrganizationId).Select(v => new VacancyLookUp{
-            Id = v.Id,
-            Title = v.Title
-        }).ToListAsync();
+    public async Task<List<VacancyList>> GetVacanciesByOrganizationAsync(int OrganizationId){
+        var vacancies = await _context.Vacancies
+            .Where(v => v.OrganizationId == OrganizationId && !v.IsDeleted && v.Status == VACANCY_STATUS.Active)
+            .Include(v => v.Organization)
+            .Include(v => v.Applications)
+            .AsNoTracking()
+            .ToListAsync();
+        
+        return _mapper.Map<List<VacancyList>>(vacancies);
     }
 
     public async Task<ServiceResult<ApplicationResponse>> ApplyAsync(int vacancyId, int userId)
@@ -226,8 +345,8 @@ public class VacancyService : IVacancyService
             return ServiceResult<VacancyDetails>.FailureResult("Vacancy not found.");
 
         var test = await _context.Tests.FindAsync(testId);
-        if (test == null)
-            return ServiceResult<VacancyDetails>.FailureResult("Test not found.");
+        if (test == null || test.IsDeleted)
+            return ServiceResult<VacancyDetails>.FailureResult("Test not found or has been deleted.");
             
         var hrManager = await _context.HrManagers.FirstOrDefaultAsync(hr => hr.UserId == userId && hr.OrganizationId == vacancy.OrganizationId);
         if (hrManager == null)

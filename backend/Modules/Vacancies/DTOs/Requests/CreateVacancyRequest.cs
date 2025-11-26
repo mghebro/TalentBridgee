@@ -23,6 +23,6 @@ public class CreateVacancyRequest
     public string Location { get; set; }
     public bool IsRemote { get; set; } = false;
     
-    public VACANCY_STATUS Status { get; set; } = VACANCY_STATUS.Draft;
+    public VACANCY_STATUS Status { get; set; } = VACANCY_STATUS.Active;
     public DateTime ApplicationDeadline { get; set; }
 }

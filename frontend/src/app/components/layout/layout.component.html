@@ -144,16 +144,13 @@
           <li nz-menu-item routerLink="/vacancy-management" (click)="inDrawer && closeDrawer()">
             All Vacancies
           </li>
-          <li nz-menu-item routerLink="/applications" (click)="inDrawer && closeDrawer()">
-            Applications
-          </li>
         </ul>
       </li>
 
       <li
         nz-menu-item
         routerLink="/tests"
-        *ngIf="user.role === 'ORGANIZATION_ADMIN' || user.role === 'HR_MANAGER'"
+        *ngIf="user.role === 'HR_MANAGER'"
         (click)="inDrawer && closeDrawer()"
       >
         <i nz-icon nzType="form"></i>

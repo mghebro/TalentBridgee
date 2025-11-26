@@ -26,13 +26,13 @@ export class VacancyService {
     let params = new HttpParams();
     if (filter) {
       if (filter.searchTerm) {
-        params = params.append('searchTerm', filter.searchTerm);
+        params = params.append('Search', filter.searchTerm);
       }
       if (filter.location) {
-        params = params.append('location', filter.location);
+        params = params.append('Location', filter.location);
       }
       if (filter.employmentType) {
-        params = params.append('employmentType', filter.employmentType);
+        params = params.append('EmploymentType', filter.employmentType);
       }
     }
     return this.http

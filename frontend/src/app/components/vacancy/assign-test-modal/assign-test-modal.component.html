@@ -26,7 +26,7 @@
       >{{ existingTest.durationMinutes }} minutes</nz-descriptions-item
     >
     <nz-descriptions-item nzTitle="Passing Score"
-      >{{ existingTest.passingScore }}%</nz-descriptions-item
+      >{{ existingTest.passingScore }}</nz-descriptions-item
     >
     <nz-descriptions-item nzTitle="Total Questions">{{
       existingTest.questions?.length || 0
@@ -145,7 +145,7 @@
           </div>
           <div nz-col [nzSpan]="8" [nzXs]="24">
             <nz-form-item>
-              <nz-form-label nzFor="passingScore" nzRequired>Passing Score (%)</nz-form-label>
+              <nz-form-label nzFor="passingScore" nzRequired>Passing Score</nz-form-label>
               <nz-form-control nzErrorTip="Please input the passing score!">
                 <nz-input-number
                   id="passingScore"

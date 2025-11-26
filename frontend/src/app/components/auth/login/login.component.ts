@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../services/auth/auth.service'; // Corrected import path
+import { AuthService } from '../../../services/auth/auth.service'; 
 import { CommonModule } from '@angular/common';
 
 import { NzNotificationService } from 'ng-zorro-antd/notification';
@@ -10,6 +10,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 @Component({
   selector: 'app-login',
@@ -21,27 +22,29 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
     NzInputModule,
     NzButtonModule,
     RouterLink,
-    NzCheckboxModule
+    NzCheckboxModule,
+    NzIconModule,
   ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   isLoading = false;
+  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
     private notification: NzNotificationService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
-      remember: [true]
+      remember: [true],
     });
   }
 
@@ -57,15 +60,19 @@ export class LoginComponent implements OnInit {
         error: (error: any) => {
           this.notification.error('Error', extractErrorMessage(error, 'Login failed'));
           this.isLoading = false;
-        }
+        },
       });
     } else {
-      Object.values(this.loginForm.controls).forEach(control => {
+      Object.values(this.loginForm.controls).forEach((control) => {
         if (control.invalid) {
           control.markAsDirty();
           control.updateValueAndValidity({ onlySelf: true });
         }
       });
     }
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }

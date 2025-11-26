@@ -5,12 +5,15 @@ export interface Test {
   title: string;
   description: string;
   organizationId: number;
+  vacancyId?: number;
   profession: string;
   durationMinutes: number;
   passingScore: number;
   difficulty: string;
   questions: Question[];
   questionCount?: number;
+  applicationId?: number;
+  status?: string;
 }
 
 export interface TestForApplicationResponse {

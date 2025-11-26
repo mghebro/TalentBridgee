@@ -26,5 +26,6 @@ public class Test : BaseEntity
     public Vacancy? Vacancy { get; set; }
     public Organization Organization { get; set; }
     public List<Question>? Questions { get; set; }
-    
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
 }

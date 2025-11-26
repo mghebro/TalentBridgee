@@ -48,6 +48,17 @@
           <span nz-icon nzType="search"></span>
           Search Jobs
         </button>
+        <button
+          nz-button
+          nzType="default"
+          type="button"
+          class="clear-btn"
+          (click)="clearFilters()"
+          *ngIf="filter.searchTerm || filter.location || filter.employmentType"
+        >
+          <span nz-icon nzType="close-circle" nzTheme="outline"></span>
+          Clear Filters
+        </button>
       </div>
     </form>
   </div>
@@ -56,15 +67,15 @@
     <div class="results-header">
       <h2>{{ vacancies.length }} Jobs Found</h2>
       <div class="view-toggle">
-        <button 
-          nz-button 
+        <button
+          nz-button
           [nzType]="viewMode === 'grid' ? 'primary' : 'default'"
           (click)="viewMode = 'grid'"
         >
           <span nz-icon nzType="appstore" nzTheme="outline"></span>
         </button>
-        <button 
-          nz-button 
+        <button
+          nz-button
           [nzType]="viewMode === 'list' ? 'primary' : 'default'"
           (click)="viewMode = 'list'"
         >
@@ -77,17 +88,18 @@
       <div class="vacancy-card" *ngFor="let vacancy of vacancies" (click)="viewVacancy(vacancy)">
         <div class="card-header">
           <div class="org-logo">
-            <nz-avatar 
-              [nzSize]="48" 
-              [nzSrc]="getLogoUrl(vacancy.organizationLogo)" 
+            <nz-avatar
+              [nzSize]="48"
+              [nzSrc]="getLogoUrl(vacancy.organizationLogo) || undefined"
               [nzText]="(vacancy.organizationName || 'O').charAt(0)"
               nzIcon="bank"
-              nzShape="square">
+              nzShape="square"
+            >
             </nz-avatar>
           </div>
           <div class="job-meta">
             <span class="org-name">{{ vacancy.organizationName || 'Company' }}</span>
-            <span class="post-date">{{ vacancy.createdAt | date:'MMM d' }}</span>
+            <span class="post-date">{{ vacancy.createdAt | date : 'MMM d' }}</span>
           </div>
         </div>
         <h3 class="job-title">{{ vacancy.title }}</h3>
@@ -103,30 +115,35 @@
           </span>
         </div>
         <div class="job-tags">
-          <nz-tag nzColor="blue">{{ vacancy.experienceLevelName || vacancy.experienceLevel }}</nz-tag>
+          <nz-tag nzColor="blue">{{
+            vacancy.experienceLevelName || vacancy.experienceLevel
+          }}</nz-tag>
           <nz-tag *ngIf="vacancy.salaryRange">{{ vacancy.salaryRange }}</nz-tag>
         </div>
         <div class="card-footer">
           <span class="deadline" *ngIf="vacancy.applicationDeadline">
             <span nz-icon nzType="calendar" nzTheme="outline"></span>
-            Deadline: {{ vacancy.applicationDeadline | date:'MMM d, yyyy' }}
+            Deadline: {{ vacancy.applicationDeadline | date : 'MMM d, yyyy' }}
           </span>
-          <button nz-button nzType="primary" nzSize="small" class="apply-btn">
-            View Details
-          </button>
+          <button nz-button nzType="primary" nzSize="small" class="apply-btn">View Details</button>
         </div>
       </div>
     </div>
 
     <div class="vacancies-list" *ngIf="viewMode === 'list'">
-      <div class="vacancy-list-item" *ngFor="let vacancy of vacancies" (click)="viewVacancy(vacancy)">
+      <div
+        class="vacancy-list-item"
+        *ngFor="let vacancy of vacancies"
+        (click)="viewVacancy(vacancy)"
+      >
         <div class="item-logo">
-          <nz-avatar 
-            [nzSize]="56" 
-            [nzSrc]="getLogoUrl(vacancy.organizationLogo)" 
+          <nz-avatar
+            [nzSize]="56"
+            [nzSrc]="getLogoUrl(vacancy.organizationLogo) || undefined"
             [nzText]="(vacancy.organizationName || 'O').charAt(0)"
             nzIcon="bank"
-            nzShape="square">
+            nzShape="square"
+          >
           </nz-avatar>
         </div>
         <div class="item-content">
@@ -152,12 +169,15 @@
           </div>
         </div>
         <div class="item-actions">
-          <span class="post-date">{{ vacancy.createdAt | date:'MMM d' }}</span>
+          <span class="post-date">{{ vacancy.createdAt | date : 'MMM d' }}</span>
           <button nz-button nzType="primary" class="apply-btn">Apply Now</button>
         </div>
       </div>
     </div>
 
-    <nz-empty *ngIf="vacancies.length === 0" nzNotFoundContent="No vacancies found. Try adjusting your search."></nz-empty>
+    <nz-empty
+      *ngIf="vacancies.length === 0"
+      nzNotFoundContent="No vacancies found. Try adjusting your search."
+    ></nz-empty>
   </div>
 </div>

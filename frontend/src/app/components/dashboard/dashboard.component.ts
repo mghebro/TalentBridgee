@@ -24,7 +24,7 @@ interface DashboardStats {
   rejectedApplications?: number;
   testsCompleted?: number;
   testsPending?: number;
-  
+
   totalVacancies?: number;
   activeVacancies?: number;
   totalReceived?: number;
@@ -70,14 +70,11 @@ export class DashboardComponent implements OnInit {
   isLoading = true;
   stats: DashboardStats = {};
   recentActivities: RecentActivity[] = [];
-  
+
   recentApplications: any[] = [];
   topVacancies: any[] = [];
 
-  constructor(
-    private authService: AuthService,
-    private http: HttpClient
-  ) {}
+  constructor(private authService: AuthService, private http: HttpClient) {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.currentUserValue;
@@ -86,7 +83,7 @@ export class DashboardComponent implements OnInit {
 
   private loadDashboardData(): void {
     this.isLoading = true;
-    
+
     if (this.isUser) {
       this.loadUserDashboard();
     } else {
@@ -95,18 +92,26 @@ export class DashboardComponent implements OnInit {
   }
 
   private loadUserDashboard(): void {
-    this.http.get<any>(`${environment.apiUrl}/applications/my`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/applications/my-applications`).subscribe({
       next: (response) => {
         const applications = response.data || [];
         this.stats = {
           totalApplications: applications.length,
-          pendingApplications: applications.filter((a: any) => a.status === 'Submitted' || a.status === 'UnderReview').length,
-          acceptedApplications: applications.filter((a: any) => a.status === 'Hired' || a.status === 'Shortlisted').length,
+          pendingApplications: applications.filter(
+            (a: any) => a.status === 'Submitted' || a.status === 'UnderReview'
+          ).length,
+          acceptedApplications: applications.filter(
+            (a: any) => a.status === 'Hired' || a.status === 'Shortlisted'
+          ).length,
           rejectedApplications: applications.filter((a: any) => a.status === 'Rejected').length,
-          testsCompleted: applications.filter((a: any) => a.testStatus === 'Completed').length,
-          testsPending: applications.filter((a: any) => a.testStatus === 'Pending' || a.testStatus === 'InProgress').length,
+          testsCompleted: applications.filter((a: any) => a.testAssignmentStatus === 'Completed')
+            .length,
+          testsPending: applications.filter(
+            (a: any) =>
+              a.testAssignmentStatus === 'Assigned' || a.testAssignmentStatus === 'InProgress'
+          ).length,
         };
-        
+
         this.recentActivities = applications.slice(0, 5).map((app: any) => ({
           id: app.id,
           type: 'application',
@@ -115,7 +120,7 @@ export class DashboardComponent implements OnInit {
           date: new Date(app.appliedAt),
           status: app.status,
         }));
-        
+
         this.isLoading = false;
       },
       error: () => {
@@ -127,28 +132,37 @@ export class DashboardComponent implements OnInit {
   private loadOrganizationDashboard(): void {
     Promise.all([
       this.http.get<any>(`${environment.apiUrl}/vacancies/my-vacancies`).toPromise(),
-      this.http.get<any>(`${environment.apiUrl}/applications`).toPromise(),
-    ]).then(([vacanciesRes, applicationsRes]) => {
-      const vacancies = vacanciesRes?.data?.items || vacanciesRes?.data || [];
-      const applications = applicationsRes?.data?.items || applicationsRes?.data || [];
-      
-      this.stats = {
-        totalVacancies: vacancies.length,
-        activeVacancies: vacancies.filter((v: any) => v.status === 'Active').length,
-        totalReceived: applications.length,
-        pendingReview: applications.filter((a: any) => a.status === 'Submitted').length,
-        shortlisted: applications.filter((a: any) => a.status === 'Shortlisted').length,
-        hired: applications.filter((a: any) => a.status === 'Hired').length,
-      };
-      
-      this.recentApplications = applications.slice(0, 5);
-      
-      this.topVacancies = vacancies.slice(0, 5);
-      
-      this.isLoading = false;
-    }).catch(() => {
-      this.isLoading = false;
-    });
+      this.http
+        .get<any>(`${environment.apiUrl}/applications/my-organization-applications`)
+        .toPromise(),
+    ])
+      .then(([vacanciesRes, applicationsRes]) => {
+        const vacancies = vacanciesRes?.data?.items || vacanciesRes?.data || [];
+        const applications = applicationsRes?.data?.items || applicationsRes?.data || [];
+
+        this.stats = {
+          totalVacancies: vacancies.length,
+          activeVacancies: vacancies.filter(
+            (v: any) => v.status === 'Active' || v.statusName === 'Active'
+          ).length,
+          totalReceived: applications.length,
+          pendingReview: applications.filter(
+            (a: any) => a.status === 'Submitted' || a.status === 'UnderReview'
+          ).length,
+          shortlisted: applications.filter((a: any) => a.status === 'Shortlisted').length,
+          hired: applications.filter((a: any) => a.status === 'Hired').length,
+        };
+
+        this.recentApplications = applications.slice(0, 5);
+
+        this.topVacancies = vacancies.slice(0, 5);
+
+        this.isLoading = false;
+      })
+      .catch((error) => {
+        console.error('Error loading organization dashboard:', error);
+        this.isLoading = false;
+      });
   }
 
   get isUser(): boolean {
@@ -156,21 +170,22 @@ export class DashboardComponent implements OnInit {
   }
 
   get isOrganization(): boolean {
-    return this.currentUser?.role === 'ORGANIZATION_ADMIN' || this.currentUser?.role === 'HR_MANAGER';
+    return (
+      this.currentUser?.role === 'ORGANIZATION_ADMIN' || this.currentUser?.role === 'HR_MANAGER'
+    );
   }
 
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {
-      'Submitted': 'blue',
-      'UnderReview': 'orange',
-      'Shortlisted': 'cyan',
-      'Rejected': 'red',
-      'Hired': 'green',
-      'Active': 'green',
-      'Draft': 'default',
-      'Closed': 'red',
+      Submitted: 'blue',
+      UnderReview: 'orange',
+      Shortlisted: 'cyan',
+      Rejected: 'red',
+      Hired: 'green',
+      Active: 'green',
+      Draft: 'default',
+      Closed: 'red',
     };
     return colors[status] || 'default';
   }
 }
-

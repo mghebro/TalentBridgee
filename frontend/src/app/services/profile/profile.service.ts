@@ -24,6 +24,10 @@ export class ProfileService {
     return this.http.get<ApiResponse<Profile>>(`${this.apiUrl}/user`);
   }
 
+  getProfileByUserId(userId: number): Observable<ApiResponse<Profile>> {
+    return this.http.get<ApiResponse<Profile>>(`${this.apiUrl}/user/${userId}`);
+  }
+
   updateProfile(request: UpdateProfileRequest): Observable<ApiResponse<Profile>> {
     return this.http.put<ApiResponse<Profile>>(`${this.apiUrl}/update-user`, request);
   }

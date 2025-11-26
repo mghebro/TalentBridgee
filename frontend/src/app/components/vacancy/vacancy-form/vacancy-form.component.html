@@ -142,18 +142,20 @@
     </div>
     <nz-form-item>
       <nz-form-label nzFor="salaryMin">Salary Range</nz-form-label>
-      <nz-form-control>
+      <nz-form-control [nzErrorTip]="getSalaryErrorTip()">
         <nz-input-group nzCompact class="salary-group">
           <nz-input-number
             [nzStep]="100"
             formControlName="salaryMin"
             nzPlaceHolder="Min"
+            (ngModelChange)="onSalaryMinChange()"
           ></nz-input-number>
           <span class="salary-separator">–</span>
           <nz-input-number
             [nzStep]="100"
             formControlName="salaryMax"
             nzPlaceHolder="Max"
+            (ngModelChange)="onSalaryMaxChange()"
           ></nz-input-number>
           <nz-select formControlName="salaryCurrency" class="currency-select">
             <nz-option nzValue="GEL" nzLabel="GEL"></nz-option>
@@ -164,7 +166,7 @@
       </nz-form-control>
     </nz-form-item>
   </div>
-  
+
   <div class="form-section">
     <h4 class="section-title">Location & Status</h4>
     <div class="form-row">
@@ -179,7 +181,7 @@
           />
         </nz-form-control>
       </nz-form-item>
-      <nz-form-item class="form-item-half">
+      <nz-form-item class="form-item-half" *ngIf="vacancyId">
         <nz-form-label nzFor="status" nzRequired>Status</nz-form-label>
         <nz-form-control nzErrorTip="Please select the status!">
           <nz-select id="status" formControlName="status" [nzDropdownMatchSelectWidth]="false">

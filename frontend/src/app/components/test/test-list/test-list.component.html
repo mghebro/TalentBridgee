@@ -45,7 +45,7 @@
           </div>
           <div class="meta-item">
             <span nz-icon nzType="check-circle" nzTheme="outline"></span>
-            <span>Pass: {{ test.passingScore }}%</span>
+            <span>Pass: {{ test.passingScore }}</span>
           </div>
         </div>
         <div class="card-actions">
@@ -58,10 +58,19 @@
             <span nz-icon nzType="edit" nzTheme="outline"></span>
             Edit
           </button>
-          <button *ngIf="!isOrgAdmin" nz-button nzType="primary" [routerLink]="['/tests', test.id]">
+          <button
+            *ngIf="!isOrgAdmin && test.applicationId && test.status !== 'Completed'"
+            nz-button
+            nzType="primary"
+            [routerLink]="['/applications', test.applicationId, 'test']"
+          >
             <span nz-icon nzType="play-circle" nzTheme="outline"></span>
             Start Test
           </button>
+          <nz-tag *ngIf="!isOrgAdmin && test.status === 'Completed'" nzColor="green">
+            <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+            Completed
+          </nz-tag>
         </div>
       </div>
     </div>

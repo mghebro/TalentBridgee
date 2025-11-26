@@ -216,6 +216,91 @@ public class TestService : ITestService
         return ServiceResult<TestDetailsResponse>.SuccessResult(response, "Test created successfully.");
     }
 
+    public async Task<ServiceResult<TestDetailsResponse>> UpdateTestAsync(int testId, CreateTestRequest request, int userId)
+    {
+        var test = await _context.Tests
+            .Include(t => t.Questions)
+            .ThenInclude(q => q.Options)
+            .FirstOrDefaultAsync(t => t.Id == testId && !t.IsDeleted);
+        
+        if (test == null)
+            return ServiceResult<TestDetailsResponse>.FailureResult("Test not found.");
+
+        var organization = await _context.Organizations.FindAsync(request.OrganizationId);
+        if (organization == null)
+            return ServiceResult<TestDetailsResponse>.FailureResult("Organization not found.");
+
+        if (organization.UserId != userId)
+            return ServiceResult<TestDetailsResponse>.FailureResult("Access denied.");
+
+        // Update test properties
+        test.Title = request.Title;
+        test.Description = request.Description;
+        test.Profession = request.Profession;
+        test.DurationMinutes = request.DurationMinutes;
+        test.PassingScore = request.PassingScore;
+        test.Difficulty = request.Difficulty;
+        test.VacancyId = request.VacancyId;
+        test.OrganizationId = request.OrganizationId;
+
+        // Remove existing questions and their options
+        if (test.Questions != null && test.Questions.Any())
+        {
+            foreach (var question in test.Questions)
+            {
+                if (question.Options != null && question.Options.Any())
+                {
+                    _context.QuestionOptions.RemoveRange(question.Options);
+                }
+            }
+            _context.Questions.RemoveRange(test.Questions);
+        }
+
+        // Add new questions
+        test.TotalPoints = 0;
+        if (request.Questions != null && request.Questions.Any())
+        {
+            test.Questions = new List<Question>();
+            var questionOrder = 1;
+
+            foreach (var questionRequest in request.Questions)
+            {
+                var question = new Question
+                {
+                    QuestionText = questionRequest.Text,
+                    QuestionType = MapQuestionType(questionRequest.Type),
+                    Points = questionRequest.Points,
+                    OrderNumber = questionOrder++,
+                    TimeLimitSeconds = questionRequest.TimeLimitSeconds ?? 0,
+                    IsRequired = true,
+                    Options = new List<QuestionOption>()
+                };
+
+                if (questionRequest.Options != null && questionRequest.Options.Any())
+                {
+                    var optionOrder = 1;
+                    foreach (var optionRequest in questionRequest.Options)
+                    {
+                        question.Options.Add(new QuestionOption
+                        {
+                            OptionText = optionRequest.Text,
+                            IsCorrect = optionRequest.IsCorrect,
+                            OrderNumber = optionOrder++
+                        });
+                    }
+                }
+
+                test.TotalPoints += question.Points;
+                test.Questions.Add(question);
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        var response = _mapper.Map<TestDetailsResponse>(test);
+        return ServiceResult<TestDetailsResponse>.SuccessResult(response, "Test updated successfully.");
+    }
+
     public async Task<ServiceResult<QuestionResponse>> AddQuestionToTestAsync(int testId, CreateQuestionRequest request, int userId)
     {
         var test = await _context.Tests.FindAsync(testId);
@@ -274,7 +359,10 @@ public class TestService : ITestService
     
     public async Task<ServiceResult<TestDetailsResponse>> GetTestByIdAsync(int testId)
     {
-        var test = await _context.Tests.Include(t => t.Questions).ThenInclude(q => q.Options).FirstOrDefaultAsync(t => t.Id == testId);
+        var test = await _context.Tests
+            .Include(t => t.Questions)
+            .ThenInclude(q => q.Options)
+            .FirstOrDefaultAsync(t => t.Id == testId);
         if (test == null) return ServiceResult<TestDetailsResponse>.FailureResult("Test not found.");
         var response = _mapper.Map<TestDetailsResponse>(test);
         return ServiceResult<TestDetailsResponse>.SuccessResult(response);
@@ -290,7 +378,7 @@ public class TestService : ITestService
 
     public async Task<ServiceResult<PaginatedResult<TestListResponse>>> GetTestsAsync(TestFilterRequest request)
     {
-        var query = _context.Tests.AsQueryable();
+        var query = _context.Tests.Where(t => !t.IsDeleted).AsQueryable();
         var totalItems = await query.CountAsync();
         var tests = await query.Skip((request.Page - 1) * request.PageSize).Take(request.PageSize).ToListAsync();
         var mappedTests = _mapper.Map<List<TestListResponse>>(tests);
@@ -360,6 +448,7 @@ public class TestService : ITestService
     {
         var assignments = await _context.TestAssignments
             .Include(ta => ta.Test)
+                .ThenInclude(t => t.Questions)
             .Include(ta => ta.Application)
             .Where(ta => ta.Application.UserId == userId)
             .OrderByDescending(ta => ta.AssignedAt)
@@ -374,6 +463,8 @@ public class TestService : ITestService
             PassingScore = ta.Test.PassingScore,
             Difficulty = ta.Test.Difficulty,
             QuestionCount = ta.Test.Questions?.Count ?? 0,
+            ApplicationId = ta.ApplicationId,
+            Status = ta.Status.ToString(),
         }).ToList();
 
         var result = new PaginatedResult<TestListResponse>
@@ -396,7 +487,7 @@ public class TestService : ITestService
 
         var tests = await _context.Tests
             .Include(t => t.Questions)
-            .Where(t => hrManagerIds.Contains(t.OrganizationId))
+            .Where(t => hrManagerIds.Contains(t.OrganizationId) && !t.IsDeleted)
             .OrderByDescending(t => t.CreatedAt)
             .Select(t => new TestListResponse
             {

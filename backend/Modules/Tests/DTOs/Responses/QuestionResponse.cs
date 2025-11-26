@@ -9,6 +9,7 @@ public class QuestionResponse
     public QUESTION_TYPE QuestionType { get; set; }
     public decimal Points { get; set; }
     public int OrderNumber { get; set; }
+    public int TimeLimitSeconds { get; set; }
     public List<QuestionOptionResponse> Options { get; set; } = new List<QuestionOptionResponse>();
 }
 
