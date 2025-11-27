@@ -20,6 +20,8 @@ import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { CreateTestRequest, Test } from '../../../models/test/test';
 import { extractErrorMessage } from '../../../utils/api-error';
 import { Router } from '@angular/router';
+import { DECIMAL_PATTERN, INTEGER_PATTERN } from '../../../utils/validation-patterns';
+import { NumericInputDirective } from '../../../directives/numeric-input.directive';
 
 @Component({
   selector: 'app-assign-test-modal',
@@ -39,6 +41,7 @@ import { Router } from '@angular/router';
     NzSpinModule,
     NzTagModule,
     NzDescriptionsModule,
+    NumericInputDirective,
   ],
   templateUrl: './assign-test-modal.component.html',
   styleUrls: ['./assign-test-modal.component.scss'],
@@ -97,8 +100,16 @@ export class AssignTestModalComponent implements OnInit {
       vacancyId: [null, [Validators.required]],
       description: [null, [Validators.required]],
       profession: [null, [Validators.required]],
-      durationMinutes: [null, [Validators.required]],
-      passingScore: [null, [Validators.required]],
+      durationMinutes: [null, [Validators.required, Validators.pattern(INTEGER_PATTERN)]],
+      passingScore: [
+        null,
+        [
+          Validators.required,
+          Validators.pattern(INTEGER_PATTERN),
+          Validators.min(0),
+          Validators.max(100),
+        ],
+      ],
       difficulty: [null, [Validators.required]],
       questions: this.fb.array([]),
     });
@@ -111,8 +122,19 @@ export class AssignTestModalComponent implements OnInit {
       vacancyId: [this.data.vacancy.id.toString(), [Validators.required]],
       description: [test.description, [Validators.required]],
       profession: [test.profession, [Validators.required]],
-      durationMinutes: [test.durationMinutes, [Validators.required]],
-      passingScore: [test.passingScore, [Validators.required]],
+      durationMinutes: [
+        test.durationMinutes,
+        [Validators.required, Validators.pattern(INTEGER_PATTERN)],
+      ],
+      passingScore: [
+        test.passingScore,
+        [
+          Validators.required,
+          Validators.pattern(INTEGER_PATTERN),
+          Validators.min(0),
+          Validators.max(100),
+        ],
+      ],
       difficulty: [test.difficulty, [Validators.required]],
       questions: this.fb.array([]),
     });
@@ -125,13 +147,17 @@ export class AssignTestModalComponent implements OnInit {
             this.mapQuestionType(q.type || q.questionType || q.QuestionType) || 'SINGLE_CHOICE',
             Validators.required,
           ],
-          points: [q.points || q.Points || 0, Validators.required],
+          points: [
+            q.points || q.Points || 0,
+            [Validators.required, Validators.pattern(DECIMAL_PATTERN)],
+          ],
           timeLimitSeconds: [
             q.timeLimitSeconds !== undefined
               ? q.timeLimitSeconds
               : q.TimeLimitSeconds !== undefined
               ? q.TimeLimitSeconds
               : null,
+            Validators.pattern(INTEGER_PATTERN),
           ],
           options: this.fb.array(
             (q.options || q.Options || []).map((o: any) =>
@@ -159,8 +185,8 @@ export class AssignTestModalComponent implements OnInit {
     return this.fb.group({
       text: ['', Validators.required],
       type: ['SINGLE_CHOICE', Validators.required],
-      points: [0, Validators.required],
-      timeLimitSeconds: [null],
+      points: [0, [Validators.required, Validators.pattern(DECIMAL_PATTERN)]],
+      timeLimitSeconds: [null, Validators.pattern(INTEGER_PATTERN)],
       options: this.fb.array([]),
     });
   }

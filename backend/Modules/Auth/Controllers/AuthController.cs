@@ -145,6 +145,27 @@ public class AuthController : BaseApiController
         }
     }
 
+    [Authorize]
+    [HttpPut("change-password")]
+    public async Task<ActionResult> ChangePassword(ChangePasswordRequest request)
+    {
+        try
+        {
+            var userIdResponse = await GetCurrentUserIdAsync();
+            if (userIdResponse.Status != StatusCodes.Status200OK)
+            {
+                return StatusCode(userIdResponse.Status, userIdResponse);
+            }
+
+            var result = await _authService.ChangePassword(userIdResponse.Data, request);
+            return StatusCode(result.Status, result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
     [HttpDelete("delete-user")]
     public async Task<ActionResult> DeleteUser()
     {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
@@ -10,6 +10,8 @@ import { CookieService } from 'ngx-cookie-service';
 import { VerifyEmail } from '../../models/auth/verify-email';
 import { ApiResponse } from '../../models/api/api-response';
 import { UserToken } from '../../models/auth/user-token';
+import { ResetPasswordRequest } from '../../models/auth/reset-password-request';
+import { ChangePasswordRequest } from '../../models/auth/change-password-request';
 
 @Injectable({
   providedIn: 'root',
@@ -43,6 +45,21 @@ export class AuthService {
       `${this.apiUrl}/send-resend-verification-code?userEmail=${email}`,
       {}
     );
+  }
+
+  sendResetPasswordLink(email: string): Observable<ApiResponse<boolean>> {
+    const params = new HttpParams().set('userEmail', email);
+    return this.http.post<ApiResponse<boolean>>(`${this.apiUrl}/send-reset-password-link`, null, {
+      params,
+    });
+  }
+
+  resetPassword(request: ResetPasswordRequest): Observable<ApiResponse<boolean>> {
+    return this.http.put<ApiResponse<boolean>>(`${this.apiUrl}/reset-password`, request);
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<ApiResponse<boolean>> {
+    return this.http.put<ApiResponse<boolean>>(`${this.apiUrl}/change-password`, request);
   }
 
   login(request: LoginRequest): Observable<User> {

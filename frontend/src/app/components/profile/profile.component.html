@@ -37,6 +37,10 @@
         </div>
 
         <div class="header-actions" *ngIf="!isViewingOtherUser">
+          <button nz-button nzType="default" (click)="openChangePasswordModal()">
+            <span nz-icon nzType="lock"></span>
+            Change Password
+          </button>
           <button nz-button [nzType]="isEditing ? 'default' : 'primary'" (click)="toggleEdit()">
             <span nz-icon [nzType]="isEditing ? 'close' : 'edit'"></span>
             {{ isEditing ? 'Cancel' : 'Edit Profile' }}
@@ -386,13 +390,19 @@
         <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label>End Date</nz-form-label>
-            <nz-form-control>
+            <nz-form-control
+              [nzValidateStatus]="hasDateRangeError(educationForm) ? 'error' : ''"
+              [nzErrorTip]="educationEndErrorTpl"
+            >
               <nz-date-picker
                 formControlName="endDate"
                 style="width: 100%"
                 [nzDisabled]="educationForm.get('isCurrent')?.value"
               ></nz-date-picker>
             </nz-form-control>
+            <ng-template #educationEndErrorTpl>
+              <span>End date cannot be earlier than start date.</span>
+            </ng-template>
           </nz-form-item>
         </div>
       </div>
@@ -455,13 +465,19 @@
         <div nz-col [nzSpan]="12">
           <nz-form-item>
             <nz-form-label>End Date</nz-form-label>
-            <nz-form-control>
+            <nz-form-control
+              [nzValidateStatus]="hasDateRangeError(experienceForm) ? 'error' : ''"
+              [nzErrorTip]="experienceEndErrorTpl"
+            >
               <nz-date-picker
                 formControlName="endDate"
                 style="width: 100%"
                 [nzDisabled]="experienceForm.get('isCurrent')?.value"
               ></nz-date-picker>
             </nz-form-control>
+            <ng-template #experienceEndErrorTpl>
+              <span>End date cannot be earlier than start date.</span>
+            </ng-template>
           </nz-form-item>
         </div>
       </div>
@@ -480,6 +496,59 @@
             placeholder="Describe your responsibilities and achievements..."
           ></textarea>
         </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>
+
+<nz-modal
+  [(nzVisible)]="isChangePasswordModalVisible"
+  nzTitle="Change Password"
+  (nzOnCancel)="isChangePasswordModalVisible = false"
+  [nzOkDisabled]="changePasswordForm.invalid || isChangingPassword"
+  [nzOkLoading]="isChangingPassword"
+  (nzOnOk)="submitChangePassword()"
+>
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="changePasswordForm">
+      <nz-form-item>
+        <nz-form-label nzRequired>Current Password</nz-form-label>
+        <nz-form-control nzErrorTip="Current password is required">
+          <input
+            nz-input
+            type="password"
+            formControlName="oldPassword"
+            autocomplete="current-password"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired>New Password</nz-form-label>
+        <nz-form-control nzErrorTip="Use 8+ chars with mixed case, number, and symbol.">
+          <input
+            nz-input
+            type="password"
+            formControlName="newPassword"
+            autocomplete="new-password"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label nzRequired>Confirm Password</nz-form-label>
+        <nz-form-control
+          [nzValidateStatus]="passwordsDoNotMatch ? 'error' : ''"
+          [nzErrorTip]="confirmPasswordErrorTpl"
+        >
+          <input
+            nz-input
+            type="password"
+            formControlName="confirmPassword"
+            autocomplete="new-password"
+          />
+        </nz-form-control>
+        <ng-template #confirmPasswordErrorTpl>
+          <span>Passwords do not match.</span>
+        </ng-template>
       </nz-form-item>
     </form>
   </ng-container>

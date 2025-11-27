@@ -3,14 +3,26 @@
     <h2>Login</h2>
     <form nz-form [formGroup]="loginForm" (ngSubmit)="submitForm()">
       <nz-form-item>
-        <nz-form-control nzErrorTip="Please input your email!">
+        <nz-form-control
+          [nzValidateStatus]="emailControl?.invalid && emailControl?.touched ? 'error' : ''"
+          [nzErrorTip]="emailErrorTpl"
+        >
           <nz-input-group nzPrefixIcon="user">
             <input type="email" nz-input formControlName="email" placeholder="Email" />
           </nz-input-group>
         </nz-form-control>
+        <ng-template #emailErrorTpl>
+          <span *ngIf="emailControl?.errors?.['required']">Email is required.</span>
+          <span *ngIf="emailControl?.errors?.['pattern']">
+            Enter a valid email (letters, numbers, and allowed symbols).
+          </span>
+        </ng-template>
       </nz-form-item>
       <nz-form-item>
-        <nz-form-control nzErrorTip="Please input your password!">
+        <nz-form-control
+          [nzValidateStatus]="passwordControl?.invalid && passwordControl?.touched ? 'error' : ''"
+          [nzErrorTip]="passwordErrorTpl"
+        >
           <nz-input-group nzPrefixIcon="lock" [nzSuffix]="passwordSuffix">
             <input
               [type]="showPassword ? 'text' : 'password'"
@@ -29,6 +41,12 @@
             ></span>
           </ng-template>
         </nz-form-control>
+        <ng-template #passwordErrorTpl>
+          <span *ngIf="passwordControl?.errors?.['required']">Password is required.</span>
+          <span *ngIf="passwordControl?.errors?.['pattern']">
+            Use 8+ chars with uppercase, lowercase, number, and symbol.
+          </span>
+        </ng-template>
       </nz-form-item>
       <nz-form-item>
         <nz-form-control>

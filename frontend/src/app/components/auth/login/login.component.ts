@@ -11,6 +11,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { EMAIL_PATTERN, PASSWORD_PATTERN } from '../../../utils/validation-patterns';
 
 @Component({
   selector: 'app-login',
@@ -42,8 +43,8 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.pattern(EMAIL_PATTERN)]],
+      password: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
       remember: [true],
     });
   }
@@ -74,5 +75,13 @@ export class LoginComponent implements OnInit {
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
+  }
+
+  get emailControl() {
+    return this.loginForm.get('email');
+  }
+
+  get passwordControl() {
+    return this.loginForm.get('password');
   }
 }

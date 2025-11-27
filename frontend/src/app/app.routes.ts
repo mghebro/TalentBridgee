@@ -21,6 +21,8 @@ import { ApplicationOwnerGuard } from './guards/application-owner.guard';
 import { ProfileComponent } from './components/profile/profile.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { OrganizationProfileComponent } from './components/organization/organization-profile/organization-profile.component';
+import { ForgotPasswordComponent } from './components/auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './components/auth/reset-password/reset-password.component';
 
 export const routes: Routes = [
   {
@@ -36,6 +38,8 @@ export const routes: Routes = [
       { path: 'auth/login', component: LoginComponent },
       { path: 'auth/register', component: RegisterComponent },
       { path: 'auth/verify-email', component: VerifyEmailComponent },
+      { path: 'auth/forgot-password', component: ForgotPasswordComponent },
+      { path: 'auth/reset-password/new-password', component: ResetPasswordComponent },
       { path: 'vacancies', pathMatch: 'full', component: VacancyListComponent },
       { path: 'vacancies/:id', component: VacancyDetailComponent },
       {

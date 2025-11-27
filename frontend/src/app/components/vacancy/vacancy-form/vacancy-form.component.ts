@@ -29,6 +29,8 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { extractErrorMessage } from '../../../utils/api-error';
+import { DECIMAL_PATTERN } from '../../../utils/validation-patterns';
+import { NumericInputDirective } from '../../../directives/numeric-input.directive';
 
 @Component({
   selector: 'app-vacancy-form',
@@ -46,6 +48,7 @@ import { extractErrorMessage } from '../../../utils/api-error';
     NzCheckboxModule,
     NzInputNumberModule,
     NzModalModule,
+    NumericInputDirective,
   ],
   templateUrl: './vacancy-form.component.html',
   styleUrls: ['./vacancy-form.component.scss'],
@@ -124,8 +127,8 @@ export class VacancyFormComponent implements OnInit {
       industry: [null, [Validators.required]],
       employmentType: [null, [Validators.required]],
       experienceLevel: [null, [Validators.required]],
-      salaryMin: [null, [this.salaryMinValidator()]],
-      salaryMax: [null, [this.salaryMaxValidator()]],
+      salaryMin: [null, [this.salaryMinValidator(), Validators.pattern(DECIMAL_PATTERN)]],
+      salaryMax: [null, [this.salaryMaxValidator(), Validators.pattern(DECIMAL_PATTERN)]],
       salaryCurrency: ['GEL'],
       location: [null, [Validators.required]],
       isRemote: [false],

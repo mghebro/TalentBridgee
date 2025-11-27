@@ -3,31 +3,61 @@
     <h2>Register</h2>
     <form nz-form [formGroup]="registerForm" (ngSubmit)="submitForm()">
       <nz-form-item>
-        <nz-form-control nzErrorTip="Please input your first name!">
+        <nz-form-control
+          [nzValidateStatus]="firstNameControl?.invalid && firstNameControl?.touched ? 'error' : ''"
+          [nzErrorTip]="firstNameErrorTpl"
+        >
           <nz-input-group nzPrefixIcon="user">
             <input type="text" nz-input formControlName="firstName" placeholder="First Name" />
           </nz-input-group>
         </nz-form-control>
+        <ng-template #firstNameErrorTpl>
+          <span *ngIf="firstNameControl?.errors?.['required']">First name is required.</span>
+          <span *ngIf="firstNameControl?.errors?.['pattern']">
+            Use letters only (2+ characters).
+          </span>
+        </ng-template>
       </nz-form-item>
       
       <nz-form-item>
-        <nz-form-control nzErrorTip="Please input your last name!">
+        <nz-form-control
+          [nzValidateStatus]="lastNameControl?.invalid && lastNameControl?.touched ? 'error' : ''"
+          [nzErrorTip]="lastNameErrorTpl"
+        >
           <nz-input-group nzPrefixIcon="user">
             <input type="text" nz-input formControlName="lastName" placeholder="Last Name" />
           </nz-input-group>
         </nz-form-control>
+        <ng-template #lastNameErrorTpl>
+          <span *ngIf="lastNameControl?.errors?.['required']">Last name is required.</span>
+          <span *ngIf="lastNameControl?.errors?.['pattern']">
+            Use letters only (2+ characters).
+          </span>
+        </ng-template>
       </nz-form-item>
       
       <nz-form-item>
-        <nz-form-control nzErrorTip="Please input your email!">
+        <nz-form-control
+          [nzValidateStatus]="emailControl?.invalid && emailControl?.touched ? 'error' : ''"
+          [nzErrorTip]="emailErrorTpl"
+        >
           <nz-input-group nzPrefixIcon="mail">
             <input type="email" nz-input formControlName="email" placeholder="Email" />
           </nz-input-group>
         </nz-form-control>
+        <ng-template #emailErrorTpl>
+          <span *ngIf="emailControl?.errors?.['required']">Email is required.</span>
+          <span *ngIf="emailControl?.errors?.['pattern']">
+            Enter a valid email address.
+          </span>
+        </ng-template>
       </nz-form-item>
       
       <nz-form-item>
-        <nz-form-control nzErrorTip="Password must be at least 6 characters long.">
+        <nz-form-control
+          [nzValidateStatus]="passwordControl?.invalid && passwordControl?.touched ? 'error' : ''"
+          [nzErrorTip]="passwordErrorTpl"
+        >
           <nz-input-group nzPrefixIcon="lock" [nzSuffix]="passwordSuffix">
             <input
               [type]="showPassword ? 'text' : 'password'"
@@ -46,10 +76,24 @@
             ></span>
           </ng-template>
         </nz-form-control>
+        <ng-template #passwordErrorTpl>
+          <span *ngIf="passwordControl?.errors?.['required']">Password is required.</span>
+          <span *ngIf="passwordControl?.errors?.['pattern']">
+            Use 8+ chars with uppercase, lowercase, number, and symbol.
+          </span>
+        </ng-template>
       </nz-form-item>
       
       <nz-form-item>
-        <nz-form-control nzErrorTip="Please confirm your password!">
+        <nz-form-control
+          [nzValidateStatus]="
+            (registerForm.hasError('mismatch') || confirmPasswordControl?.invalid) &&
+            confirmPasswordControl?.touched
+              ? 'error'
+              : ''
+          "
+          [nzErrorTip]="confirmPasswordErrorTpl"
+        >
           <nz-input-group nzPrefixIcon="lock" [nzSuffix]="confirmPasswordSuffix">
             <input
               [type]="showConfirmPassword ? 'text' : 'password'"
@@ -67,11 +111,11 @@
               style="cursor: pointer; color: rgba(0, 0, 0, 0.45);"
             ></span>
           </ng-template>
-          <div *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.dirty" 
-               class="ant-form-item-explain-error" style="color: red;">
-            Passwords do not match.
-          </div>
         </nz-form-control>
+        <ng-template #confirmPasswordErrorTpl>
+          <span *ngIf="confirmPasswordControl?.errors?.['required']">Confirm your password.</span>
+          <span *ngIf="registerForm.hasError('mismatch')">Passwords do not match.</span>
+        </ng-template>
       </nz-form-item>
 
       <nz-form-item>
@@ -89,7 +133,12 @@
         <h3>Organization Details</h3>
         
         <nz-form-item>
-          <nz-form-control nzErrorTip="Please input the organization name!">
+          <nz-form-control
+            [nzValidateStatus]="
+              orgDetailsGroup.get('name')?.invalid && orgDetailsGroup.get('name')?.touched ? 'error' : ''
+            "
+            nzErrorTip="Organization name is required."
+          >
             <nz-input-group nzPrefixIcon="bank">
               <input type="text" nz-input formControlName="name" placeholder="Organization Name" />
             </nz-input-group>
@@ -105,7 +154,12 @@
         </nz-form-item>
         
         <nz-form-item>
-          <nz-form-control nzErrorTip="Please input the organization address!">
+          <nz-form-control
+            [nzValidateStatus]="
+              orgDetailsGroup.get('address')?.invalid && orgDetailsGroup.get('address')?.touched ? 'error' : ''
+            "
+            nzErrorTip="Organization address is required."
+          >
             <nz-input-group nzPrefixIcon="environment">
               <input type="text" nz-input formControlName="address" placeholder="Organization Address" />
             </nz-input-group>
@@ -113,27 +167,70 @@
         </nz-form-item>
         
         <nz-form-item>
-          <nz-form-control nzErrorTip="Please input the organization contact email!">
+          <nz-form-control
+            [nzValidateStatus]="
+              orgDetailsGroup.get('contactEmail')?.invalid && orgDetailsGroup.get('contactEmail')?.touched
+                ? 'error'
+                : ''
+            "
+            [nzErrorTip]="contactEmailErrorTpl"
+          >
             <nz-input-group nzPrefixIcon="mail">
               <input type="email" nz-input formControlName="contactEmail" placeholder="Organization Contact Email" />
             </nz-input-group>
           </nz-form-control>
+          <ng-template #contactEmailErrorTpl>
+            <span *ngIf="orgDetailsGroup.get('contactEmail')?.errors?.['required']">
+              Contact email is required.
+            </span>
+            <span *ngIf="orgDetailsGroup.get('contactEmail')?.errors?.['pattern']">
+              Enter a valid email address.
+            </span>
+          </ng-template>
         </nz-form-item>
         
         <nz-form-item>
-          <nz-form-control nzErrorTip="Please input the organization website!">
+          <nz-form-control
+            [nzValidateStatus]="
+              orgDetailsGroup.get('website')?.invalid && orgDetailsGroup.get('website')?.touched ? 'error' : ''
+            "
+            [nzErrorTip]="websiteErrorTpl"
+          >
             <nz-input-group nzPrefixIcon="global">
               <input type="url" nz-input formControlName="website" placeholder="https://example.com" />
             </nz-input-group>
           </nz-form-control>
+          <ng-template #websiteErrorTpl>
+            <span *ngIf="orgDetailsGroup.get('website')?.errors?.['required']">
+              Organization website is required.
+            </span>
+            <span *ngIf="orgDetailsGroup.get('website')?.errors?.['pattern']">
+              Provide a valid URL including protocol.
+            </span>
+          </ng-template>
         </nz-form-item>
         
         <nz-form-item>
-          <nz-form-control nzErrorTip="Please input the organization phone number!">
+          <nz-form-control
+            [nzValidateStatus]="
+              orgDetailsGroup.get('phoneNumber')?.invalid && orgDetailsGroup.get('phoneNumber')?.touched
+                ? 'error'
+                : ''
+            "
+            [nzErrorTip]="phoneErrorTpl"
+          >
             <nz-input-group nzPrefixIcon="phone">
               <input type="tel" nz-input formControlName="phoneNumber" placeholder="Organization Phone Number" />
             </nz-input-group>
           </nz-form-control>
+          <ng-template #phoneErrorTpl>
+            <span *ngIf="orgDetailsGroup.get('phoneNumber')?.errors?.['required']">
+              Phone number is required.
+            </span>
+            <span *ngIf="orgDetailsGroup.get('phoneNumber')?.errors?.['pattern']">
+              Use digits, spaces, +, or - only (7-20 chars).
+            </span>
+          </ng-template>
         </nz-form-item>
         
         <nz-form-item>

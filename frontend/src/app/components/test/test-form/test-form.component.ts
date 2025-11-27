@@ -13,6 +13,7 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NumericInputDirective } from '../../../directives/numeric-input.directive';
 
 import { TestService } from '../../../services/test/test.service';
 import { VacancyService } from '../../../services/vacancy/vacancy.service';
@@ -20,6 +21,7 @@ import { OrganizationService } from '../../../services/organization/organization
 import { CreateTestRequest } from '../../../models/test/test';
 import { OrganizationList } from '../../../models/organization.model';
 import { extractErrorMessage } from '../../../utils/api-error';
+import { DECIMAL_PATTERN, INTEGER_PATTERN } from '../../../utils/validation-patterns';
 
 @Component({
   selector: 'app-test-form',
@@ -39,6 +41,7 @@ import { extractErrorMessage } from '../../../utils/api-error';
     NzIconModule,
     NzCheckboxModule,
     NzDividerModule,
+    NumericInputDirective,
   ],
 })
 export class TestFormComponent implements OnInit {
@@ -89,8 +92,16 @@ export class TestFormComponent implements OnInit {
       vacancyId: [null, [Validators.required]],
       description: [null, [Validators.required]],
       profession: [null, [Validators.required]],
-      durationMinutes: [null, [Validators.required]],
-      passingScore: [null, [Validators.required]],
+      durationMinutes: [null, [Validators.required, Validators.pattern(INTEGER_PATTERN)]],
+      passingScore: [
+        null,
+        [
+          Validators.required,
+          Validators.pattern(INTEGER_PATTERN),
+          Validators.min(0),
+          Validators.max(100),
+        ],
+      ],
       difficulty: [null, [Validators.required]],
       questions: this.fb.array([]),
     });
@@ -121,13 +132,17 @@ export class TestFormComponent implements OnInit {
           this.mapQuestionType(q.type || q.questionType || q.QuestionType) || 'SINGLE_CHOICE',
           Validators.required,
         ],
-        points: [q.points || q.Points || 0, Validators.required],
+        points: [
+          q.points || q.Points || 0,
+          [Validators.required, Validators.pattern(DECIMAL_PATTERN)],
+        ],
         timeLimitSeconds: [
           q.timeLimitSeconds !== undefined
             ? q.timeLimitSeconds
             : q.TimeLimitSeconds !== undefined
             ? q.TimeLimitSeconds
             : null,
+          Validators.pattern(INTEGER_PATTERN),
         ],
         options: this.fb.array((q.options || q.Options || []).map((o: any) => this.newOption(o))),
       })
@@ -139,8 +154,8 @@ export class TestFormComponent implements OnInit {
     return this.fb.group({
       text: ['', Validators.required],
       type: ['SINGLE_CHOICE', Validators.required],
-      points: [0, Validators.required],
-      timeLimitSeconds: [null],
+      points: [0, [Validators.required, Validators.pattern(DECIMAL_PATTERN)]],
+      timeLimitSeconds: [null, Validators.pattern(INTEGER_PATTERN)],
       options: this.fb.array([]),
     });
   }

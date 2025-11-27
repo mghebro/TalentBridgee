@@ -11,6 +11,13 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { OrganizationType } from '../../../models/organization.model';
 import { extractErrorMessage } from '../../../utils/api-error';
+import {
+  EMAIL_PATTERN,
+  NAME_PATTERN,
+  PASSWORD_PATTERN,
+  PHONE_PATTERN,
+  WEBSITE_PATTERN,
+} from '../../../utils/validation-patterns';
 
 @Component({
   selector: 'app-register',
@@ -45,11 +52,11 @@ export class RegisterComponent implements OnInit {
   ngOnInit(): void {
     this.registerForm = this.fb.group(
       {
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
+        email: ['', [Validators.required, Validators.pattern(EMAIL_PATTERN)]],
+        password: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
         confirmPassword: ['', [Validators.required]],
-        firstName: ['', [Validators.required]],
-        lastName: ['', [Validators.required]],
+        firstName: ['', [Validators.required, Validators.pattern(NAME_PATTERN)]],
+        lastName: ['', [Validators.required, Validators.pattern(NAME_PATTERN)]],
         desiredRole: ['USER', [Validators.required]],
         organizationDetails: this.fb.group({
           name: [''],
@@ -85,10 +92,10 @@ export class RegisterComponent implements OnInit {
       orgDetails.get('name')?.setValidators([Validators.required]);
       orgDetails.get('type')?.setValidators([Validators.required]);
       orgDetails.get('address')?.setValidators([Validators.required]);
-      orgDetails.get('contactEmail')?.setValidators([Validators.required, Validators.email]);
-      orgDetails.get('website')?.setValidators([Validators.required]);
+      orgDetails.get('contactEmail')?.setValidators([Validators.required, Validators.pattern(EMAIL_PATTERN)]);
+      orgDetails.get('website')?.setValidators([Validators.required, Validators.pattern(WEBSITE_PATTERN)]);
       orgDetails.get('description')?.setValidators([Validators.required]);
-      orgDetails.get('phoneNumber')?.setValidators([Validators.required]);
+      orgDetails.get('phoneNumber')?.setValidators([Validators.required, Validators.pattern(PHONE_PATTERN)]);
     } else {
       fields.forEach((field) => {
         orgDetails.get(field)?.clearValidators();
@@ -161,5 +168,29 @@ export class RegisterComponent implements OnInit {
 
   toggleConfirmPasswordVisibility(): void {
     this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
+  get firstNameControl() {
+    return this.registerForm.get('firstName');
+  }
+
+  get lastNameControl() {
+    return this.registerForm.get('lastName');
+  }
+
+  get emailControl() {
+    return this.registerForm.get('email');
+  }
+
+  get passwordControl() {
+    return this.registerForm.get('password');
+  }
+
+  get confirmPasswordControl() {
+    return this.registerForm.get('confirmPassword');
+  }
+
+  get orgDetailsGroup(): FormGroup {
+    return this.registerForm.get('organizationDetails') as FormGroup;
   }
 }

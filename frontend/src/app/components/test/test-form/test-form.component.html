@@ -95,6 +95,7 @@
               id="durationMinutes"
               formControlName="durationMinutes"
               [nzMin]="1"
+              tbNumericInput="integer"
               nzPlaceHolder="Minutes"
             ></nz-input-number>
           </nz-form-control>
@@ -109,6 +110,7 @@
               formControlName="passingScore"
               [nzMin]="0"
               [nzMax]="100"
+              tbNumericInput="integer"
               nzPlaceHolder="Score"
             ></nz-input-number>
           </nz-form-control>
@@ -178,6 +180,7 @@
                   formControlName="points"
                   [nzMin]="0"
                   [nzStep]="0.5"
+                  tbNumericInput="decimal"
                 ></nz-input-number>
               </nz-form-control>
             </nz-form-item>
@@ -189,6 +192,7 @@
                 <nz-input-number
                   formControlName="timeLimitSeconds"
                   [nzMin]="1"
+                  tbNumericInput="integer"
                   nzPlaceHolder="Optional"
                 ></nz-input-number>
               </nz-form-control>

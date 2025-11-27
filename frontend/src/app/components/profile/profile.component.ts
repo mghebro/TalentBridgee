@@ -6,6 +6,8 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
+  AbstractControl,
+  ValidatorFn,
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NzCardModule } from 'ng-zorro-antd/card';
@@ -38,6 +40,7 @@ import {
   AddExperienceRequest,
 } from '../../models/profile/profile';
 import { environment } from '../../../environments/environment';
+import { PASSWORD_PATTERN } from '../../utils/validation-patterns';
 
 @Component({
   selector: 'app-profile',
@@ -78,11 +81,14 @@ export class ProfileComponent implements OnInit {
   profileForm!: FormGroup;
   educationForm!: FormGroup;
   experienceForm!: FormGroup;
+  changePasswordForm!: FormGroup;
 
   isEducationModalVisible = false;
   isExperienceModalVisible = false;
+  isChangePasswordModalVisible = false;
   editingEducationId: number | null = null;
   editingExperienceId: number | null = null;
+  isChangingPassword = false;
 
   isUploadingAvatar = false;
   isUploadingCV = false;
@@ -128,25 +134,43 @@ export class ProfileComponent implements OnInit {
       gender: [''],
     });
 
-    this.educationForm = this.fb.group({
-      institution: ['', Validators.required],
-      degree: ['', Validators.required],
-      fieldOfStudy: ['', Validators.required],
-      startDate: [null, Validators.required],
-      endDate: [null],
-      isCurrent: [false],
-      description: [''],
-    });
+    this.educationForm = this.fb.group(
+      {
+        institution: ['', Validators.required],
+        degree: ['', Validators.required],
+        fieldOfStudy: ['', Validators.required],
+        startDate: [null, Validators.required],
+        endDate: [null],
+        isCurrent: [false],
+        description: [''],
+      },
+      { validators: this.createDateRangeValidator('startDate', 'endDate', 'isCurrent') }
+    );
 
-    this.experienceForm = this.fb.group({
-      company: ['', Validators.required],
-      position: ['', Validators.required],
-      location: [''],
-      startDate: [null, Validators.required],
-      endDate: [null],
-      isCurrent: [false],
-      description: [''],
-    });
+    this.experienceForm = this.fb.group(
+      {
+        company: ['', Validators.required],
+        position: ['', Validators.required],
+        location: [''],
+        startDate: [null, Validators.required],
+        endDate: [null],
+        isCurrent: [false],
+        description: [''],
+      },
+      { validators: this.createDateRangeValidator('startDate', 'endDate', 'isCurrent') }
+    );
+
+    this.setupCurrentToggle(this.educationForm, 'isCurrent', 'endDate');
+    this.setupCurrentToggle(this.experienceForm, 'isCurrent', 'endDate');
+
+    this.changePasswordForm = this.fb.group(
+      {
+        oldPassword: ['', Validators.required],
+        newPassword: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
+        confirmPassword: ['', Validators.required],
+      },
+      { validators: this.matchPasswords('newPassword', 'confirmPassword') }
+    );
   }
 
   loadProfile(): void {
@@ -327,6 +351,7 @@ export class ProfileComponent implements OnInit {
   openAddEducationModal(): void {
     this.editingEducationId = null;
     this.educationForm.reset({ isCurrent: false });
+    this.updateEndDateState(this.educationForm, 'isCurrent', 'endDate');
     this.isEducationModalVisible = true;
   }
 
@@ -341,6 +366,7 @@ export class ProfileComponent implements OnInit {
       isCurrent: education.isCurrent,
       description: education.description,
     });
+    this.updateEndDateState(this.educationForm, 'isCurrent', 'endDate');
     this.isEducationModalVisible = true;
   }
 
@@ -392,6 +418,7 @@ export class ProfileComponent implements OnInit {
   openAddExperienceModal(): void {
     this.editingExperienceId = null;
     this.experienceForm.reset({ isCurrent: false });
+    this.updateEndDateState(this.experienceForm, 'isCurrent', 'endDate');
     this.isExperienceModalVisible = true;
   }
 
@@ -406,6 +433,7 @@ export class ProfileComponent implements OnInit {
       isCurrent: experience.isCurrent,
       description: experience.description,
     });
+    this.updateEndDateState(this.experienceForm, 'isCurrent', 'endDate');
     this.isExperienceModalVisible = true;
   }
 
@@ -460,5 +488,134 @@ export class ProfileComponent implements OnInit {
       .split(',')
       .map((s) => s.trim())
       .filter((s) => s);
+  }
+
+  hasDateRangeError(form: FormGroup): boolean {
+    if (!form.hasError('endBeforeStart')) {
+      return false;
+    }
+    const endControl = form.get('endDate');
+    return !!endControl && (endControl.dirty || endControl.touched);
+  }
+
+  openChangePasswordModal(): void {
+    this.changePasswordForm.reset();
+    this.isChangePasswordModalVisible = true;
+  }
+
+  submitChangePassword(): void {
+    if (this.changePasswordForm.invalid) {
+      this.changePasswordForm.markAllAsTouched();
+      return;
+    }
+
+    this.isChangingPassword = true;
+    this.authService.changePassword(this.changePasswordForm.value).subscribe({
+      next: () => {
+        this.notification.success('Success', 'Password updated successfully');
+        this.isChangingPassword = false;
+        this.isChangePasswordModalVisible = false;
+        this.changePasswordForm.reset();
+      },
+      error: (error) => {
+        this.isChangingPassword = false;
+        this.notification.error('Error', error.error?.message ?? 'Failed to change password');
+      },
+    });
+  }
+
+  get changePasswordControls() {
+    return this.changePasswordForm.controls;
+  }
+
+  get passwordsDoNotMatch(): boolean {
+    const confirmControl = this.changePasswordControls['confirmPassword'];
+    return (
+      this.changePasswordForm.hasError('mismatch') &&
+      !!confirmControl &&
+      (confirmControl.dirty || confirmControl.touched)
+    );
+  }
+
+  private createDateRangeValidator(
+    startKey: string,
+    endKey: string,
+    isCurrentKey: string
+  ): ValidatorFn {
+    return (group: AbstractControl) => {
+      const start = group.get(startKey)?.value;
+      const endControl = group.get(endKey);
+      const end = endControl?.value;
+      const isCurrent = group.get(isCurrentKey)?.value;
+
+      if (isCurrent || !start || !end) {
+        this.clearDateRangeError(endControl);
+        return null;
+      }
+
+      const startTime = new Date(start).getTime();
+      const endTime = new Date(end).getTime();
+
+      if (endTime < startTime) {
+        const errors = { ...(endControl?.errors || {}), endBeforeStart: true };
+        endControl?.setErrors(errors);
+        return { endBeforeStart: true };
+      }
+
+      this.clearDateRangeError(endControl);
+      return null;
+    };
+  }
+
+  private clearDateRangeError(control: AbstractControl | null | undefined): void {
+    if (!control?.errors?.['endBeforeStart']) {
+      return;
+    }
+
+    const { endBeforeStart, ...otherErrors } = control.errors;
+    control.setErrors(Object.keys(otherErrors).length ? otherErrors : null);
+  }
+
+  private setupCurrentToggle(form: FormGroup, isCurrentKey: string, endKey: string): void {
+    const isCurrentControl = form.get(isCurrentKey);
+    if (!isCurrentControl) {
+      return;
+    }
+
+    this.updateEndDateState(form, isCurrentKey, endKey);
+
+    isCurrentControl.valueChanges.subscribe(() => {
+      this.updateEndDateState(form, isCurrentKey, endKey);
+      form.updateValueAndValidity();
+    });
+  }
+
+  private updateEndDateState(form: FormGroup, isCurrentKey: string, endKey: string): void {
+    const endControl = form.get(endKey);
+    const isCurrent = form.get(isCurrentKey)?.value;
+    if (!endControl) {
+      return;
+    }
+
+    if (isCurrent) {
+      endControl.disable({ emitEvent: false });
+      endControl.setValue(null, { emitEvent: false });
+      this.clearDateRangeError(endControl);
+    } else {
+      endControl.enable({ emitEvent: false });
+    }
+  }
+
+  private matchPasswords(passwordKey: string, confirmKey: string): ValidatorFn {
+    return (group: AbstractControl) => {
+      const password = group.get(passwordKey)?.value;
+      const confirm = group.get(confirmKey)?.value;
+
+      if (!password || !confirm) {
+        return null;
+      }
+
+      return password === confirm ? null : { mismatch: true };
+    };
   }
 }

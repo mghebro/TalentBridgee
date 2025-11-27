@@ -149,6 +149,7 @@
             formControlName="salaryMin"
             nzPlaceHolder="Min"
             (ngModelChange)="onSalaryMinChange()"
+            tbNumericInput="decimal"
           ></nz-input-number>
           <span class="salary-separator">–</span>
           <nz-input-number
@@ -156,6 +157,7 @@
             formControlName="salaryMax"
             nzPlaceHolder="Max"
             (ngModelChange)="onSalaryMaxChange()"
+            tbNumericInput="decimal"
           ></nz-input-number>
           <nz-select formControlName="salaryCurrency" class="currency-select">
             <nz-option nzValue="GEL" nzLabel="GEL"></nz-option>

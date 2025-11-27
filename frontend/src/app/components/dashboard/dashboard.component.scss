@@ -68,6 +68,9 @@ $grey-900: #0f172a;
   
   .quick-actions {
     a {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       height: 44px;
       border-radius: 10px;
       font-weight: 500;
