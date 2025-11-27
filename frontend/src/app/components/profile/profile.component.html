@@ -521,6 +521,11 @@
             autocomplete="current-password"
           />
         </nz-form-control>
+        <div class="forgot-password-link">
+          <a routerLink="/auth/forgot-password" (click)="isChangePasswordModalVisible = false">
+            Forgot password?
+          </a>
+        </div>
       </nz-form-item>
       <nz-form-item>
         <nz-form-label nzRequired>New Password</nz-form-label>

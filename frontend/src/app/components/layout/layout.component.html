@@ -107,11 +107,9 @@
       <i nz-icon nzType="search"></i>
       <span>Browse Jobs</span>
     </li>
-
-    <li nz-submenu nzTitle="Organizations" nzIcon="bank">
-      <ul>
-        <li nz-menu-item routerLink="/organizations" (click)="inDrawer && closeDrawer()">List</li>
-      </ul>
+    <li nz-menu-item routerLink="/organizations" (click)="inDrawer && closeDrawer()">
+      <i nz-icon nzType="bank"></i>
+      <span>Organizations</span>
     </li>
 
     <ng-container *ngIf="currentUser$ | async as user">

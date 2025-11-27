@@ -519,6 +519,20 @@ $grey-900: #0f172a;
   }
 }
 
+.forgot-password-link {
+  text-align: right;
+  margin-top: 4px;
+
+  a {
+    color: $secondary-blue;
+    font-size: 13px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
 ::ng-deep {
   .ant-timeline-item {
     padding-bottom: 20px;

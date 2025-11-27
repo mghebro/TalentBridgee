@@ -9,7 +9,7 @@ import {
   AbstractControl,
   ValidatorFn,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -66,6 +66,7 @@ import { PASSWORD_PATTERN } from '../../utils/validation-patterns';
     NzEmptyModule,
     NzTabsModule,
     NzTimelineModule,
+    RouterLink,
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
